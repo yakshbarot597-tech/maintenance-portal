@@ -1,13 +1,13 @@
 // Set your generated Railway backend URL here for production Vercel deployment (e.g., 'https://society-backend-production.up.railway.app')
 const PRODUCTION_API_URL = ''; 
 
-const API_BASE = import.meta.env.VITE_API_URL || 
+const API_BASE = (typeof window !== 'undefined' && window.VITE_API_URL) || 
     ((window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
         ? 'http://localhost:5000/api'
         : (PRODUCTION_API_URL ? `${PRODUCTION_API_URL.replace(/\/$/, '')}/api` : window.location.origin + '/api'));
 
 
-const API_KEY = import.meta.env.VITE_API_KEY || 'hms-api-key-2024-secure';
+const API_KEY = (typeof window !== 'undefined' && window.VITE_API_KEY) || 'hms-api-key-2024-secure';
 
 function getHeaders() {
     const headers = { 
