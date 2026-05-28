@@ -48,18 +48,21 @@ function translateQuery(sql, values) {
 
 // Postgres pool initialization
 const pgConfig = {
-    max: config.db.connectionLimit,
-    ssl: config.db.ssl ? { rejectUnauthorized: false } : undefined
+    max: config.db.connectionLimit
 };
 
 if (process.env.DATABASE_URL) {
     pgConfig.connectionString = process.env.DATABASE_URL;
+    pgConfig.ssl = {
+        rejectUnauthorized: false
+    };
 } else {
     pgConfig.host = config.db.host;
     pgConfig.port = config.db.port;
     pgConfig.user = config.db.user;
     pgConfig.password = config.db.password;
     pgConfig.database = config.db.database;
+    pgConfig.ssl = config.db.ssl ? { rejectUnauthorized: false } : undefined;
 }
 
 const pool = new Pool(pgConfig);
