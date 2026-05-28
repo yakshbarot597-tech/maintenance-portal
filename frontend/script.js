@@ -412,9 +412,9 @@ function showServerError() {
                 margin-bottom: 28px;
                 text-align: left;
             ">
-                <p style="color:rgba(255,255,255,0.4); font-size:11px; font-weight:700; letter-spacing:1px; margin:0 0 8px; text-transform:uppercase;">How to start the server</p>
-                <p style="color:#86EFAC; font-size:13px; font-family:monospace; margin:0 0 4px;">▶ Double-click: <strong>start-server.bat</strong></p>
-                <p style="color:rgba(255,255,255,0.35); font-size:12px; margin:0;">or run <code style="color:#FCD34D;">node server.js</code> in terminal</p>
+                <p style="color:rgba(255,255,255,0.4); font-size:11px; font-weight:700; letter-spacing:1px; margin:0 0 8px; text-transform:uppercase;">Status Info</p>
+                <p style="color:#86EFAC; font-size:13px; font-family:monospace; margin:0 0 4px;">The backend service might be offline or starting up.</p>
+                <p style="color:rgba(255,255,255,0.35); font-size:12px; margin:0;">Please wait a few seconds and click retry.</p>
             </div>
 
             <button class="retry-btn" onclick="retryConnection()" style="

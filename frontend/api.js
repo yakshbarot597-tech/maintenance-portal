@@ -1,5 +1,4 @@
-// Set your generated Railway backend URL here for production Vercel deployment (e.g., 'https://society-backend-production.up.railway.app')
-const PRODUCTION_API_URL = ''; 
+const PRODUCTION_API_URL = 'https://maintenance-portal-5cds.onrender.com'; 
 
 const API_BASE = (typeof window !== 'undefined' && window.VITE_API_URL) || 
     ((window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
