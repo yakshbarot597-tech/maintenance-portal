@@ -3365,16 +3365,15 @@ process.on('uncaughtException', (err) => {
 // --- GRACEFUL SHUTDOWN ---
 function gracefulShutdown(code = 0) {
     console.log('Shutting down server gracefully...');
-    server.close(() => {
+    server.close(async () => {
         console.log('HTTP server closed');
-        db.end((err) => {
-            if (err) {
-                console.error('Error closing database pool:', err.message);
-            } else {
-                console.log('Database connection pool closed');
-            }
-            process.exit(code);
-        });
+        try {
+            await pool.end();
+            console.log('Database connection pool closed');
+        } catch (err) {
+            console.error('Error closing database pool:', err.message);
+        }
+        process.exit(code);
     });
 }
 
