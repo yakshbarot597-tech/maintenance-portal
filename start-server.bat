@@ -17,28 +17,18 @@ if %errorlevel% neq 0 (
     exit /b 1
 )
 
-:: --- Ensure MySQL is running ---
-echo Checking MySQL service...
-sc query MySQL80 >nul 2>&1
+:: --- Ensure PostgreSQL is running ---
+echo Checking PostgreSQL service...
+sc query postgresql-x64-16 >nul 2>&1
 if %errorlevel% equ 0 (
-    for /f "tokens=4" %%s in ('sc query MySQL80 ^| findstr "STATE"') do set MYSQL_STATE=%%s
-    if not "%MYSQL_STATE%"=="RUNNING" (
-        echo Starting MySQL80 service...
-        net start MySQL80 >nul 2>&1
+    for /f "tokens=4" %%s in ('sc query postgresql-x64-16 ^| findstr "STATE"') do set PG_STATE=%%s
+    if not "%PG_STATE%"=="RUNNING" (
+        echo Starting PostgreSQL service...
+        net start postgresql-x64-16 >nul 2>&1
         timeout /t 3 /nobreak >nul
     )
-) else (
-    sc query MySQL >nul 2>&1
-    if %errorlevel% equ 0 (
-        for /f "tokens=4" %%s in ('sc query MySQL ^| findstr "STATE"') do set MYSQL_STATE=%%s
-        if not "%MYSQL_STATE%"=="RUNNING" (
-            echo Starting MySQL service...
-            net start MySQL >nul 2>&1
-            timeout /t 3 /nobreak >nul
-        )
-    )
 )
-echo MySQL check done.
+echo PostgreSQL check done.
 echo.
 
 :: Check if port 5000 is already in use

@@ -12,10 +12,12 @@ if (isProduction) {
     const missing = [];
     if (!process.env.JWT_SECRET) missing.push("JWT_SECRET");
     if (!process.env.API_KEY) missing.push("API_KEY");
-    if (!process.env.DB_PASSWORD) missing.push("DB_PASSWORD");
-    if (!process.env.DB_USER) missing.push("DB_USER");
-    if (!process.env.DB_HOST) missing.push("DB_HOST");
-    if (!process.env.DB_NAME) missing.push("DB_NAME");
+    if (!process.env.DATABASE_URL) {
+        if (!process.env.DB_PASSWORD) missing.push("DB_PASSWORD");
+        if (!process.env.DB_USER) missing.push("DB_USER");
+        if (!process.env.DB_HOST) missing.push("DB_HOST");
+        if (!process.env.DB_NAME) missing.push("DB_NAME");
+    }
 
     if (missing.length > 0) {
         console.error(`FATAL ERROR: The following environment variables are required in production mode but are missing: ${missing.join(", ")}`);
@@ -39,9 +41,9 @@ module.exports = {
     apiKey: process.env.API_KEY || "hms-api-key-2024-secure", // Static API key for public data endpoints
     db: {
         host: process.env.DB_HOST || "localhost",
-        port: parseInt(process.env.DB_PORT) || 3306,
-        user: process.env.DB_USER || "root",
-        password: process.env.DB_PASSWORD || "Yaksh@1419",
+        port: parseInt(process.env.DB_PORT) || 5432,
+        user: process.env.DB_USER || "postgres",
+        password: process.env.DB_PASSWORD || "",
         database: process.env.DB_NAME || "society_management",
         connectionLimit: parseInt(process.env.DB_CONNECTION_LIMIT) || 10,
         ssl: (function() {

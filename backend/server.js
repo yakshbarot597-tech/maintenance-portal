@@ -2,7 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const fs = require("fs");
 const path = require("path");
-const mysql = require("mysql2");
+const { Pool } = require("pg");
 const bcryptjs = require("bcryptjs");
 const config = require("./config");
 const jwt = require("jsonwebtoken");
@@ -19,44 +19,146 @@ const JWT_SECRET = config.jwtSecret || "super-secure-secret-key-123";
 // A pool automatically creates fresh connections and handles reconnection
 // after a system restart — a single createConnection() dies permanently
 // once the server or MySQL is restarted.
-const db = mysql.createPool({
-    host: config.db.host,
-    port: config.db.port,
-    user: config.db.user,
-    password: config.db.password,
-    database: config.db.database,
-    waitForConnections: true,
-    connectionLimit: config.db.connectionLimit,
-    queueLimit: 0,
-    enableKeepAlive: true,
-    keepAliveInitialDelay: 0,
-    ssl: config.db.ssl // Added support for cloud DB SSL
-});
+// Query translation helper: replaces ? placeholders with $1, $2, $3...
+function translateQuery(sql, values) {
+    if (!values || !Array.isArray(values) || values.length === 0) {
+        return { text: sql, values: values || [] };
+    }
+    let index = 1;
+    let text = "";
+    let inSingleQuote = false;
+    let inDoubleQuote = false;
+    
+    for (let i = 0; i < sql.length; i++) {
+        const char = sql[i];
+        if (char === "'" && sql[i - 1] !== "\\") {
+            if (!inDoubleQuote) inSingleQuote = !inSingleQuote;
+            text += char;
+        } else if (char === '"' && sql[i - 1] !== "\\") {
+            if (!inSingleQuote) inDoubleQuote = !inDoubleQuote;
+            text += char;
+        } else if (char === "?" && !inSingleQuote && !inDoubleQuote) {
+            text += `$${index++}`;
+        } else {
+            text += char;
+        }
+    }
+    return { text, values };
+}
+
+// Postgres pool initialization
+const pgConfig = {
+    max: config.db.connectionLimit,
+    ssl: config.db.ssl ? { rejectUnauthorized: false } : undefined
+};
+
+if (process.env.DATABASE_URL) {
+    pgConfig.connectionString = process.env.DATABASE_URL;
+} else {
+    pgConfig.host = config.db.host;
+    pgConfig.port = config.db.port;
+    pgConfig.user = config.db.user;
+    pgConfig.password = config.db.password;
+    pgConfig.database = config.db.database;
+}
+
+const pool = new Pool(pgConfig);
+
+// Compatibility adapter for mysql2
+const db = {
+    getConnection: (callback) => {
+        pool.connect((err, client, release) => {
+            if (err) {
+                callback(err, null);
+                return;
+            }
+            const connection = {
+                release: () => release(),
+                query: (sql, values, cb) => {
+                    const { text, values: translated } = translateQuery(sql, values);
+                    client.query(text, translated, (pgErr, result) => {
+                        if (pgErr) return cb(pgErr);
+                        cb(null, result.rows, result.fields);
+                    });
+                }
+            };
+            callback(null, connection);
+        });
+    },
+    
+    promise: function() {
+        const queryFn = async (sql, values) => {
+            let finalSql = sql;
+            
+            // Convert ON DUPLICATE KEY UPDATE to Postgres ON CONFLICT DO UPDATE
+            if (sql.includes("ON DUPLICATE KEY UPDATE")) {
+                finalSql = sql.replace(
+                    "ON DUPLICATE KEY UPDATE total_blocks=?, total_units=?, default_due_day=?, property_type=?, address=?",
+                    "ON CONFLICT (society_name) DO UPDATE SET total_blocks=?, total_units=?, default_due_day=?, property_type=?, address=?"
+                );
+            }
+            
+            // Convert SHOW TABLES to Postgres table list query
+            if (finalSql.trim().toUpperCase() === "SHOW TABLES") {
+                finalSql = "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public'";
+            }
+
+            // Convert RENAME TABLE to Postgres ALTER TABLE RENAME TO
+            const renameMatch = finalSql.match(/RENAME TABLE (\w+) TO (\w+)/i);
+            if (renameMatch) {
+                finalSql = `ALTER TABLE ${renameMatch[1]} RENAME TO ${renameMatch[2]}`;
+            }
+
+            const { text, values: translatedValues } = translateQuery(finalSql, values);
+
+            // Handle INSERT query insertId emulation (append RETURNING id)
+            const isInsert = text.trim().toUpperCase().startsWith("INSERT");
+            let sqlToRun = text;
+            if (isInsert && !text.toUpperCase().includes("RETURNING")) {
+                sqlToRun = text.trim() + " RETURNING id";
+            }
+
+            const result = await pool.query(sqlToRun, translatedValues);
+            
+            if (isInsert) {
+                const insertId = result.rows[0] ? parseInt(result.rows[0].id) : null;
+                return [{ insertId }, result.fields];
+            }
+            
+            return [result.rows, result.fields];
+        };
+
+        return {
+            query: queryFn,
+            execute: queryFn
+        };
+    }
+};
 
 // Test initial connection
 db.getConnection((err, connection) => {
     if (err) {
         console.log("Initial DB connection error:", err.message);
     } else {
-        console.log("MySQL Pool Connected");
+        console.log("Postgres Pool Connected");
         connection.release();
     }
 });
 
-// Helper: wait for MySQL to be ready before running initDB
+// Helper: wait for DB to be ready before running initDB
 // Retries every 2 seconds for up to 60 seconds
 function waitForDB(retriesLeft = 30) {
     db.getConnection((err, connection) => {
         if (err) {
             if (retriesLeft <= 0) {
-                console.error("Could not connect to MySQL after 60 seconds. Giving up.");
+                console.error("Could not connect to Postgres after 60 seconds. Giving up.");
                 return;
             }
-            console.log(`MySQL not ready yet, retrying in 2s... (${retriesLeft} retries left)`);
+            console.log(`Postgres not ready yet, retrying in 2s... (${retriesLeft} retries left)`);
             setTimeout(() => waitForDB(retriesLeft - 1), 2000);
         } else {
             connection.release();
-            console.log("MySQL is ready. Running database initialization...");
+            console.log("Postgres is ready. Running database initialization...");
             initDB();
         }
     });
@@ -264,21 +366,46 @@ function parsePaidDate(dateStr) {
 const loadSchemaFromFile = async () => {
     const schemaPath = path.join(__dirname, "..", "database", "schema.sql");
     const sql = fs.readFileSync(schemaPath, "utf8");
-    const statements = sql
-        .split(";")
-        .map((s) => s.trim())
-        .filter(
-            (s) =>
-                s.length > 0 &&
-                !/^CREATE DATABASE/i.test(s) &&
-                !/^USE /i.test(s)
-        );
+    
+    const statements = [];
+    let currentStmt = "";
+    let inDollarQuote = false;
+    
+    // Split by lines to parse dollar-quoted blocks correctly
+    const lines = sql.split("\n");
+    for (let line of lines) {
+        // Toggle dollar quote flag if line contains $$
+        if (line.includes("$$")) {
+            inDollarQuote = !inDollarQuote;
+        }
+        
+        if (!inDollarQuote && line.includes(";")) {
+            const parts = line.split(";");
+            for (let i = 0; i < parts.length - 1; i++) {
+                currentStmt += parts[i];
+                const trimmed = currentStmt.trim();
+                if (trimmed && 
+                    !/^CREATE DATABASE/i.test(trimmed) && 
+                    !/^USE /i.test(trimmed) &&
+                    !/^CHARACTER SET/i.test(trimmed)) {
+                    statements.push(trimmed);
+                }
+                currentStmt = "";
+            }
+            currentStmt = parts[parts.length - 1];
+        } else {
+            currentStmt += line + "\n";
+        }
+    }
+    const finalTrimmed = currentStmt.trim();
+    if (finalTrimmed && 
+        !/^CREATE DATABASE/i.test(finalTrimmed) && 
+        !/^USE /i.test(finalTrimmed) &&
+        !/^CHARACTER SET/i.test(finalTrimmed)) {
+        statements.push(finalTrimmed);
+    }
 
     for (let stmt of statements) {
-        if (!/CREATE TABLE /i.test(stmt)) continue;
-        if (!/CREATE TABLE IF NOT EXISTS /i.test(stmt)) {
-            stmt = stmt.replace(/CREATE TABLE /i, "CREATE TABLE IF NOT EXISTS ");
-        }
         await db.promise().query(stmt);
     }
 };
@@ -286,9 +413,9 @@ const loadSchemaFromFile = async () => {
 // Keeps complaint APIs working (raw_flat_number / nullable unit_id) without changing schema.sql
 const ensureComplaintAppColumns = async () => {
     const [cols] = await db.promise().query(
-        `SELECT COLUMN_NAME, IS_NULLABLE
+        `SELECT column_name AS "COLUMN_NAME", is_nullable AS "IS_NULLABLE"
          FROM INFORMATION_SCHEMA.COLUMNS
-         WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'complaints'`
+         WHERE TABLE_SCHEMA = current_schema() AND TABLE_NAME = 'complaints'`
     );
     if (cols.length === 0) return;
 
@@ -301,7 +428,7 @@ const ensureComplaintAppColumns = async () => {
     const unitCol = cols.find((c) => c.COLUMN_NAME === "unit_id");
     if (unitCol && unitCol.IS_NULLABLE === "NO") {
         await db.promise().query(
-            "ALTER TABLE complaints MODIFY COLUMN unit_id BIGINT UNSIGNED NULL"
+            "ALTER TABLE complaints ALTER COLUMN unit_id DROP NOT NULL"
         );
     }
 };
