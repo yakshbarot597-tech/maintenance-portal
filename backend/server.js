@@ -220,17 +220,11 @@ const allowedOrigins = process.env.ALLOWED_ORIGINS
 
 app.use(cors({
     origin: (origin, callback) => {
-        // Allow requests with no origin (like mobile apps or curl requests)
-        if (!origin) return callback(null, true);
-        if (process.env.NODE_ENV !== "production") {
-            return callback(null, true); // Allow all in dev
-        }
-        if (allowedOrigins.indexOf(origin) !== -1 || allowedOrigins.includes("*")) {
-            return callback(null, true);
-        } else {
-            return callback(new Error("Not allowed by CORS"));
-        }
-    }
+        // Allow all origins by echoing the request origin back to support credentials
+        callback(null, true);
+    },
+    allowedHeaders: ["Content-Type", "Authorization", "x-api-key"],
+    credentials: true
 }));
 
 app.use(express.json({ limit: '50mb' })); // Handle large base64 QR codes
