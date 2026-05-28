@@ -135,6 +135,9 @@ const db = {
             query: queryFn,
             execute: queryFn
         };
+    },
+    end: (callback) => {
+        pool.end(callback);
     }
 };
 
