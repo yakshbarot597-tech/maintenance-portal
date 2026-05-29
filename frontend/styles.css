@@ -965,14 +965,14 @@ select option {
     position: fixed;
     background: #8B5E3C;
     color: white;
-    padding: 10px 16px;
-    border-radius: 12px;
-    font-size: 15px;
+    padding: 6px 10px;
+    border-radius: 8px;
+    font-size: 10px;
     font-weight: 900;
     pointer-events: none;
     z-index: 9999;
     white-space: nowrap;
-    box-shadow: 0 8px 18px rgba(139, 94, 60, 0.28);
+    box-shadow: 0 4px 10px rgba(139, 94, 60, 0.2);
     display: none;
 }
 
@@ -980,14 +980,14 @@ select option {
     position: fixed;
     background: #8B5E3C;
     color: white;
-    padding: 10px 16px;
-    border-radius: 12px;
-    font-size: 15px;
+    padding: 6px 10px;
+    border-radius: 8px;
+    font-size: 10px;
     font-weight: 900;
     pointer-events: none;
     z-index: 9999;
     white-space: nowrap;
-    box-shadow: 0 8px 18px rgba(139, 94, 60, 0.28);
+    box-shadow: 0 4px 10px rgba(139, 94, 60, 0.2);
     display: none;
 }
 
