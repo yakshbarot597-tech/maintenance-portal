@@ -2225,7 +2225,7 @@ body:not(.admin-view) #residentPanel {
 /* ==================== ADDITIONAL RESPONSIVENESS OVERRIDES ==================== */
 
 .society-status-title {
-    font-size: 48px !important;
+    font-size: 38px !important;
     color: #8B5E3C !important;
     margin-right: 32px !important;
 }
@@ -2313,7 +2313,7 @@ body:not(.admin-view) #residentPanel {
     /* Laptop actions row buttons remain compact and premium */
 
     .society-status-title {
-        font-size: 38px !important;
+        font-size: 28px !important;
     }
 
     /* Laptop Table Font/Padding Responsive Downscaling */
@@ -2407,7 +2407,7 @@ body:not(.admin-view) #residentPanel {
     /* Tablet actions row buttons remain compact and premium */
 
     .society-status-title {
-        font-size: 30px !important;
+        font-size: 20px !important;
     }
 
     /* Tablet Table Font/Padding Responsive Downscaling */
@@ -2498,7 +2498,7 @@ body:not(.admin-view) #residentPanel {
     }
 
     .society-status-title {
-        font-size: 26px !important;
+        font-size: 16px !important;
     }
 }
 
