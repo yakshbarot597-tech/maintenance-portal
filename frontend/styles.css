@@ -2729,3 +2729,9 @@ body:not(.admin-view) #residentPanel {
     align-items: center !important;
     justify-content: center !important;
 }
+
+#waBlastMessage {
+    height: 180px !important;
+    min-height: 120px !important;
+    font-size: 14px !important;
+}
