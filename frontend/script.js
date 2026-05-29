@@ -1358,7 +1358,7 @@ ${mData.yearlyActive ? `
                 <td class="p-6 text-[19px] font-bold text-[#7A6855]">
 ${mData.status === 'Paid' ? (mData.paidDate || '-') : '-'}
 </td>
-                                <td class="p-6 font-mono text-[19px]">${isOccupied ? `₹${mData.amount || 0}` : '-'}</td>
+                                <td class="p-6 font-mono text-[16px]">${isOccupied ? `₹${mData.amount || 0}` : '-'}</td>
                 <td class="p-6 text-center">
 ${(isOccupied && isAdmin)
                     ? `
@@ -1371,10 +1371,10 @@ ${(isOccupied && isAdmin)
         background:#16A34A;
         color:white;
         border:none;
-        padding:12px 18px;
-        border-radius:12px;
-        font-size:16px;
-        font-weight:900;
+        padding:8px 14px;
+        border-radius:8px;
+        font-size:13px;
+        font-weight:800;
         cursor:pointer;
     "
 >
@@ -1390,10 +1390,10 @@ ${(isOccupied && isAdmin)
                 background:rgba(139,94,60,0.12);
                 color:#8B5E3C;
                 border:1px solid rgba(139,94,60,0.25);
-                padding:12px 18px;
-                border-radius:12px;
-                font-size:16px;
-                font-weight:900;
+                padding:8px 14px;
+                border-radius:8px;
+                font-size:13px;
+                font-weight:800;
                 cursor:pointer;
             "
         >
