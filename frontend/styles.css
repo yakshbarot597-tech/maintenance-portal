@@ -543,26 +543,26 @@ select option {
 
 #adminForm input,
 #adminForm select {
-    font-size: 32px !important;
+    font-size: 14px !important;
     font-weight: 800 !important;
     color: #4E3424 !important;
-    padding: 12px 24px !important;
-    min-height: 78px !important;
+    padding: 8px 16px !important;
+    min-height: 44px !important;
     height: auto !important;
     line-height: 1.4 !important;
-    border-radius: 18px !important;
+    border-radius: 12px !important;
     display: flex !important;
     align-items: center !important;
 }
 
 #adminForm input::placeholder {
-    font-size: 26px !important;
+    font-size: 14px !important;
     font-weight: 700 !important;
     color: #9C826B !important;
 }
 
 #adminForm select option {
-    font-size: 28px !important;
+    font-size: 14px !important;
     font-weight: 700 !important;
 }
 
@@ -1014,31 +1014,31 @@ select option {
 }
 
 #adminForm h2 {
-    font-size: 42px !important;
+    font-size: 24px !important;
     color: #6F4A2F !important;
 }
 
 #adminForm span {
-    font-size: 26px !important;
+    font-size: 16px !important;
     color: #6F4A2F !important;
 }
 
 #adminForm input,
 #adminForm select {
-    height: 64px !important;
-    min-height: 64px !important;
-    font-size: 24px !important;
-    padding: 12px 20px !important;
-    border-radius: 16px !important;
+    height: 44px !important;
+    min-height: 44px !important;
+    font-size: 14px !important;
+    padding: 8px 16px !important;
+    border-radius: 12px !important;
     background: #fff !important;
     border: 1.5px solid rgba(139, 94, 60, 0.22) !important;
 }
 
 #adminForm button[onclick="saveFlat()"] {
-    min-width: 260px !important;
-    height: 66px !important;
-    border-radius: 18px !important;
-    font-size: 20px !important;
+    min-width: 200px !important;
+    height: 44px !important;
+    border-radius: 12px !important;
+    font-size: 13px !important;
     background: linear-gradient(135deg, #7A4F2E, #B57A4B) !important;
 }
 
@@ -1203,10 +1203,10 @@ select option {
 
 #adminForm .edit-field label,
 #adminForm .edit-field span {
-    font-size: 24px !important;
+    font-size: 16px !important;
     font-weight: 900 !important;
     color: #6F4A2F !important;
-    margin-bottom: 10px !important;
+    margin-bottom: 6px !important;
     display: block !important;
 }
 
@@ -2690,4 +2690,42 @@ body:not(.admin-view) #residentPanel {
 
 #dashboardInterface #notificationsPanel .notice-card small {
     font-size: 10px !important; /* 16px - 6px */
+}
+
+/* Admin Form Ownership Transfer specific overrides */
+#adminForm #ownerTransferSection span {
+    font-size: 14px !important;
+}
+
+#adminForm #ownerTransferSection span[style*="color:#9C6B45"] {
+    font-size: 11px !important;
+}
+
+#adminForm #transferFields span {
+    font-size: 11px !important;
+}
+
+#adminForm #transferFields input,
+#adminForm #transferFields select {
+    font-size: 12px !important;
+    height: 38px !important;
+    min-height: 38px !important;
+    padding: 0 12px !important;
+    border-radius: 8px !important;
+}
+
+#adminForm #transferPreviewText {
+    font-size: 11px !important;
+}
+
+#adminForm button[onclick="closeForm()"] {
+    width: 32px !important;
+    height: 32px !important;
+    font-size: 18px !important;
+    padding: 0 !important;
+    border-radius: 50% !important;
+    min-width: auto !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
 }
