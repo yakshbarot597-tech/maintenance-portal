@@ -2099,6 +2099,7 @@ app.get("/api/expense", async (req, res) => {
 // Save/Update Expense
 app.post("/api/expense", async (req, res) => {
     const { id, society_name, title, amount, details, period, year, date, property_type } = req.body;
+    const expenseId = id ? parseInt(id, 10) : null;
     try {
         const [societies] = await db.promise().query("SELECT id FROM societies WHERE society_name=? AND property_type=?", [society_name, property_type || 'flat']);
         if (societies.length === 0) return res.status(404).send("Society not found");
@@ -2106,10 +2107,10 @@ app.post("/api/expense", async (req, res) => {
 
         const expenseDate = parseDDMMYYYY(date);
 
-        if (id) {
+        if (expenseId) {
             await db.promise().query(
                 `UPDATE expenses SET title=?, amount=?, notes=? WHERE id=?`,
-                [title, amount, details, id]
+                [title, amount, details, expenseId]
             );
         } else {
             await db.promise().query(
@@ -2126,7 +2127,7 @@ app.post("/api/expense", async (req, res) => {
 
 // Delete Expense
 app.delete("/api/expense/:id", (req, res) => {
-    db.query("DELETE FROM expenses WHERE id=?", [req.params.id], (err) => {
+    db.query("DELETE FROM expenses WHERE id=?", [parseInt(req.params.id, 10)], (err) => {
         if (err) return res.status(500).send(err);
         res.send({ success: true });
     });
@@ -2173,6 +2174,7 @@ app.get("/api/notice", async (req, res) => {
 // Save/Update Notice
 app.post("/api/notice", async (req, res) => {
     const { id, society_name, title, details, date, property_type } = req.body;
+    const noticeId = id ? parseInt(id, 10) : null;
     try {
         const [societies] = await db.promise().query("SELECT id FROM societies WHERE society_name=? AND property_type=?", [society_name, property_type || 'flat']);
         if (societies.length === 0) return res.status(404).send("Society not found");
@@ -2180,10 +2182,10 @@ app.post("/api/notice", async (req, res) => {
 
         const publishDate = parseDDMMYYYY(date);
 
-        if (id) {
+        if (noticeId) {
             await db.promise().query(
                 `UPDATE notices SET title=?, details=? WHERE id=?`,
-                [title, details, id]
+                [title, details, noticeId]
             );
         } else {
             await db.promise().query(
@@ -2200,7 +2202,7 @@ app.post("/api/notice", async (req, res) => {
 
 // Delete Notice
 app.delete("/api/notice/:id", (req, res) => {
-    db.query("DELETE FROM notices WHERE id=?", [req.params.id], (err) => {
+    db.query("DELETE FROM notices WHERE id=?", [parseInt(req.params.id, 10)], (err) => {
         if (err) return res.status(500).send(err);
         res.send({ success: true });
     });
@@ -2248,6 +2250,7 @@ app.get("/api/rule", async (req, res) => {
 // Save/Update Rule
 app.post("/api/rule", async (req, res) => {
     const { id, society_name, title, details, date, property_type } = req.body;
+    const ruleId = id ? parseInt(id, 10) : null;
     try {
         const [societies] = await db.promise().query("SELECT id FROM societies WHERE society_name=? AND property_type=?", [society_name, property_type || 'flat']);
         if (societies.length === 0) return res.status(404).send("Society not found");
@@ -2256,10 +2259,10 @@ app.post("/api/rule", async (req, res) => {
         const publishDate = parseDDMMYYYY(date);
         const ruleTitle = `_rule_${title}`;
 
-        if (id) {
+        if (ruleId) {
             await db.promise().query(
                 `UPDATE notices SET title=?, details=? WHERE id=?`,
-                [ruleTitle, details, id]
+                [ruleTitle, details, ruleId]
             );
         } else {
             await db.promise().query(
@@ -2276,7 +2279,7 @@ app.post("/api/rule", async (req, res) => {
 
 // Delete Rule
 app.delete("/api/rule/:id", (req, res) => {
-    db.query("DELETE FROM notices WHERE id=?", [req.params.id], (err) => {
+    db.query("DELETE FROM notices WHERE id=?", [parseInt(req.params.id, 10)], (err) => {
         if (err) return res.status(500).send(err);
         res.send({ success: true });
     });
@@ -2330,6 +2333,7 @@ app.get("/api/complaint", async (req, res) => {
 // Save/Update Complaint
 app.post("/api/complaint", async (req, res) => {
     const { id, society_name, title, flat, details, date, createdBy, property_type } = req.body;
+    const complaintId = id ? parseInt(id, 10) : null;
     try {
         const [societies] = await db.promise().query("SELECT id FROM societies WHERE society_name=? AND property_type=?", [society_name, property_type || 'flat']);
         if (societies.length === 0) return res.status(404).json({ success: false, error: "Society not found" });
@@ -2357,10 +2361,10 @@ app.post("/api/complaint", async (req, res) => {
 
         const publishDate = parseDDMMYYYY(date);
 
-        if (id) {
+        if (complaintId) {
             await db.promise().query(
                 `UPDATE complaints SET title=?, unit_id=?, raw_flat_number=?, details=? WHERE id=?`,
-                [title, unitId, rawFlatNumber, details, id]
+                [title, unitId, rawFlatNumber, details, complaintId]
             );
         } else {
             await db.promise().query(
@@ -2377,7 +2381,7 @@ app.post("/api/complaint", async (req, res) => {
 
 // Delete Complaint
 app.delete("/api/complaint/:id", (req, res) => {
-    db.query("DELETE FROM complaints WHERE id=?", [req.params.id], (err) => {
+    db.query("DELETE FROM complaints WHERE id=?", [parseInt(req.params.id, 10)], (err) => {
         if (err) return res.status(500).send(err);
         res.send({ success: true });
     });
@@ -2455,7 +2459,7 @@ app.post("/api/committee", async (req, res) => {
 
 // Delete Committee Member
 app.delete("/api/committee/:id", (req, res) => {
-    db.query("DELETE FROM users WHERE id=?", [req.params.id], (err) => {
+    db.query("DELETE FROM users WHERE id=?", [parseInt(req.params.id, 10)], (err) => {
         if (err) return res.status(500).send(err);
         res.send({ success: true });
     });
