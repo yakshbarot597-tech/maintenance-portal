@@ -2569,3 +2569,24 @@ body:not(.admin-view) #residentPanel {
         width: 320px !important;
     }
 }
+
+/* Specific selector rule to prevent ID/pseudo-class overrides on password eye buttons */
+#setupInterface .pwd-eye,
+#loginInterface .pwd-eye,
+#residentInterface .pwd-eye,
+.pwd-wrapper .pwd-eye {
+    height: 44px !important;
+    width: 44px !important;
+    position: absolute !important;
+    right: 24px !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+}
