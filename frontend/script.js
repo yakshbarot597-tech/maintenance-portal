@@ -2939,12 +2939,12 @@ function renderNotices() {
         <div class="notice-card">
             <h3>${n.title}</h3>
             <p>${n.details}</p>
-            <small style="font-size:16px;font-weight:900;color:#8B5E3C;">
+            <small style="font-size:10px;font-weight:900;color:#8B5E3C;">
                 ${n.date}
             </small>
         </div>
     `).join("")
-            : `<p style="font-size:22px;font-weight:800;color:#7A6855;">No recent notices.</p>`;
+            : `<p style="font-size:12px;font-weight:800;color:#7A6855;">No recent notices.</p>`;
     }
 
     if (!fullBox) return;

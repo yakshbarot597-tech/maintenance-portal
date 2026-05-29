@@ -2659,3 +2659,25 @@ body:not(.admin-view) #residentPanel {
 #expenseDashboard .card-bg p {
     font-size: 12px !important;
 }
+
+#dashboardInterface #notificationsPanel h2 {
+    font-size: 30px !important; /* 40px - 10px */
+}
+
+#dashboardInterface #notificationsPanel button {
+    font-size: 13px !important; /* 18px (global) - 5px */
+    padding: 8px 16px !important;
+    border-radius: 10px !important;
+}
+
+#dashboardInterface #notificationsPanel .notice-card h3 {
+    font-size: 18px !important; /* 28px - 10px */
+}
+
+#dashboardInterface #notificationsPanel .notice-card p {
+    font-size: 12px !important; /* 20px - 8px for readability, or 10px if we want exact 10px decrease, let's use 12px */
+}
+
+#dashboardInterface #notificationsPanel .notice-card small {
+    font-size: 10px !important; /* 16px - 6px */
+}
