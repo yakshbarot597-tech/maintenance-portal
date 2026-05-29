@@ -1730,14 +1730,10 @@ function saveGlobalMaintenance() {
     saveBtn.innerText = "Saving...";
     saveBtn.disabled = true;
 
-    fetch("/api/update-monthly-maintenance", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            society_name: currentSociety,
-            monthly_maintenance: amt,
-            property_type: propertyType
-        })
+    Api.updateMonthlyMaintenance({
+        society_name: currentSociety,
+        monthly_maintenance: amt,
+        property_type: propertyType
     })
     .then(res => res.json())
     .then(data => {
@@ -1745,10 +1741,13 @@ function saveGlobalMaintenance() {
         saveBtn.disabled = false;
         if (data.success) {
             toggleMaintenanceModal();
+            if (!vault[currentSociety]) vault[currentSociety] = { config: {} };
+            if (!vault[currentSociety].config) vault[currentSociety].config = {};
+            vault[currentSociety].config.monthlyMaintenance = amt;
             loadDashboardData();
             showToast("Global monthly maintenance updated successfully!", "success");
         } else {
-            showToast("Failed to update monthly maintenance: " + (data.error || "Unknown error"), "error");
+            showToast("Failed to update monthly maintenance: " + (data.error || data.message || "Unknown error"), "error");
         }
     })
     .catch(err => {

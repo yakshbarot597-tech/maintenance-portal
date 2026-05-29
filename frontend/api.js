@@ -65,7 +65,8 @@ const Api = {
     adminVerifyIdentity: (data) => fetch(`${API_BASE}/admin-verify-identity`, { method: 'POST', headers: {'Content-Type': 'application/json', 'x-api-key': API_KEY}, body: JSON.stringify(data) }),
     adminVerifyOtp: (data) => fetch(`${API_BASE}/admin-verify-otp`, { method: 'POST', headers: {'Content-Type': 'application/json', 'x-api-key': API_KEY}, body: JSON.stringify(data) }),
     adminResetPassword: (data) => fetch(`${API_BASE}/admin-reset-password`, { method: 'POST', headers: {'Content-Type': 'application/json', 'x-api-key': API_KEY}, body: JSON.stringify(data) }),
-    updateDueDay: (data) => fetchWithAuth(`${API_BASE}/update-due-day`, { method: 'POST', body: JSON.stringify(data) })
+    updateDueDay: (data) => fetchWithAuth(`${API_BASE}/update-due-day`, { method: 'POST', body: JSON.stringify(data) }),
+    updateMonthlyMaintenance: (data) => fetchWithAuth(`${API_BASE}/update-monthly-maintenance`, { method: 'POST', body: JSON.stringify(data) })
 };
 
 window.Api = Api;

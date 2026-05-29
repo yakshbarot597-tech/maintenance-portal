@@ -1544,7 +1544,8 @@ app.get("/api/society/:name/:type", async (req, res) => {
                 flats: parsedFlats,
                 user: adminCred.admin_username,
                 defaultDueDay: society.default_due_day,
-                propertyType: society.property_type || 'flat'
+                propertyType: society.property_type || 'flat',
+                monthlyMaintenance: society.monthly_maintenance ? Number(society.monthly_maintenance) : 0.00
             },
             bank: {
                 n: bank.bank_name,
