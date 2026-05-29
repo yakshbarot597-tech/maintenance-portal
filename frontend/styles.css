@@ -305,9 +305,11 @@ tbody td div.text-amber-700 {
 #globalDueDate {
     font-size: 16px !important;
     font-weight: 700 !important;
-    padding: 8px 16px !important;
+    padding: 0 16px !important;
     min-width: 170px !important;
     height: 48px !important;
+    min-height: 48px !important;
+    line-height: 46px !important;
     border-radius: 12px !important;
     color: #5C4033 !important;
     background: #fff !important;
@@ -1139,6 +1141,8 @@ select option {
 
 .header-input {
     height: 48px !important;
+    min-height: 48px !important;
+    line-height: 46px !important;
     min-width: 140px !important;
     padding: 0 16px !important;
     border-radius: 12px !important;
@@ -1349,6 +1353,8 @@ body.rules-open #floatingComplaintBtn {
 
 .header-input {
     height: 48px !important;
+    min-height: 48px !important;
+    line-height: 46px !important;
     min-width: 140px !important;
     padding: 0 16px !important;
     border-radius: 12px !important;
@@ -2237,6 +2243,8 @@ body:not(.admin-view) #residentPanel {
 
     .header-input {
         height: 40px !important;
+        min-height: 40px !important;
+        line-height: 38px !important;
         min-width: 120px !important;
         font-size: 12px !important;
         padding: 0 12px !important;
@@ -2247,6 +2255,8 @@ body:not(.admin-view) #residentPanel {
     #viewYear,
     #globalDueDate {
         height: 40px !important;
+        min-height: 40px !important;
+        line-height: 38px !important;
     }
 
     .header-menu-btn {
