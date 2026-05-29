@@ -1208,20 +1208,20 @@ select option {
     /* Hidden by default */
     align-items: center !important;
     justify-content: center !important;
-    gap: 10px !important;
-    padding: 16px 22px !important;
+    gap: 8px !important;
+    padding: 8px 16px !important;
     border: none !important;
     border-radius: 999px !important;
     background: linear-gradient(135deg, #8B5E3C, #C08A5B) !important;
     color: white !important;
-    font-size: 20px !important;
+    font-size: 10px !important;
     font-weight: 900 !important;
     cursor: pointer !important;
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.30) !important;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2) !important;
 }
 
 #floatingComplaintBtn span:first-child {
-    font-size: 28px !important;
+    font-size: 18px !important;
 }
 
 @media(max-width:768px) {
