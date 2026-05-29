@@ -363,6 +363,13 @@ h1 {
     font-size: 52px !important;
 }
 
+#rulesPage h1,
+#noticePage h1,
+#expensePage h1,
+#complaintPage h1 {
+    font-size: 37px !important;
+}
+
 h2 {
     font-size: 40px !important;
 }
