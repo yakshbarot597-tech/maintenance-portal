@@ -1211,9 +1211,8 @@ function getEffectiveMonthData(d, period) {
 
     const globalMaintenance = Number(vault[currentSociety]?.config?.monthlyMaintenance || 0);
     const plan = existingMonth.plan || 'monthly';
-    let calculatedAmount = 0;
-    if (existingMonth.amount !== undefined && existingMonth.amount !== null) {
-        calculatedAmount = existingMonth.amount;
+    if (existingMonth.amount !== undefined && existingMonth.amount !== null && Number(existingMonth.amount) > 0) {
+        calculatedAmount = Number(existingMonth.amount);
     } else {
         calculatedAmount = plan === 'yearly' ? (globalMaintenance * 11) : globalMaintenance;
     }
