@@ -444,19 +444,35 @@ const ensureComplaintAppColumns = async () => {
          FROM INFORMATION_SCHEMA.COLUMNS
          WHERE TABLE_SCHEMA = current_schema() AND TABLE_NAME = 'complaints'`
     );
-    if (cols.length === 0) return;
-
-    const colNames = cols.map((c) => c.COLUMN_NAME);
-    if (!colNames.includes("raw_flat_number")) {
-        await db.promise().query(
-            "ALTER TABLE complaints ADD COLUMN raw_flat_number VARCHAR(50) NULL"
-        );
+    if (cols.length > 0) {
+        const colNames = cols.map((c) => c.COLUMN_NAME);
+        if (!colNames.includes("raw_flat_number")) {
+            await db.promise().query(
+                "ALTER TABLE complaints ADD COLUMN raw_flat_number VARCHAR(50) NULL"
+            );
+        }
+        const unitCol = cols.find((c) => c.COLUMN_NAME === "unit_id");
+        if (unitCol && unitCol.IS_NULLABLE === "NO") {
+            await db.promise().query(
+                "ALTER TABLE complaints ALTER COLUMN unit_id DROP NOT NULL"
+            );
+        }
     }
-    const unitCol = cols.find((c) => c.COLUMN_NAME === "unit_id");
-    if (unitCol && unitCol.IS_NULLABLE === "NO") {
-        await db.promise().query(
-            "ALTER TABLE complaints ALTER COLUMN unit_id DROP NOT NULL"
-        );
+
+    // Ensure societies table has monthly_maintenance column
+    const [socCols] = await db.promise().query(
+        `SELECT column_name AS "COLUMN_NAME"
+         FROM INFORMATION_SCHEMA.COLUMNS
+         WHERE TABLE_SCHEMA = current_schema() AND TABLE_NAME = 'societies'`
+    );
+    if (socCols.length > 0) {
+        const socColNames = socCols.map((c) => c.COLUMN_NAME);
+        if (!socColNames.includes("monthly_maintenance")) {
+            await db.promise().query(
+                "ALTER TABLE societies ADD COLUMN monthly_maintenance DECIMAL(12,2) DEFAULT 0.00"
+            );
+            console.log("Added column monthly_maintenance to societies table.");
+        }
     }
 };
 
@@ -2895,6 +2911,21 @@ app.post("/api/update-due-day", async (req, res) => {
     }
 });
 
+// Update Monthly Maintenance globally
+app.post("/api/update-monthly-maintenance", async (req, res) => {
+    const { society_name, monthly_maintenance, property_type } = req.body;
+    try {
+        await db.promise().query(
+            "UPDATE societies SET monthly_maintenance=? WHERE society_name=? AND property_type=?",
+            [monthly_maintenance, society_name, property_type || 'flat']
+        );
+        res.json({ success: true });
+    } catch (err) {
+        console.error("Update monthly maintenance error:", err);
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
+
 
 // ── GET Committee (API Key protected) ──────────────────────────────────────
 // GET /api/society-committee/:name/:type
@@ -3361,7 +3392,8 @@ app.get("/api/society-flats/:name/:type", async (req, res) => {
                 flats: parsedFlats,
                 user: adminCred.admin_username,
                 defaultDueDay: society.default_due_day,
-                propertyType: society.property_type || 'flat'
+                propertyType: society.property_type || 'flat',
+                monthlyMaintenance: society.monthly_maintenance || 0.00
             },
             apartmentData: flatData,
             maintenance: maintenance

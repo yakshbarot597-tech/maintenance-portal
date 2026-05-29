@@ -1209,11 +1209,20 @@ function getEffectiveMonthData(d, period) {
         }
     }
 
+    const globalMaintenance = Number(vault[currentSociety]?.config?.monthlyMaintenance || 0);
+    const plan = existingMonth.plan || 'monthly';
+    let calculatedAmount = 0;
+    if (existingMonth.amount !== undefined && existingMonth.amount !== null) {
+        calculatedAmount = existingMonth.amount;
+    } else {
+        calculatedAmount = plan === 'yearly' ? (globalMaintenance * 11) : globalMaintenance;
+    }
+
     let mData = {
         status: existingMonth.status || 'Pending',
-        amount: existingMonth.amount || d.latestAmount || 0,
+        amount: calculatedAmount,
         paidDate: existingMonth.paidDate || '-',
-        plan: existingMonth.plan || 'monthly',
+        plan: plan,
         paymentMethod: existingMonth.paymentMethod || d.latestPaymentMethod || 'Cash',
         owner: (existingMonth && existingMonth.hasOwnProperty('owner') && existingMonth.owner !== null) ? existingMonth.owner : defaultOwner, // Historical owner if exists, else current/resolved
         phone: defaultPhone,
@@ -1235,9 +1244,12 @@ function getEffectiveMonthData(d, period) {
             expiryDate.setFullYear(expiryDate.getFullYear() + 1);
 
             if (selectedMonthEnd >= paidDate && selectedMonthStart < expiryDate) {
+                const yearlyAmount = (m.amount !== undefined && m.amount !== null && m.amount !== 0) 
+                    ? m.amount 
+                    : (globalMaintenance * 11);
                 mData = {
                     status: 'Paid',
-                    amount: m.amount || d.latestAmount || 0,
+                    amount: yearlyAmount,
                     paidDate: m.paidDate,
                     plan: 'yearly',
                     paymentMethod: m.paymentMethod || 'Cash',
@@ -1700,6 +1712,51 @@ function toggleCommitteeModal() {
 
     }
     checkFloatingComplaintVisibility();
+}
+
+function toggleMaintenanceModal() {
+    const modal = document.getElementById('maintenanceModal');
+    modal.classList.toggle('hidden');
+    if (!modal.classList.contains('hidden')) {
+        const globalAmt = vault[currentSociety]?.config?.monthlyMaintenance || 0;
+        document.getElementById('globalMaintenanceAmount').value = globalAmt;
+    }
+    checkFloatingComplaintVisibility();
+}
+
+function saveGlobalMaintenance() {
+    const amt = parseFloat(document.getElementById('globalMaintenanceAmount').value) || 0;
+    const saveBtn = document.getElementById('saveGlobalMaintenanceBtn');
+    saveBtn.innerText = "Saving...";
+    saveBtn.disabled = true;
+
+    fetch("/api/update-monthly-maintenance", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            society_name: currentSociety,
+            monthly_maintenance: amt,
+            property_type: propertyType
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        saveBtn.innerText = "Save Settings";
+        saveBtn.disabled = false;
+        if (data.success) {
+            toggleMaintenanceModal();
+            loadDashboardData();
+            showToast("Global monthly maintenance updated successfully!", "success");
+        } else {
+            showToast("Failed to update monthly maintenance: " + (data.error || "Unknown error"), "error");
+        }
+    })
+    .catch(err => {
+        saveBtn.innerText = "Save Settings";
+        saveBtn.disabled = false;
+        console.error("Save global maintenance error:", err);
+        showToast("Error updating monthly maintenance.", "error");
+    });
 }
 
 function loadCommittee() {
@@ -2752,8 +2809,12 @@ function markMaintenancePaid(block, flat) {
 function updateYearlyAmount() {
     const plan = document.getElementById("paymentPlan").value;
     const amountInput = document.getElementById("maintenanceAmount");
+    const globalMaintenance = Number(vault[currentSociety]?.config?.monthlyMaintenance || 0);
 
-    const currentAmount = Number(amountInput.value) || 0;
+    let currentAmount = Number(amountInput.value) || 0;
+    if (currentAmount === 0) {
+        currentAmount = globalMaintenance;
+    }
 
     if (plan === "yearly") {
         amountInput.value = currentAmount * 11;
@@ -4231,6 +4292,7 @@ Object.assign(window, {
     saveComplaint,
     saveExpense,
     saveFlat,
+    saveGlobalMaintenance,
     saveRule,
     selectPropertyType,
     sendAllBlastIndividually,
@@ -4243,6 +4305,7 @@ Object.assign(window, {
     toggleExpensePage,
     toggleHeaderMenu,
     toggleLoginMode,
+    toggleMaintenanceModal,
     toggleNoticePage,
     togglePasswordVisibility,
     toggleRentalFields,

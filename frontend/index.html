@@ -569,6 +569,9 @@
                                 <button onclick="toggleRulesPage(); closeHeaderMenu()" class="menu-item-btn">
                                     📜 <span>Rules</span>
                                 </button>
+                                <button onclick="toggleMaintenanceModal(); closeHeaderMenu()" class="menu-item-btn">
+                                    🔧 <span>Monthly Maintenance</span>
+                                </button>
                                 <div class="menu-divider"></div>
                                 <button onclick="confirmLogout(); closeHeaderMenu()" class="menu-item-btn logout-item">
                                     🚪 <span>Logout</span>
@@ -1153,16 +1156,45 @@
         ">
                         💾
                     </span>
-
-                    <span style="
-    color:white;
-">
                         Save Changes
                     </span>
 
                 </button>
 
             </div>
+        </div>
+    </div>
+
+    <!-- ==================== MONTHLY MAINTENANCE MODAL ==================== -->
+    <div id="maintenanceModal" class="hidden fixed inset-0 flex items-center justify-center z-[110] p-4">
+        <div class="absolute inset-0 bg-black/80 backdrop-blur-lg" onclick="toggleMaintenanceModal()"></div>
+        <div class="card-bg w-full max-w-md p-8 rounded-[40px] relative border-amber-400/20">
+            <button onclick="toggleMaintenanceModal()" style="
+                position:absolute; top:20px; right:20px;
+                width:36px; height:36px; border-radius:50%;
+                background:#8B5E3C; color:white;
+                font-size:18px; font-weight:900; border:none;
+                cursor:pointer; display:flex; align-items:center; justify-content:center;
+            ">×</button>
+            <h3 class="text-2xl font-bold mb-6" style="color:#8B5E3C;">
+                🔧 Monthly Maintenance
+            </h3>
+            <p class="text-[#7A6855] text-sm mb-4">
+                Set a global monthly maintenance amount. This will apply by default to all flats unless overridden.
+            </p>
+            <div style="margin-bottom: 20px;">
+                <label style="display:block; font-size:13px; font-weight:900; color:#8B5E3C; text-transform:uppercase; margin-bottom:8px;">
+                    Monthly Maintenance Amount (₹)
+                </label>
+                <input id="globalMaintenanceAmount" type="number" min="0" max="999999" placeholder="Enter amount"
+                    class="p-4 input-field rounded-xl text-xl w-full">
+            </div>
+            <button id="saveGlobalMaintenanceBtn" onclick="saveGlobalMaintenance()" style="
+                width:100%; height:52px; border:none; border-radius:14px;
+                background:linear-gradient(135deg,#8B5E3C,#C08A5B);
+                color:white; font-size:18px; font-weight:900; cursor:pointer;
+                box-shadow:0 8px 24px rgba(139,94,60,0.25);
+            ">Save Settings</button>
         </div>
     </div>
 

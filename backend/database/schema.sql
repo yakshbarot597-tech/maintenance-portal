@@ -15,6 +15,7 @@ CREATE TABLE IF NOT EXISTS societies (
     default_due_day SMALLINT DEFAULT 1,
     grace_days SMALLINT DEFAULT 5,
     late_fee_percent DECIMAL(5,2) DEFAULT 0.00,
+    monthly_maintenance DECIMAL(12,2) DEFAULT 0.00,
     is_active SMALLINT DEFAULT 1,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
