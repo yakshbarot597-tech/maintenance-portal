@@ -2221,27 +2221,16 @@ function openWhatsAppBlast(type) {
     }
 
     // Populate modal
-    const icon = document.getElementById('waBlastIcon');
-    const sendBtn = document.getElementById('waBlastSendBtn');
-    const sendAllBtn = document.getElementById('waBlastSendAllBtn');
     if (isPending) {
-        icon.style.background = 'linear-gradient(135deg,#25D366,#128C7E)';
-        sendBtn.style.background = 'linear-gradient(135deg,#25D366,#128C7E)';
-        if (sendAllBtn) {
-            sendAllBtn.style.background = 'linear-gradient(135deg,#FF9800,#F57C00)';
-            sendAllBtn.style.boxShadow = '0 8px 16px rgba(245,124,0,0.25)';
-        }
         document.getElementById('waBlastTitle').textContent = `Notify Pending Residents`;
-        document.getElementById('waBlastSubtitle').textContent = `${waBlastResidents.length} ${translateTerm('flat(s)')} with pending maintenance for ${period}`;
+        const resText = waBlastResidents.length === 1 ? 'resident' : 'residents';
+        const verbText = waBlastResidents.length === 1 ? 'is pending' : 'are pending';
+        document.getElementById('waBlastSubtitle').textContent = `${waBlastResidents.length} ${resText} ${verbText} for ${period}`;
     } else {
-        icon.style.background = 'linear-gradient(135deg,#3B82F6,#1D4ED8)';
-        sendBtn.style.background = 'linear-gradient(135deg,#3B82F6,#1D4ED8)';
-        if (sendAllBtn) {
-            sendAllBtn.style.background = 'linear-gradient(135deg,#6366F1,#4F46E5)';
-            sendAllBtn.style.boxShadow = '0 8px 16px rgba(99,102,241,0.25)';
-        }
         document.getElementById('waBlastTitle').textContent = `Acknowledge Paid Residents`;
-        document.getElementById('waBlastSubtitle').textContent = `${waBlastResidents.length} ${translateTerm('flat(s)')} have paid for ${period}`;
+        const resText = waBlastResidents.length === 1 ? 'resident' : 'residents';
+        const verbText = waBlastResidents.length === 1 ? 'has paid' : 'have paid';
+        document.getElementById('waBlastSubtitle').textContent = `${waBlastResidents.length} ${resText} ${verbText} for ${period}`;
     }
 
     document.getElementById('waBlastMessage').value = defaultMsg;
@@ -2250,7 +2239,7 @@ function openWhatsAppBlast(type) {
     // Build resident list cards
     const listEl = document.getElementById('waBlastList');
     if (waBlastResidents.length === 0) {
-        listEl.innerHTML = `<div style="text-align:center;padding:30px;font-size:18px;font-weight:800;color:#9A6B45;">No residents found for this filter.</div>`;
+        listEl.innerHTML = `<div style="text-align:center;padding:30px;font-size:16px;font-weight:600;color:#64748b;">No residents found for this filter.</div>`;
     } else {
         listEl.innerHTML = waBlastResidents.map(r => {
             const hasPhone = r.phone && r.phone.length >= 10;
@@ -2258,17 +2247,24 @@ function openWhatsAppBlast(type) {
                 ? `https://wa.me/91${r.phone.replace(/\D/g, '').slice(-10)}?text=${encodeURIComponent(`Dear ${r.owner}, this is a reminder from ${society} regarding your maintenance dues for ${period}.`)}`
                 : '#';
             return `
-            <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-radius:16px;background:rgba(248,245,240,0.9);border:1px solid rgba(139,94,60,0.1);">
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-radius:12px;background:#f8fafc;border:1px solid #e2e8f0;margin-bottom:4px;">
                 <div>
-                    <div style="font-size:18px;font-weight:950;color:#2C1A0E;">Flat ${r.flat} — ${r.owner}</div>
-                    <div style="font-size:15px;font-weight:700;color:#9A6B45;margin-top:3px;">
-                        ${hasPhone ? `📱 ${r.phone}` : '⚠️ No phone on record'} &nbsp;·&nbsp; ₹${Number(r.amount).toLocaleString('en-IN')}
-                        ${isPending ? '' : ` &nbsp;·&nbsp; Paid: ${r.paidDate}`}
+                    <div style="font-size:16px;font-weight:700;color:#0f172a;">Flat ${r.flat} — ${r.owner}</div>
+                    <div style="font-size:14px;font-weight:500;color:#64748b;margin-top:4px;display:flex;align-items:center;gap:6px;">
+                        <span style="display:inline-flex;align-items:center;justify-content:center;background:#f3e8ff;color:#9333ea;width:20px;height:20px;border-radius:4px;font-size:11px;">🗂️</span>
+                        ${hasPhone ? r.phone : '<span style="color:#ef4444;">No phone on record</span>'} &nbsp;·&nbsp; ₹${Number(r.amount).toLocaleString('en-IN')}
+                        ${isPending ? '' : ` &nbsp;·&nbsp; ${r.paidDate}`}
                     </div>
                 </div>
                 ${hasPhone
-                    ? `<a href="${waLink}" target="_blank" style="background:linear-gradient(135deg,#25D366,#128C7E);color:white;text-decoration:none;padding:10px 18px;border-radius:12px;font-size:15px;font-weight:900;white-space:nowrap;">Send ↗</a>`
-                    : `<span style="color:#EF4444;font-size:14px;font-weight:800;">No Phone</span>`
+                    ? `<a href="${waLink}" target="_blank" style="background:#059669;color:white;text-decoration:none;padding:8px 16px;border-radius:8px;font-size:14px;font-weight:600;display:inline-flex;align-items:center;gap:6px;white-space:nowrap;transition:background 0.2s;" onmouseover="this.style.background='#047857'" onmouseout="this.style.background='#059669'">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="22" y1="2" x2="11" y2="13"/>
+                            <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                        </svg>
+                        Send
+                       </a>`
+                    : `<span style="color:#ef4444;font-size:13px;font-weight:600;padding:8px 12px;background:#fef2f2;border-radius:8px;display:inline-flex;align-items:center;gap:4px;">⚠️ No Phone</span>`
                 }
             </div>`;
         }).join('');
