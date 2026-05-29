@@ -346,16 +346,16 @@ button {
 }
 
 tbody td:nth-child(5) {
-    font-size: 14px !important;
+    font-size: 22px !important;
     font-weight: 900 !important;
     color: #5C4033 !important;
     letter-spacing: 0.5px !important;
 }
 
 tbody td button {
-    font-size: 11px !important;
-    padding: 6px 10px !important;
-    border-radius: 6px !important;
+    font-size: 19px !important;
+    padding: 10px 18px !important;
+    border-radius: 10px !important;
     font-weight: 800 !important;
 }
 
