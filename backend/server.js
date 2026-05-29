@@ -136,6 +136,24 @@ const db = {
             execute: queryFn
         };
     },
+    query: (sql, values, callback) => {
+        let actualValues = values;
+        let actualCallback = callback;
+        if (typeof values === 'function') {
+            actualCallback = values;
+            actualValues = [];
+        }
+        const { text, values: translated } = translateQuery(sql, actualValues);
+        pool.query(text, translated, (pgErr, result) => {
+            if (pgErr) {
+                if (actualCallback) return actualCallback(pgErr);
+                return;
+            }
+            if (actualCallback) {
+                actualCallback(null, result.rows, result.fields);
+            }
+        });
+    },
     end: (callback) => {
         pool.end(callback);
     }
@@ -364,7 +382,16 @@ function parsePaidDate(dateStr) {
 }
 
 const loadSchemaFromFile = async () => {
-    const schemaPath = path.join(__dirname, "..", "database", "schema.sql");
+    let schemaPath = path.join(__dirname, "..", "database", "schema.sql");
+    if (!fs.existsSync(schemaPath)) {
+        schemaPath = path.join(__dirname, "database", "schema.sql");
+    }
+    if (!fs.existsSync(schemaPath)) {
+        schemaPath = path.join(__dirname, "schema.sql");
+    }
+    if (!fs.existsSync(schemaPath)) {
+        throw new Error("Could not locate schema.sql in database/ or backend/database/ directory.");
+    }
     const sql = fs.readFileSync(schemaPath, "utf8");
     
     const statements = [];
