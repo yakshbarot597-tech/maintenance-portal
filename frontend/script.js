@@ -322,7 +322,7 @@ function renderExpenses() {
 }
 
 function editExpense(id) {
-    const e = vault[currentSociety].expenses.find(exp => exp.id === id);
+    const e = vault[currentSociety].expenses.find(exp => String(exp.id) === String(id));
 
     document.getElementById("expenseTitle").value = e.title;
     document.getElementById("expenseAmount").value = e.amount;
@@ -2929,7 +2929,7 @@ function renderNotices() {
         : `<p style="font-size:22px;font-weight:800;color:#7A6855;">No notices added yet.</p>`;
 }
 function editNotice(id) {
-    const notice = vault[currentSociety].notices.find(n => n.id === id);
+    const notice = vault[currentSociety].notices.find(n => String(n.id) === String(id));
 
     document.getElementById("noticeTitle").value = notice.title;
     document.getElementById("noticeDetails").value = notice.details;
@@ -3107,7 +3107,7 @@ function renderRules() {
 }
 
 function editRule(id) {
-    const rule = vault[currentSociety].rules.find(r => r.id === id);
+    const rule = vault[currentSociety].rules.find(r => String(r.id) === String(id));
 
     document.getElementById("ruleTitle").value = rule.title;
     document.getElementById("ruleDetails").value = rule.details;
@@ -3424,7 +3424,7 @@ function renderComplaints() {
 }
 
 function editComplaint(id) {
-    const c = vault[currentSociety].complaints.find(comp => comp.id === id);
+    const c = vault[currentSociety].complaints.find(comp => String(comp.id) === String(id));
     const loggedFlat = getLoggedInComplaintFlat();
 
     if (!isAdmin && (loggedFlat === "" || (c.created_by !== loggedFlat && c.flat !== loggedFlat))) {
@@ -3440,7 +3440,7 @@ function editComplaint(id) {
 }
 
 function deleteComplaint(id) {
-    const c = vault[currentSociety].complaints.find(comp => comp.id === id);
+    const c = vault[currentSociety].complaints.find(comp => String(comp.id) === String(id));
     const loggedFlat = getLoggedInComplaintFlat();
 
     if (!isAdmin && (loggedFlat === "" || (c.created_by !== loggedFlat && c.flat !== loggedFlat))) {
