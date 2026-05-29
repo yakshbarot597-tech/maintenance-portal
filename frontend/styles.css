@@ -303,12 +303,12 @@ tbody td div.text-amber-700 {
 #viewMonth,
 #viewYear,
 #globalDueDate {
-    font-size: 22px !important;
+    font-size: 12px !important;
     font-weight: 700 !important;
-    padding: 16px 20px !important;
-    min-width: 170px !important;
-    height: 62px !important;
-    border-radius: 16px !important;
+    padding: 0 12px !important;
+    min-width: 120px !important;
+    height: 42px !important;
+    border-radius: 10px !important;
     color: #5C4033 !important;
     background: #fff !important;
     border: 1px solid rgba(139, 94, 60, 0.18) !important;
@@ -1305,7 +1305,7 @@ body.rules-open #floatingComplaintBtn {
 /* CENTER TITLE */
 .header-title {
     text-align: left;
-    font-size: 34px !important;
+    font-size: 24px !important;
     font-weight: 900 !important;
     color: #8B5E3C !important;
     letter-spacing: 1.5px;
@@ -1340,7 +1340,7 @@ body.rules-open #floatingComplaintBtn {
 .control-row label,
 .danger-label {
     text-align: center;
-    font-size: 15px !important;
+    font-size: 10px !important;
     font-weight: 900 !important;
     letter-spacing: 1.8px !important;
     color: #7b4b2a !important;
@@ -1348,19 +1348,19 @@ body.rules-open #floatingComplaintBtn {
 }
 
 .header-input {
-    height: 58px !important;
+    height: 42px !important;
     min-width: 140px !important;
-    padding: 0 16px !important;
-    border-radius: 14px !important;
+    padding: 0 12px !important;
+    border-radius: 10px !important;
     border: 1px solid #ead8c8 !important;
     background: white !important;
     color: #5b3a29 !important;
-    font-size: 18px !important;
+    font-size: 12px !important;
     font-weight: 800 !important;
 }
 
 #globalDueDate {
-    min-width: 170px !important;
+    min-width: 140px !important;
 }
 
 .logout-btn {
@@ -1391,7 +1391,7 @@ body.rules-open #floatingComplaintBtn {
     }
 
     .header-title {
-        font-size: 30px !important;
+        font-size: 20px !important;
         white-space: normal;
         text-align: center !important;
         padding-left: 50px !important;
@@ -2110,12 +2110,12 @@ body:not(.admin-view) #residentPanel {
 }
 
 .header-menu-btn {
-    height: 62px !important;
-    width: 62px !important;
+    height: 42px !important;
+    width: 42px !important;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 16px !important;
+    border-radius: 10px !important;
     border: 1px solid #ead8c8 !important;
     background: #fffaf6 !important;
     color: #6f4a2f !important;
@@ -2232,27 +2232,27 @@ body:not(.admin-view) #residentPanel {
     }
 
     .header-title {
-        font-size: 30px !important;
+        font-size: 20px !important;
     }
 
     .header-input {
-        height: 50px !important;
+        height: 38px !important;
         min-width: 120px !important;
-        font-size: 16px !important;
+        font-size: 11px !important;
         padding: 0 12px !important;
-        border-radius: 12px !important;
+        border-radius: 8px !important;
     }
 
     #viewMonth,
     #viewYear,
     #globalDueDate {
-        height: 50px !important;
+        height: 38px !important;
     }
 
     .header-menu-btn {
-        height: 50px !important;
-        width: 50px !important;
-        border-radius: 12px !important;
+        height: 38px !important;
+        width: 38px !important;
+        border-radius: 8px !important;
     }
 
     #searchBox {
