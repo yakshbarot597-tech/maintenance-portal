@@ -2604,3 +2604,58 @@ body:not(.admin-view) #residentPanel {
     margin: 0 !important;
     box-shadow: none !important;
 }
+
+/* ==================== SUBPAGES COMPACT TYPOGRAPHY ==================== */
+/* Downscales everything inside Rules, Notices, Expenditure, and Complaints pages */
+
+#rulesPage input, #noticePage input, #expensePage input, #complaintPage input {
+    font-size: 14px !important;
+    height: 46px !important;
+    line-height: 1.4 !important;
+    padding: 10px 16px !important;
+}
+
+#rulesPage input::placeholder, #noticePage input::placeholder, #expensePage input::placeholder, #complaintPage input::placeholder {
+    font-size: 14px !important;
+}
+
+#rulesPage textarea, #noticePage textarea, #expensePage textarea, #complaintPage textarea {
+    font-size: 14px !important;
+    height: 100px !important;
+    line-height: 1.4 !important;
+    padding: 12px 16px !important;
+}
+
+#rulesPage button, #noticePage button, #expensePage button, #complaintPage button {
+    font-size: 13px !important;
+    padding: 8px 16px !important;
+    height: auto !important;
+    min-width: auto !important;
+    border-radius: 8px !important;
+    font-weight: 800 !important;
+}
+
+#rulesPage h3, #noticePage h3, #expensePage h3, #complaintPage h3 {
+    font-size: 18px !important;
+    font-weight: 800 !important;
+    margin-bottom: 6px !important;
+}
+
+#rulesPage p, #noticePage p, #expensePage p, #complaintPage p {
+    font-size: 14px !important;
+    line-height: 1.6 !important;
+}
+
+#rulesPage small, #noticePage small, #expensePage small, #complaintPage small,
+#rulesPage div[style*="font-size"], #noticePage div[style*="font-size"], #expensePage div[style*="font-size"], #complaintPage div[style*="font-size"],
+#rulesPage p[style*="font-size"], #noticePage p[style*="font-size"], #expensePage p[style*="font-size"], #complaintPage p[style*="font-size"] {
+    font-size: 12px !important;
+}
+
+#expenseDashboard .card-bg h3 {
+    font-size: 26px !important;
+}
+
+#expenseDashboard .card-bg p {
+    font-size: 12px !important;
+}
