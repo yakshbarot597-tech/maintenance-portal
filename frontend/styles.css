@@ -2571,10 +2571,10 @@ body:not(.admin-view) #residentPanel {
 }
 
 /* Specific selector rule to prevent ID/pseudo-class overrides on password eye buttons */
-#setupInterface .pwd-eye,
-#loginInterface .pwd-eye,
-#residentInterface .pwd-eye,
-.pwd-wrapper .pwd-eye {
+#setupInterface button.pwd-eye,
+#loginInterface button.pwd-eye,
+#residentInterface button.pwd-eye,
+.pwd-wrapper button.pwd-eye {
     height: 44px !important;
     width: 44px !important;
     position: absolute !important;
