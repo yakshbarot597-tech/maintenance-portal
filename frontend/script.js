@@ -3313,6 +3313,16 @@ document.addEventListener("mousemove", (e) => {
         }
     }
 });
+
+// Hide tooltips on scroll (they get stuck because scroll fires no mousemove)
+function hideAllTooltips() {
+    const rowTooltip = document.getElementById("rowHoverTooltip");
+    const expenseTooltip = document.getElementById("expenseHoverTooltip");
+    if (rowTooltip) rowTooltip.style.display = "none";
+    if (expenseTooltip) expenseTooltip.style.display = "none";
+}
+document.addEventListener("scroll", hideAllTooltips, true);
+document.addEventListener("mouseleave", hideAllTooltips);
 document.addEventListener("input", function (e) {
 
     if (
