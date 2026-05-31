@@ -3485,68 +3485,105 @@ function saveComplaint() {
 
 function renderComplaints() {
     const soc = vault[currentSociety];
-    if (!soc) return; // Guard: society data not loaded yet
+    if (!soc) return;
     if (!soc.complaints) soc.complaints = [];
 
     const list = document.getElementById("complaintList");
     const loggedFlat = getLoggedInComplaintFlat();
 
+    if (!soc.complaints.length) {
+        list.innerHTML = `<div style="
+            border:2px dashed #d4c8bc;
+            border-radius:18px;
+            padding:60px 24px;
+            text-align:center;
+            background:rgba(255,255,255,0.5);
+        ">
+            <div style="
+                width:56px; height:56px;
+                background:#ede8e2;
+                border-radius:50%;
+                display:flex; align-items:center; justify-content:center;
+                font-size:24px;
+                margin:0 auto 16px auto;
+            ">💬</div>
+            <p style="font-size:16px; font-weight:800; color:#1a1a1a; margin:0 0 6px 0;">No complaints yet</p>
+            <p style="font-size:13px; font-weight:600; color:#8B5E3C; margin:0;">Submit a complaint using the form above.</p>
+        </div>`;
+        if (document.getElementById("totalComplaints")) {
+            document.getElementById("totalComplaints").innerText = 0;
+        }
+        return;
+    }
+
     list.innerHTML = soc.complaints.map((c) => {
         const ownerAccess = isAdmin || (loggedFlat !== "" && (c.created_by === loggedFlat || c.flat === loggedFlat));
 
+        const statusColor = c.status === 'resolved' ? '#15803D' : c.status === 'in-progress' ? '#D97706' : '#8B5E3C';
+        const statusBg = c.status === 'resolved' ? '#F0FDF4' : c.status === 'in-progress' ? '#FFFBEB' : '#fef3e8';
+        const statusLabel = c.status === 'resolved' ? '✅ Resolved' : c.status === 'in-progress' ? '🔄 In Progress' : '🕐 Pending';
+
         return `
-<div class="notice-card">
-    <div class="flex justify-between items-start gap-6">
-        <div>
-            <h3>${c.title}</h3>
-
-            <p style="margin-top:8px;">
-                ${translateTerm('Flat')}: <b>${c.flat}</b>
-            </p>
-
-            <p style="margin-top:8px;">
-                ${c.details}
-            </p>
-
-            <div style="font-size:16px;font-weight:800;margin-top:8px;color:#8B5E3C;">
-                <p>Added: ${c.date}</p>
-                ${c.updated_date ? `<p style="color:#D97706;">Updated: ${c.updated_date}</p>` : ""}
+<div style="
+    background:white;
+    border-radius:16px;
+    padding:20px 22px;
+    margin-bottom:12px;
+    box-shadow:0 1px 6px rgba(0,0,0,0.06);
+">
+    <div style="display:flex; justify-content:space-between; gap:16px; align-items:flex-start;">
+        <div style="flex:1; min-width:0;">
+            <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:6px;">
+                <p style="font-size:15px; font-weight:800; color:#1a1a1a; margin:0;">${c.title}</p>
+                <span style="
+                    background:${statusBg};
+                    color:${statusColor};
+                    font-size:11px;
+                    font-weight:800;
+                    padding:3px 10px;
+                    border-radius:20px;
+                    white-space:nowrap;
+                ">${statusLabel}</span>
+            </div>
+            <div style="display:flex; align-items:center; gap:6px; margin-bottom:6px;">
+                <span style="font-size:12px;">🏢</span>
+                <span style="font-size:12px; font-weight:700; color:#8B5E3C;">${translateTerm('Flat')}: ${c.flat}</span>
+            </div>
+            <p style="font-size:12px; font-weight:600; color:#7A6855; margin:0 0 8px 0; line-height:1.6;">${c.details}</p>
+            <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
+                <span style="font-size:11px; font-weight:700; color:#B0998A;">📅 ${c.date}</span>
+                ${c.updated_date ? `<span style="font-size:11px; font-weight:700; color:#D97706;">✏️ Updated: ${c.updated_date}</span>` : ''}
             </div>
         </div>
-
         ${ownerAccess ? `
-        <div class="flex gap-3">
+        <div style="display:flex; gap:8px; flex-shrink:0;">
             <button onclick="editComplaint(${c.id})" style="
-                background:#2563EB;
-                color:white;
-                border:none;
-                border-radius:12px;
-                padding:12px 18px;
-                font-weight:900;
-            ">
-                Edit
-            </button>
-
+                background:#EFF6FF;
+                color:#2563EB;
+                border:1.5px solid #BFDBFE;
+                border-radius:8px;
+                padding:7px 14px;
+                font-size:12px;
+                font-weight:800;
+                cursor:pointer;
+            ">Edit</button>
             <button onclick="deleteComplaint(${c.id})" style="
-                background:#DC2626;
-                color:white;
-                border:none;
-                border-radius:12px;
-                padding:12px 18px;
-                font-weight:900;
-            ">
-                Delete
-            </button>
-        </div>
-        ` : ""}
+                background:#FEF2F2;
+                color:#DC2626;
+                border:1.5px solid #FECACA;
+                border-radius:8px;
+                padding:7px 14px;
+                font-size:12px;
+                font-weight:800;
+                cursor:pointer;
+            ">Delete</button>
+        </div>` : ''}
     </div>
-</div>
-`;
+</div>`;
     }).join('');
 
     if (document.getElementById("totalComplaints")) {
-        document.getElementById("totalComplaints").innerText =
-            soc.complaints.length;
+        document.getElementById("totalComplaints").innerText = soc.complaints.length;
     }
 }
 
