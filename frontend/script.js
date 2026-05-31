@@ -181,9 +181,9 @@ function showResidentErr(msg) {
     if (!el) {
         el = document.createElement('p');
         el.id = 'resLoginErr';
-        el.style.cssText = 'color:#DC2626;font-size:22px;font-weight:700;text-align:center;margin-top:6px;display:none;';
-        const btn = document.querySelector('#residentInterface button');
-        if (btn && btn.parentNode) btn.parentNode.insertBefore(el, btn);
+        el.style.cssText = 'color:#DC2626;font-size:22px;font-weight:700;text-align:center;margin-top:14px;display:none;';
+        const btn = document.querySelector('#residentInterface button[onclick="attemptResidentLogin()"]');
+        if (btn) btn.after(el);
     }
     el.textContent = msg;
     el.style.display = 'block';
@@ -199,9 +199,9 @@ function showSetupErr(msg) {
     if (!el) {
         el = document.createElement('p');
         el.id = 'setupErr';
-        el.style.cssText = 'color:#DC2626;font-size:22px;font-weight:700;text-align:center;margin-top:6px;';
-        const btn = document.querySelector('#setupInterface .space-y-6 button');
-        if (btn && btn.parentNode) btn.parentNode.insertBefore(el, btn);
+        el.style.cssText = 'color:#DC2626;font-size:22px;font-weight:700;text-align:center;margin-top:14px;';
+        const btn = document.querySelector('#setupInterface button[onclick="runSetup()"]');
+        if (btn) btn.after(el);
     }
     el.textContent = msg;
     el.style.display = 'block';

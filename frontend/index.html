@@ -440,11 +440,6 @@
                     <button type="button" class="pwd-eye" onclick="togglePasswordVisibility('loginPass', this)" tabindex="-1"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" style="pointer-events:none;"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0z"/><circle cx="12" cy="12" r="3"/></svg></button>
                 </div>
 
-                <!-- Inline error message for admin login -->
-                <p id="loginErr"
-                    style="color:#DC2626;font-size:22px;font-weight:700;display:none;text-align:center;margin-top:4px;">
-                </p>
-
                 <button onclick="attemptLogin()" style="
                     width:100%;
                     height:100px;
@@ -460,6 +455,11 @@
                 ">
                     Access Dashboard
                 </button>
+
+                <!-- Inline error message for admin login -->
+                <p id="loginErr"
+                    style="color:#DC2626;font-size:22px;font-weight:700;display:none;text-align:center;margin-top:14px;">
+                </p>
 
                 <p style="text-align:center; margin-top:16px;">
                     <a href="#" onclick="forgotAdminPassword(); return false;"
@@ -1578,15 +1578,15 @@
                     <p id="rfPhoneErr"
                         style="color:#DC2626;font-size:18px;font-weight:700;margin-top:6px;display:none;"></p>
                 </div>
-                <p id="rfStep1GeneralErr"
-                    style="color:#DC2626;font-size:20px;font-weight:700;margin-bottom:14px;display:none;text-align:center;">
-                </p>
                 <button id="rfSendOtpBtn" onclick="rfSendOtp()" style="
                     width:100%; height:72px; border:none; border-radius:18px;
                     background:linear-gradient(135deg,#8B5E3C,#C08A5B);
                     color:white; font-size:26px; font-weight:900; cursor:pointer;
                     box-shadow:0 10px 28px rgba(139,94,60,0.28); transition:0.25s;
                 ">Send OTP</button>
+                <p id="rfStep1GeneralErr"
+                    style="color:#DC2626;font-size:20px;font-weight:700;margin-top:14px;display:none;text-align:center;">
+                </p>
             </div>
 
             <!-- STEP 2: OTP verification -->
@@ -1601,9 +1601,6 @@
                         border-radius:18px; font-size:30px; font-weight:900;
                         letter-spacing:8px; text-align:center;
                     " oninput="this.value=this.value.replace(/[^0-9]/g,'')">
-                    <p id="rfOtpErr"
-                        style="color:#DC2626;font-size:18px;font-weight:700;margin-top:6px;display:none;text-align:center;">
-                    </p>
                 </div>
                 <button onclick="rfVerifyOtp()" style="
                     width:100%; height:72px; border:none; border-radius:18px;
@@ -1611,6 +1608,9 @@
                     color:white; font-size:26px; font-weight:900; cursor:pointer;
                     box-shadow:0 10px 28px rgba(139,94,60,0.28);
                 ">Verify Code</button>
+                <p id="rfOtpErr"
+                    style="color:#DC2626;font-size:18px;font-weight:700;margin-top:14px;display:none;text-align:center;">
+                </p>
                 <button onclick="rfGoBack(1)" style="
                     width:100%; background:none; border:none; color:#7A6855;
                     font-size:22px; font-weight:800; margin-top:14px; cursor:pointer;
@@ -1646,8 +1646,6 @@
                             class="input-field" style="width:100%; height:72px; padding:18px 72px 18px 22px; border-radius:18px; font-size:26px; font-weight:700;">
                         <button type="button" class="pwd-eye" onclick="togglePasswordVisibility('rfConfirmPass', this)" tabindex="-1"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" style="pointer-events:none;"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0z"/><circle cx="12" cy="12" r="3"/></svg></button>
                     </div>
-                    <p id="rfConfirmPassErr"
-                        style="color:#DC2626;font-size:18px;font-weight:700;margin-top:6px;display:none;"></p>
                 </div>
                 <button onclick="rfResetPassword()" style="
                     width:100%; height:72px; border:none; border-radius:18px;
@@ -1655,6 +1653,8 @@
                     color:white; font-size:26px; font-weight:900; cursor:pointer;
                     box-shadow:0 10px 28px rgba(139,94,60,0.28);
                 ">Reset Password</button>
+                <p id="rfConfirmPassErr"
+                    style="color:#DC2626;font-size:18px;font-weight:700;margin-top:14px;display:none;text-align:center;"></p>
             </div>
 
         </div>
@@ -1827,8 +1827,6 @@
                     width:100%; height:72px; padding:18px 22px;
                     border-radius:18px; font-size:26px; font-weight:700; letter-spacing:4px; text-align:center;
                 ">
-                    <p id="afOtpErr"
-                        style="color:#DC2626;font-size:18px;font-weight:700;margin-top:6px;display:none;"></p>
                 </div>
                 <button id="afConfirmOtpBtn" onclick="afVerifyOtp()" style="
                     width:100%; height:72px; border:none; border-radius:18px;
@@ -1836,6 +1834,8 @@
                     color:white; font-size:26px; font-weight:900; cursor:pointer;
                     box-shadow:0 10px 28px rgba(139,94,60,0.28); margin-bottom:16px;
                 ">Confirm Code</button>
+                <p id="afOtpErr"
+                    style="color:#DC2626;font-size:18px;font-weight:700;margin-top:2px;margin-bottom:16px;display:none;text-align:center;"></p>
             </div>
 
             <div id="afNewCredentialsSection" style="display:none;">
@@ -1873,9 +1873,6 @@
                     <p id="afConfirmPassErr"
                         style="color:#DC2626;font-size:18px;font-weight:700;margin-top:6px;display:none;"></p>
                 </div>
-                <p id="afGeneralErr"
-                    style="color:#DC2626;font-size:20px;font-weight:700;margin-bottom:14px;display:none;text-align:center;">
-                </p>
                 <button onclick="afResetPassword()" style="
                 width:100%; height:72px; border:none; border-radius:18px;
                 background:linear-gradient(135deg,#8B5E3C,#C08A5B);
@@ -1883,6 +1880,11 @@
                 box-shadow:0 10px 28px rgba(139,94,60,0.28);
             ">Reset Admin Credentials</button>
             </div>
+
+            <!-- Inline error message for admin reset -->
+            <p id="afGeneralErr"
+                style="color:#DC2626;font-size:20px;font-weight:700;margin-top:16px;display:none;text-align:center;">
+            </p>
 
             <!-- Success message -->
             <p id="afSuccess"
