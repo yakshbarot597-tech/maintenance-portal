@@ -968,6 +968,11 @@ app.get("/api", (req, res) => {
 app.post("/api/setup", async (req, res) => {
     const { society_name, blocks, flats, username, password, property_type } = req.body;
 
+    const passRegex = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[^a-zA-Z0-9]).{5,}$/;
+    if (password && !passRegex.test(password)) {
+        return res.json({ success: false, error: "Password must be at least 5 characters long and contain letters, numbers, and special characters." });
+    }
+
     try {
         // Find existing society and credentials to exclude from unique check
         const [socRows] = await db.promise().query(
@@ -1569,6 +1574,11 @@ app.get("/api/society/:name/:type", async (req, res) => {
 // Save/Update Flat
 app.post("/api/flat", async (req, res) => {
     const { society_name, block, flat_number, owner, phone, isRental, rentalName, rentalPhone, amount, period, status, plan, paymentMethod, dateStr, futureOwner, futureOwnerPhone, transferMonth, transferYear, property_type, residentUsername, residentPassword } = req.body;
+
+    const passRegex = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[^a-zA-Z0-9]).{5,}$/;
+    if (residentPassword && !passRegex.test(residentPassword)) {
+        return res.json({ success: false, message: "Password must be at least 5 characters long and contain letters, numbers, and special characters." });
+    }
 
     const transferPeriod = (futureOwner && transferMonth && transferYear)
         ? `${transferMonth}-${transferYear}`
@@ -2671,6 +2681,11 @@ app.post("/api/whatsapp-blast", async (req, res) => {
 app.post("/api/verify-resident-otp", async (req, res) => {
     const { society, flat, phone, otp, newPassword, property_type, newUsername } = req.body;
 
+    const passRegex = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[^a-zA-Z0-9]).{5,}$/;
+    if (!newPassword || !passRegex.test(newPassword)) {
+        return res.json({ success: false, message: "Password must be at least 5 characters long and contain letters, numbers, and special characters." });
+    }
+
     try {
         const key = `${society}_${flat}_${phone}`;
         const storedOtpData = residentOtps[key];
@@ -2842,6 +2857,11 @@ app.post("/api/admin-verify-otp", async (req, res) => {
 
 app.post("/api/admin-reset-password", async (req, res) => {
     const { username, chairmanPhone, otp, newUsername, newPassword } = req.body;
+
+    const passRegex = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[^a-zA-Z0-9]).{5,}$/;
+    if (!newPassword || !passRegex.test(newPassword)) {
+        return res.json({ success: false, message: "Password must be at least 5 characters long and contain letters, numbers, and special characters." });
+    }
 
     try {
         const key = `admin_${username}_${chairmanPhone}`;

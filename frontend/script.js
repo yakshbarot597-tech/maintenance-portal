@@ -1498,6 +1498,11 @@ function saveFlat() {
 
     if (!maintenanceAmount) return showToast("Please fill Maintenance Amount.");
 
+    const passRegex = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[^a-zA-Z0-9]).{5,}$/;
+    if (residentPassword && !passRegex.test(residentPassword)) {
+        return showToast("Password must be at least 5 characters long and contain letters, numbers, and special characters.");
+    }
+
     const b = document.getElementById('block').value;
     const f = document.getElementById('flatNumber').value;
     const period = `${document.getElementById('editMonth').value}-${document.getElementById('editYear').value}`;
@@ -2044,6 +2049,11 @@ function runSetup() {
         if (!blocksInput) { showSetupErr('Please fill Number of Blocks.'); return; }
         if (!user) { showSetupErr('Please fill Admin Username.'); return; }
         if (!pass) { showSetupErr('Please fill Admin Password.'); return; }
+        const passRegex = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[^a-zA-Z0-9]).{5,}$/;
+        if (!passRegex.test(pass)) {
+            showSetupErr('Password must be at least 5 characters long and contain letters, numbers, and special characters.');
+            return;
+        }
 
         const blocks = parseInt(blocksInput);
 
@@ -3669,7 +3679,11 @@ function rfResetPassword() {
     const confirmPass = document.getElementById('rfConfirmPass').value;
 
     let valid = true;
-    if (!newPass || newPass.length < 4) { rfShowErr('rfNewPassErr', 'Password must be at least 4 characters.'); valid = false; }
+    const passRegex = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[^a-zA-Z0-9]).{5,}$/;
+    if (!newPass || !passRegex.test(newPass)) {
+        rfShowErr('rfNewPassErr', 'Password must be at least 5 characters long and contain letters, numbers, and special characters.');
+        valid = false;
+    }
     if (newPass !== confirmPass) { rfShowErr('rfConfirmPassErr', 'Passwords do not match.'); valid = false; }
     if (!valid) return;
 
@@ -3834,7 +3848,11 @@ function afResetPassword() {
 
     let valid = true;
     if (!otp || otp.length !== 6) { afShowErr('afOtpErr', 'enter 6-digit OTP'); valid = false; }
-    if (!newPass || newPass.length < 4) { afShowErr('afNewPassErr', 'Password must be at least 4 characters.'); valid = false; }
+    const passRegex = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[^a-zA-Z0-9]).{5,}$/;
+    if (!newPass || !passRegex.test(newPass)) {
+        afShowErr('afNewPassErr', 'Password must be at least 5 characters long and contain letters, numbers, and special characters.');
+        valid = false;
+    }
     if (newPass !== confirmPass) { afShowErr('afConfirmPassErr', 'Passwords do not match.'); valid = false; }
     if (!valid) return;
 
