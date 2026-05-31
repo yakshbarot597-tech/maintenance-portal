@@ -2181,7 +2181,7 @@ body:not(.admin-view) #residentPanel {
     border: none !important;
     background: transparent !important;
     color: #5C4033 !important;
-    font-size: 24px !important;
+    font-size: 20px !important;
     font-weight: 800 !important;
     text-transform: none !important;
     letter-spacing: 0.5px !important;
@@ -2192,7 +2192,7 @@ body:not(.admin-view) #residentPanel {
 }
 
 .menu-item-btn span {
-    font-size: 24px !important;
+    font-size: 20px !important;
 }
 
 .menu-item-btn:hover {
@@ -2438,7 +2438,7 @@ body:not(.admin-view) #residentPanel {
 @media (max-width: 1200px) {
     .menu-item-btn,
     .menu-item-btn span {
-        font-size: 20px !important;
+        font-size: 18px !important;
     }
     .header-dropdown-menu {
         min-width: 220px !important;
@@ -2485,7 +2485,7 @@ body:not(.admin-view) #residentPanel {
 
     .menu-item-btn,
     .menu-item-btn span {
-        font-size: 18px !important;
+        font-size: 16px !important;
     }
     .header-dropdown-menu {
         min-width: 200px !important;
