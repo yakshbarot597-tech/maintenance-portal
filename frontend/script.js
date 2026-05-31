@@ -274,51 +274,75 @@ function renderExpenses() {
         if (String(e.year) === String(year)) yearlyTotal += Number(e.amount || 0);
     });
 
-    document.getElementById("expenseMonthlyTotal").innerText = `₹${monthlyTotal}`;
-    document.getElementById("expenseYearlyTotal").innerText = `₹${yearlyTotal}`;
+    document.getElementById("expenseMonthlyTotal").innerText = `₹${monthlyTotal.toLocaleString('en-IN')}`;
+    document.getElementById("expenseYearlyTotal").innerText = `₹${yearlyTotal.toLocaleString('en-IN')}`;
 
     const expenses = soc.expenses.filter(e => e.period === period);
 
+    // Update record count badge
+    const countEl = document.getElementById("expenseCount");
+    if (countEl) countEl.textContent = `${expenses.length} record${expenses.length !== 1 ? 's' : ''}`;
+
     box.innerHTML = expenses.length
         ? expenses.map(e => `
-    <div class="notice-card">
-        <div style="display:flex;justify-content:space-between;gap:16px;align-items:flex-start;">
-            <div>
-                <h3>${e.title}</h3>
-                <p>${e.details}</p>
-
-                <p style="font-size:28px;font-weight:900;color:#8B5E3C;">
-                    ₹${e.amount}
-                </p>
-
-                <div style="font-size:16px;font-weight:800;color:#8B5E3C;margin-top:10px;">
-                    <p>Added: ${e.date}</p>
-                    ${e.updated_date ? `<p style="color:#D97706;">Updated: ${e.updated_date}</p>` : ""}
+    <div style="
+        background:white;
+        border-radius:16px;
+        padding:20px 22px;
+        margin-bottom:12px;
+        box-shadow:0 1px 6px rgba(0,0,0,0.06);
+    ">
+        <div style="display:flex; justify-content:space-between; gap:16px; align-items:flex-start;">
+            <div style="flex:1; min-width:0;">
+                <div style="display:flex; align-items:center; gap:10px; margin-bottom:6px;">
+                    <p style="font-size:15px; font-weight:800; color:#1a1a1a; margin:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${e.title}</p>
+                    <span style="
+                        background:#fef3e8;
+                        color:#8B5E3C;
+                        font-size:11px;
+                        font-weight:800;
+                        padding:3px 10px;
+                        border-radius:20px;
+                        white-space:nowrap;
+                    ">₹${Number(e.amount).toLocaleString('en-IN')}</span>
+                </div>
+                ${e.details ? `<p style="font-size:12px; font-weight:600; color:#7A6855; margin:0 0 8px 0; line-height:1.5;">${e.details}</p>` : ''}
+                <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
+                    <span style="font-size:11px; font-weight:700; color:#B0998A;">📅 ${e.date}</span>
+                    ${e.updated_date ? `<span style="font-size:11px; font-weight:700; color:#D97706;">✏️ Updated: ${e.updated_date}</span>` : ''}
                 </div>
             </div>
-
-            ${isAdmin
-                ? `
-                    <div style="display:flex;gap:10px;">
-                        <button onclick="editExpense(${e.id})" style="
-                            background:#2563EB;color:white;border:none;
-                            border-radius:12px;padding:12px 18px;font-weight:900;
-                        ">Edit</button>
-
-                        <button onclick="deleteExpense(${e.id})" style="
-                            background:#DC2626;color:white;border:none;
-                            border-radius:12px;padding:12px 18px;font-weight:900;
-                        ">Delete</button>
-                    </div>
-                `
-                : ""
-            }
+            ${isAdmin ? `
+            <div style="display:flex; gap:8px; flex-shrink:0;">
+                <button onclick="editExpense(${e.id})" style="
+                    background:#EFF6FF;
+                    color:#2563EB;
+                    border:1.5px solid #BFDBFE;
+                    border-radius:8px;
+                    padding:7px 14px;
+                    font-size:12px;
+                    font-weight:800;
+                    cursor:pointer;
+                ">Edit</button>
+                <button onclick="deleteExpense(${e.id})" style="
+                    background:#FEF2F2;
+                    color:#DC2626;
+                    border:1.5px solid #FECACA;
+                    border-radius:8px;
+                    padding:7px 14px;
+                    font-size:12px;
+                    font-weight:800;
+                    cursor:pointer;
+                ">Delete</button>
+            </div>` : ''}
         </div>
     </div>
 `).join("")
-        : `<p style="font-size:22px;font-weight:800;color:#7A6855;">
-    No expenditure added .
-</p>`;
+        : `<div style="text-align:center; padding:60px 20px;">
+    <div style="font-size:40px; margin-bottom:14px; opacity:0.4;">🧾</div>
+    <p style="font-size:15px; font-weight:800; color:#3a2a1a; margin:0 0 6px 0;">No expenditures yet</p>
+    <p style="font-size:12px; font-weight:600; color:#8B5E3C; margin:0;">Add your first expenditure using the form above</p>
+</div>`;
 }
 
 function editExpense(id) {

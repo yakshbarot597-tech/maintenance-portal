@@ -1361,74 +1361,149 @@
 
         </div>
     </div>
-    <div id="expensePage" class="hidden fixed inset-0 z-[360] bg-[#f8f5f0] overflow-y-auto">
+    <div id="expensePage" class="hidden fixed inset-0 z-[360] overflow-y-auto" style="background:#f2ede8;">
 
-        <div class="max-w-6xl mx-auto p-8">
+        <div style="max-width:860px; margin:0 auto; padding:32px 20px;">
 
-            <div class="flex justify-between items-center mb-8">
-                <h1 style="font-size:37px;font-weight:900;color:#8B5E3C;">
-                    Society Expenditure
-                </h1>
-
+            <!-- Header -->
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:28px;">
+                <h1 style="font-size:28px;font-weight:900;color:#5C3A1E; letter-spacing:-0.3px;">Society Expenditure</h1>
                 <button onclick="toggleExpensePage()" style="
-                background:#8B5E3C;
-                color:white;
-                border:none;
-                border-radius:16px;
-                font-size:24px;
-                font-weight:900;
-                padding:16px 28px;
-            ">
-                    Back
-                </button>
+                    background:#8B5E3C;
+                    color:white;
+                    border:none;
+                    border-radius:12px;
+                    font-size:15px;
+                    font-weight:800;
+                    padding:10px 22px;
+                    cursor:pointer;
+                    letter-spacing:0.3px;
+                ">← Back</button>
             </div>
 
-            <div id="expenseDashboard" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+            <!-- Stat Cards -->
+            <div id="expenseDashboard" style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:20px;">
 
-                <div class="card-bg p-6 rounded-3xl text-center">
-                    <h3 id="expenseMonthlyTotal">₹0</h3>
-                    <p>Monthly Expenditure</p>
+                <div style="background:white; border-radius:18px; padding:22px 24px; box-shadow:0 1px 6px rgba(0,0,0,0.06); position:relative; overflow:hidden;">
+                    <div style="position:absolute;top:-18px;right:-18px;width:80px;height:80px;background:#f2ede8;border-radius:50%;opacity:0.8;"></div>
+                    <div style="display:flex; align-items:center; gap:8px; margin-bottom:14px;">
+                        <span style="font-size:15px; color:#8B5E3C;">📅</span>
+                        <span style="font-size:13px; font-weight:700; color:#8B5E3C; letter-spacing:0.2px;">Monthly Expenditure</span>
+                    </div>
+                    <p id="expenseMonthlyTotal" style="font-size:30px; font-weight:900; color:#1a1a1a; margin:0 0 4px 0; letter-spacing:-0.5px;">₹0</p>
+                    <p style="font-size:12px; font-weight:600; color:#8B5E3C; margin:0;">Current month spending</p>
                 </div>
 
-                <div class="card-bg p-6 rounded-3xl text-center">
-                    <h3 id="expenseYearlyTotal">₹0</h3>
-                    <p>Yearly Expenditure</p>
+                <div style="background:white; border-radius:18px; padding:22px 24px; box-shadow:0 1px 6px rgba(0,0,0,0.06); position:relative; overflow:hidden;">
+                    <div style="position:absolute;top:-18px;right:-18px;width:80px;height:80px;background:#f2ede8;border-radius:50%;opacity:0.8;"></div>
+                    <div style="display:flex; align-items:center; gap:8px; margin-bottom:14px;">
+                        <span style="font-size:15px; color:#8B5E3C;">📈</span>
+                        <span style="font-size:13px; font-weight:700; color:#8B5E3C; letter-spacing:0.2px;">Yearly Expenditure</span>
+                    </div>
+                    <p id="expenseYearlyTotal" style="font-size:30px; font-weight:900; color:#1a1a1a; margin:0 0 4px 0; letter-spacing:-0.5px;">₹0</p>
+                    <p style="font-size:12px; font-weight:600; color:#8B5E3C; margin:0;">Total spending this year</p>
                 </div>
 
             </div>
 
-            <div id="adminExpenseForm" class="card-bg p-6 rounded-3xl mb-8">
+            <!-- Add New Expenditure Form -->
+            <div id="adminExpenseForm" style="background:white; border-radius:18px; padding:26px 28px; box-shadow:0 1px 6px rgba(0,0,0,0.06); margin-bottom:20px;">
 
-                <input id="expenseTitle" maxlength="40" class="input-field p-4 rounded-xl mb-4"
-                    placeholder="Expenditure Title">
+                <div style="margin-bottom:20px;">
+                    <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
+                        <span style="font-size:16px; color:#8B5E3C; font-weight:800;">+</span>
+                        <h2 style="font-size:17px; font-weight:800; color:#1a1a1a; margin:0;">Add New Expenditure</h2>
+                    </div>
+                    <p style="font-size:12px; color:#8B5E3C; margin:0; font-weight:600;">Record a new expense for the society</p>
+                </div>
 
-                <input id="expenseAmount" type="number" min="0" max="99999999" oninput="
-        if(this.value.length > 8)
-        this.value = this.value.slice(0,8);
-    " class="input-field p-4 rounded-xl mb-4" placeholder="Amount">
+                <!-- Title + Amount Row -->
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px;">
+                    <div>
+                        <label style="display:block; font-size:12px; font-weight:800; color:#3a2a1a; margin-bottom:6px; letter-spacing:0.2px;">Expenditure Title</label>
+                        <input id="expenseTitle" maxlength="40"
+                            placeholder="e.g., Maintenance, Security, Utilities"
+                            style="
+                                width:100%; box-sizing:border-box;
+                                border:1.5px solid #e8e0d8;
+                                border-radius:10px;
+                                padding:11px 14px;
+                                font-size:13px;
+                                font-weight:600;
+                                color:#1a1a1a;
+                                background:#fdfcfb;
+                                outline:none;
+                                font-family:inherit;
+                            ">
+                    </div>
+                    <div>
+                        <label style="display:block; font-size:12px; font-weight:800; color:#3a2a1a; margin-bottom:6px; letter-spacing:0.2px;">Amount</label>
+                        <div style="position:relative; display:flex; align-items:center;">
+                            <span style="position:absolute; left:13px; font-size:14px; font-weight:800; color:#5C3A1E;">₹</span>
+                            <input id="expenseAmount" type="number" min="0" max="99999999" oninput="if(this.value.length>8)this.value=this.value.slice(0,8);"
+                                placeholder="0"
+                                style="
+                                    width:100%; box-sizing:border-box;
+                                    border:1.5px solid #e8e0d8;
+                                    border-radius:10px;
+                                    padding:11px 14px 11px 30px;
+                                    font-size:13px;
+                                    font-weight:600;
+                                    color:#1a1a1a;
+                                    background:#fdfcfb;
+                                    outline:none;
+                                    font-family:inherit;
+                                ">
+                        </div>
+                    </div>
+                </div>
 
-                <textarea id="expenseDetails" maxlength="350" class="input-field p-4 rounded-xl mb-4"
-                    placeholder="Expenditure Details" style="
-        height:140px;
-        font-size:22px;
-        font-weight:700;
-    "></textarea>
+                <!-- Details -->
+                <div style="margin-bottom:20px;">
+                    <label style="display:block; font-size:12px; font-weight:800; color:#3a2a1a; margin-bottom:6px; letter-spacing:0.2px;">Expenditure Details</label>
+                    <textarea id="expenseDetails" maxlength="350"
+                        placeholder="Add any additional details about this expenditure..."
+                        style="
+                            width:100%; box-sizing:border-box;
+                            border:1.5px solid #e8e0d8;
+                            border-radius:10px;
+                            padding:12px 14px;
+                            font-size:13px;
+                            font-weight:600;
+                            color:#1a1a1a;
+                            background:#fdfcfb;
+                            outline:none;
+                            font-family:inherit;
+                            height:110px;
+                            resize:vertical;
+                        "></textarea>
+                </div>
 
                 <button onclick="saveExpense()" style="
-                background:linear-gradient(135deg,#8B5E3C,#C08A5B);
-                color:white;
-                border:none;
-                border-radius:16px;
-                font-size:24px;
-                font-weight:900;
-                padding:16px 30px;
-            ">
-                    Save Expenditure
-                </button>
+                    background:#8B5E3C;
+                    color:white;
+                    border:none;
+                    border-radius:10px;
+                    font-size:14px;
+                    font-weight:800;
+                    padding:12px 22px;
+                    cursor:pointer;
+                    letter-spacing:0.3px;
+                    display:inline-flex;
+                    align-items:center;
+                    gap:6px;
+                ">+ Save Expenditure</button>
 
             </div>
 
-            <div id="expenseList" class="space-y-5"></div>
+            <!-- Recent Expenditures Header -->
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+                <h2 style="font-size:16px; font-weight:900; color:#1a1a1a; margin:0;">Recent Expenditures</h2>
+                <span id="expenseCount" style="font-size:12px; font-weight:700; color:#8B5E3C;">0 records</span>
+            </div>
+
+            <!-- Expense List -->
+            <div id="expenseList"></div>
 
         </div>
 
