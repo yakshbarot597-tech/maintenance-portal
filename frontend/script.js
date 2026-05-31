@@ -1770,8 +1770,8 @@ function loadCommittee() {
     members.forEach((m) => {
         const div = document.createElement('div');
         div.className = "bg-amber-900/5 p-4 rounded-2xl flex justify-between items-center border border-amber-900/10";
-        div.innerHTML = `<div><p class="text-[22px] text-amber-400 font-bold uppercase tracking-widest">${m.role}</p><p class="text-2xl font-bold text-[#3E2C1C]">${m.name}</p><p class="text-2xl text-[#7A6855] font-mono">${m.phone}</p></div>
-        <div class="flex gap-2">
+        div.innerHTML = `<div><p style="font-size:14px; font-weight:800;" class="text-amber-400 uppercase tracking-widest">${m.role}</p><p style="font-size:18px; font-weight:800;" class="text-[#3E2C1C]">${m.name}</p><p style="font-size:16px; font-weight:700;" class="text-[#7A6855] font-mono">${m.phone}</p></div>
+        <div class="flex gap-2" style="font-size:15px; font-weight:800;">
             <button onclick="window.open('https://wa.me/${m.phone}')" class="text-emerald-400">WA</button>
             ${isAdmin ? `<button onclick="deleteComm(${m.id})" class="text-rose-600">DEL</button>` : ''}
         </div>`;
