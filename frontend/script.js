@@ -2954,6 +2954,8 @@ function addNotice() {
 
     document.getElementById("noticeTitle").value = "";
     document.getElementById("noticeDetails").value = "";
+    const panel = document.getElementById("noticeFormPanel");
+    if (panel) panel.style.display = "none";
 }
 function renderNotices() {
     const soc = vault[currentSociety];
@@ -2966,17 +2968,13 @@ function renderNotices() {
 
     if (recentBox) {
         const recent = notices.slice(0, 2);
-
         recentBox.innerHTML = recent.length
             ? recent.map(n => `
-        <div class="notice-card">
-            <h3>${n.title}</h3>
-            <p>${n.details}</p>
-            <small style="font-size:10px;font-weight:900;color:#8B5E3C;">
-                ${n.date}
-            </small>
-        </div>
-    `).join("")
+        <div style="background:white;border-radius:14px;padding:16px 18px;margin-bottom:10px;box-shadow:0 1px 4px rgba(0,0,0,0.05);">
+            <p style="font-size:14px;font-weight:800;color:#1a1a1a;margin:0 0 4px 0;">${n.title}</p>
+            <p style="font-size:12px;font-weight:600;color:#7A6855;margin:0 0 6px 0;line-height:1.5;">${n.details}</p>
+            <span style="font-size:11px;font-weight:700;color:#B0998A;">📅 ${n.date}</span>
+        </div>`).join("")
             : `<p style="font-size:12px;font-weight:800;color:#7A6855;">No recent notices.</p>`;
     }
 
@@ -2984,37 +2982,74 @@ function renderNotices() {
 
     fullBox.innerHTML = notices.length
         ? notices.map((n) => `
-    <div class="notice-card">
-        <div style="display:flex;justify-content:space-between;gap:16px;align-items:flex-start;">
-            <div>
-                <h3>${n.title}</h3>
-                <p>${n.details}</p>
-                <div style="font-size:16px;font-weight:800;color:#8B5E3C;margin-top:10px;">
-                    <p>Added: ${n.date}</p>
-                    ${n.updated_date ? `<p style="color:#D97706;">Updated: ${n.updated_date}</p>` : ""}
+    <div style="
+        background:white;
+        border-radius:16px;
+        padding:20px 22px;
+        margin-bottom:12px;
+        box-shadow:0 1px 6px rgba(0,0,0,0.06);
+    ">
+        <div style="display:flex; justify-content:space-between; gap:16px; align-items:flex-start;">
+            <div style="flex:1; min-width:0;">
+                <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
+                    <span style="font-size:16px;">📋</span>
+                    <p style="font-size:15px; font-weight:800; color:#1a1a1a; margin:0;">${n.title}</p>
+                </div>
+                <p style="font-size:12px; font-weight:600; color:#7A6855; margin:0 0 8px 0; line-height:1.6;">${n.details}</p>
+                <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
+                    <span style="font-size:11px; font-weight:700; color:#B0998A;">📅 ${n.date}</span>
+                    ${n.updated_date ? `<span style="font-size:11px; font-weight:700; color:#D97706;">✏️ Updated: ${n.updated_date}</span>` : ''}
                 </div>
             </div>
-
-            ${isAdmin
-                ? `
-                    <div style="display:flex;gap:10px;">
-                        <button onclick="editNotice(${n.id})" style="
-                            background:#2563EB;color:white;border:none;
-                            border-radius:12px;padding:12px 18px;font-weight:900;
-                        ">Edit</button>
-
-                        <button onclick="deleteNotice(${n.id})" style="
-                            background:#DC2626;color:white;border:none;
-                            border-radius:12px;padding:12px 18px;font-weight:900;
-                        ">Delete</button>
-                    </div>
-                `
-                : ""
-            }
+            ${isAdmin ? `
+            <div style="display:flex; gap:8px; flex-shrink:0;">
+                <button onclick="editNotice(${n.id})" style="
+                    background:#EFF6FF;
+                    color:#2563EB;
+                    border:1.5px solid #BFDBFE;
+                    border-radius:8px;
+                    padding:7px 14px;
+                    font-size:12px;
+                    font-weight:800;
+                    cursor:pointer;
+                ">Edit</button>
+                <button onclick="deleteNotice(${n.id})" style="
+                    background:#FEF2F2;
+                    color:#DC2626;
+                    border:1.5px solid #FECACA;
+                    border-radius:8px;
+                    padding:7px 14px;
+                    font-size:12px;
+                    font-weight:800;
+                    cursor:pointer;
+                ">Delete</button>
+            </div>` : ''}
         </div>
-    </div>
-`).join("")
-        : `<p style="font-size:22px;font-weight:800;color:#7A6855;">No notices added yet.</p>`;
+    </div>`).join("")
+        : `<div style="
+            border:2px dashed #d4c8bc;
+            border-radius:18px;
+            padding:60px 24px;
+            text-align:center;
+            background:rgba(255,255,255,0.5);
+        ">
+            <div style="
+                width:56px; height:56px;
+                background:#ede8e2;
+                border-radius:50%;
+                display:flex; align-items:center; justify-content:center;
+                font-size:24px;
+                margin:0 auto 16px auto;
+            ">🔔</div>
+            <p style="font-size:16px; font-weight:800; color:#1a1a1a; margin:0 0 6px 0;">No notices yet</p>
+            <p style="font-size:13px; font-weight:600; color:#8B5E3C; margin:0;">Create your first notice to keep your community updated.</p>
+        </div>`;
+}
+
+function toggleNoticeFormPanel() {
+    const panel = document.getElementById('noticeFormPanel');
+    if (!panel) return;
+    panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
 }
 function editNotice(id) {
     const notice = vault[currentSociety].notices.find(n => String(n.id) === String(id));
@@ -3024,10 +3059,11 @@ function editNotice(id) {
 
     editingNoticeIndex = id;
 
-    window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-    });
+    // Open the form panel so user sees pre-filled fields
+    const panel = document.getElementById("noticeFormPanel");
+    if (panel) panel.style.display = "block";
+
+    window.scrollTo({ top: 0, behavior: "smooth" });
 }
 function deleteNotice(id) {
     if (!isAdmin) return;
@@ -3223,10 +3259,13 @@ function toggleNoticePage() {
 
     if (!page.classList.contains("hidden")) {
         renderNotices();
-
+        // Show/hide the Add Notice button for admin; hide form panel by default
         const form = document.getElementById("adminNoticeForm");
         if (form) form.style.display = isAdmin ? "block" : "none";
-    } checkFloatingComplaintVisibility();
+        const panel = document.getElementById("noticeFormPanel");
+        if (panel) panel.style.display = "none";
+    }
+    checkFloatingComplaintVisibility();
 }
 // saveVault removed as it is now defined above with SQL support.
 function toggleExpensePage() {
@@ -4346,6 +4385,7 @@ Object.assign(window, {
     toggleLoginMode,
     toggleMaintenanceModal,
     toggleNoticePage,
+    toggleNoticeFormPanel,
     togglePasswordVisibility,
     toggleRentalFields,
     toggleResidentLogin,

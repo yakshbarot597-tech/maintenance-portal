@@ -1315,49 +1315,125 @@
 
         </div>
     </div>
-    <div id="noticePage" class="hidden fixed inset-0 z-[350] bg-[#f8f5f0] overflow-y-auto">
+    <div id="noticePage" class="hidden fixed inset-0 z-[350] overflow-y-auto" style="background:#f2ede8;">
 
-        <div class="max-w-6xl mx-auto p-8">
+        <div style="max-width:860px; margin:0 auto; padding:32px 20px;">
 
-            <div class="flex justify-between items-center mb-8">
-                <h1 style="font-size:37px;font-weight:900;color:#8B5E3C;">
-                    Society Notices
-                </h1>
-
+            <!-- Header -->
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
+                <div style="display:flex; align-items:center; gap:14px;">
+                    <div style="
+                        width:50px; height:50px;
+                        background:#fef3e8;
+                        border-radius:14px;
+                        display:flex; align-items:center; justify-content:center;
+                        font-size:22px;
+                        flex-shrink:0;
+                    ">📢</div>
+                    <div>
+                        <h1 style="font-size:24px; font-weight:900; color:#1a1a1a; margin:0 0 2px 0; letter-spacing:-0.3px;">Society Notices</h1>
+                        <p style="font-size:13px; font-weight:600; color:#8B5E3C; margin:0;">Keep your community informed</p>
+                    </div>
+                </div>
                 <button onclick="toggleNoticePage()" style="
-                background:#8B5E3C;
-                color:white;
-                border:none;
-                border-radius:16px;
-                font-size:24px;
-                font-weight:900;
-                padding:16px 28px;
-            ">
-                    Back
-                </button>
+                    background:white;
+                    color:#1a1a1a;
+                    border:1.5px solid #e0d8d0;
+                    border-radius:10px;
+                    font-size:14px;
+                    font-weight:800;
+                    padding:9px 18px;
+                    cursor:pointer;
+                    display:inline-flex;
+                    align-items:center;
+                    gap:6px;
+                ">← Back</button>
             </div>
 
-            <div id="adminNoticeForm" class="card-bg p-6 rounded-3xl mb-8">
-                <input id="noticeTitle" maxlength="50" class="input-field p-4 rounded-xl mb-4"
-                    placeholder="Notice Title">
+            <!-- Add New Notice button (admin toggle) -->
+            <div id="adminNoticeForm" style="margin-bottom:20px;">
+                <button onclick="toggleNoticeFormPanel()" style="
+                    width:100%;
+                    background:#8B5E3C;
+                    color:white;
+                    border:none;
+                    border-radius:14px;
+                    font-size:15px;
+                    font-weight:800;
+                    padding:16px 24px;
+                    cursor:pointer;
+                    display:flex;
+                    align-items:center;
+                    justify-content:center;
+                    gap:8px;
+                    letter-spacing:0.3px;
+                ">+ Add New Notice</button>
 
-                <textarea id="noticeDetails" maxlength="400" class="input-field p-4 rounded-xl mb-4"
-                    placeholder="Notice Details" style="height:140px;font-size:22px;font-weight:700;"></textarea>
-
-                <button onclick="addNotice()" style="
-                background:linear-gradient(135deg,#8B5E3C,#C08A5B);
-                color:white;
-                border:none;
-                border-radius:16px;
-                font-size:24px;
-                font-weight:900;
-                padding:16px 30px;
-            ">
-                    Save Notice
-                </button>
+                <!-- Collapsible form panel -->
+                <div id="noticeFormPanel" style="display:none; background:white; border-radius:14px; padding:22px 24px; margin-top:12px; box-shadow:0 1px 6px rgba(0,0,0,0.06);">
+                    <div style="margin-bottom:14px;">
+                        <label style="display:block; font-size:12px; font-weight:800; color:#3a2a1a; margin-bottom:6px; letter-spacing:0.2px;">Notice Title</label>
+                        <input id="noticeTitle" maxlength="50"
+                            placeholder="e.g., Water supply cut on Sunday"
+                            style="
+                                width:100%; box-sizing:border-box;
+                                border:1.5px solid #e8e0d8;
+                                border-radius:10px;
+                                padding:11px 14px;
+                                font-size:13px;
+                                font-weight:600;
+                                color:#1a1a1a;
+                                background:#fdfcfb;
+                                outline:none;
+                                font-family:inherit;
+                            ">
+                    </div>
+                    <div style="margin-bottom:18px;">
+                        <label style="display:block; font-size:12px; font-weight:800; color:#3a2a1a; margin-bottom:6px; letter-spacing:0.2px;">Notice Details</label>
+                        <textarea id="noticeDetails" maxlength="400"
+                            placeholder="Add details about this notice..."
+                            style="
+                                width:100%; box-sizing:border-box;
+                                border:1.5px solid #e8e0d8;
+                                border-radius:10px;
+                                padding:12px 14px;
+                                font-size:13px;
+                                font-weight:600;
+                                color:#1a1a1a;
+                                background:#fdfcfb;
+                                outline:none;
+                                font-family:inherit;
+                                height:110px;
+                                resize:vertical;
+                            "></textarea>
+                    </div>
+                    <div style="display:flex; gap:10px;">
+                        <button onclick="addNotice()" style="
+                            background:#8B5E3C;
+                            color:white;
+                            border:none;
+                            border-radius:10px;
+                            font-size:14px;
+                            font-weight:800;
+                            padding:11px 22px;
+                            cursor:pointer;
+                        ">Save Notice</button>
+                        <button onclick="toggleNoticeFormPanel()" style="
+                            background:white;
+                            color:#7A6855;
+                            border:1.5px solid #e0d8d0;
+                            border-radius:10px;
+                            font-size:14px;
+                            font-weight:800;
+                            padding:11px 18px;
+                            cursor:pointer;
+                        ">Cancel</button>
+                    </div>
+                </div>
             </div>
 
-            <div id="noticeList" class="space-y-5"></div>
+            <!-- Notice List -->
+            <div id="noticeList"></div>
 
         </div>
     </div>
