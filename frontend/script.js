@@ -1775,18 +1775,17 @@ function loadCommittee() {
 }
 
 function saveCommitteeMember() {
-    const n = document.getElementById('commName').value, r = document.getElementById('commRole').value, p = document.getElementById('commPhone').value;
+    const n = document.getElementById('commName').value.trim(), r = document.getElementById('commRole').value.trim(), p = document.getElementById('commPhone').value.trim();
     if (!n || !r || !p) return showToast("Please fill all committee fields.");
-
-    // Immediate UI feedback
-    document.getElementById('commName').value = '';
-    document.getElementById('commRole').value = '';
-    document.getElementById('commPhone').value = '';
 
     Api.saveCommittee({ society_name: currentSociety, name: n, role: r, phone: p, property_type: propertyType })
         .then(res => res.json())
         .then(data => {
             if (data.success) {
+                document.getElementById('commName').value = '';
+                document.getElementById('commRole').value = '';
+                document.getElementById('commPhone').value = '';
+                updateCommitteeButton();
                 if (!vault[currentSociety].committee) vault[currentSociety].committee = [];
                 vault[currentSociety].committee.push({ id: data.id, name: n, role: r, phone: p });
                 loadCommittee();

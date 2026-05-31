@@ -2466,7 +2466,7 @@ app.post("/api/committee", async (req, res) => {
         const [result] = await db.promise().query(
             `INSERT INTO users (society_id, username, password_hash, full_name, phone, role) 
              VALUES (?, ?, 'dummy', ?, ?, 'committee')`,
-            [socId, username, name, phone, role]
+            [socId, username, name, phone]
         );
         res.send({ success: true, id: result.insertId });
     } catch (err) {
