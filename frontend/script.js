@@ -796,7 +796,7 @@ function loadDashboard() {
 
     const menuMaintenanceBtn = document.getElementById('menuMaintenanceBtn');
     if (menuMaintenanceBtn) {
-        menuMaintenanceBtn.style.display = isAdmin ? 'flex' : 'none';
+        menuMaintenanceBtn.style.setProperty('display', isAdmin ? 'flex' : 'none', 'important');
     }
     
 
