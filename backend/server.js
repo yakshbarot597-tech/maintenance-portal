@@ -330,6 +330,24 @@ const verifyToken = (req, res, next) => {
 
 app.use('/api', verifyToken);
 
+const verifyAdmin = (req, res, next) => {
+    if (req.method !== 'GET' && (!req.user || req.user.role !== 'admin')) {
+        return res.status(403).json({ success: false, message: "Access denied. Admin role required." });
+    }
+    next();
+};
+
+app.use([
+    '/api/flat',
+    '/api/expense',
+    '/api/notice',
+    '/api/rule',
+    '/api/committee',
+    '/api/bank',
+    '/api/update-due-day',
+    '/api/update-monthly-maintenance'
+], verifyAdmin);
+
 // --- DATABASE INITIALIZATION ---
 const monthsList = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 

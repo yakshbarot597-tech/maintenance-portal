@@ -793,6 +793,11 @@ function loadDashboard() {
     if (exportBtn) exportBtn.style.display = isAdmin ? 'inline-flex' : 'none';
     if (waPendingBtn) waPendingBtn.style.display = isAdmin ? 'inline-flex' : 'none';
     if (waPaidBtn) waPaidBtn.style.display = isAdmin ? 'inline-flex' : 'none';
+
+    const menuMaintenanceBtn = document.getElementById('menuMaintenanceBtn');
+    if (menuMaintenanceBtn) {
+        menuMaintenanceBtn.style.display = isAdmin ? 'flex' : 'none';
+    }
     
 
 
@@ -1767,6 +1772,7 @@ function toggleCommitteeModal() {
 }
 
 function toggleMaintenanceModal() {
+    if (!isAdmin) return;
     const modal = document.getElementById('maintenanceModal');
     modal.classList.toggle('hidden');
     if (!modal.classList.contains('hidden')) {
@@ -1777,6 +1783,10 @@ function toggleMaintenanceModal() {
 }
 
 function saveGlobalMaintenance() {
+    if (!isAdmin) {
+        showToast("Access denied.", "error");
+        return;
+    }
     const amt = parseFloat(document.getElementById('globalMaintenanceAmount').value) || 0;
     const saveBtn = document.getElementById('saveGlobalMaintenanceBtn');
     saveBtn.innerText = "Saving...";
