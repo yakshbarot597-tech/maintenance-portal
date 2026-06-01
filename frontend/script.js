@@ -3031,7 +3031,7 @@ async function markAllBlockPaid(block) {
     }
 
     showConfirm(
-        `Mark ${flatsToMark.length} pending flat(s) in Block ${block} as Paid?`,
+        `Mark All pending flat(s) in Block ${block} as Paid?`,
         'Yes, Paid',
         false,
         async () => {
@@ -3094,7 +3094,7 @@ async function undoBlockPaid(block) {
     }
 
     showConfirm(
-        `Revert ${flatsToRevert.length} flat(s) in Block ${block} back to Pending?`,
+        `Revert All flat(s) in Block ${block} back to Pending?`,
         'Yes, Undo',
         true,
         async () => {
