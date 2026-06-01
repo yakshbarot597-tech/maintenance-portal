@@ -3034,12 +3034,13 @@ function renderNotices() {
             background:rgba(255,255,255,0.5);
         ">
             <div style="
-                width:56px; height:56px;
-                background:#ede8e2;
-                border-radius:50%;
+                width:62px; height:62px;
+                background:#8B5E3C;
+                border-radius:16px;
                 display:flex; align-items:center; justify-content:center;
-                font-size:24px;
+                font-size:36px;
                 margin:0 auto 16px auto;
+                box-shadow:0 4px 14px rgba(139,94,60,0.35);
             ">🔔</div>
             <p style="font-size:16px; font-weight:800; color:#1a1a1a; margin:0 0 6px 0;">No notices yet</p>
             <p style="font-size:13px; font-weight:600; color:#8B5E3C; margin:0;">Create your first notice to keep your community updated.</p>
@@ -3520,12 +3521,13 @@ function renderComplaints() {
             background:rgba(255,255,255,0.5);
         ">
             <div style="
-                width:56px; height:56px;
-                background:#ede8e2;
-                border-radius:50%;
+                width:62px; height:62px;
+                background:#8B5E3C;
+                border-radius:16px;
                 display:flex; align-items:center; justify-content:center;
-                font-size:24px;
+                font-size:36px;
                 margin:0 auto 16px auto;
+                box-shadow:0 4px 14px rgba(139,94,60,0.35);
             ">💬</div>
             <p style="font-size:16px; font-weight:800; color:#1a1a1a; margin:0 0 6px 0;">No complaints yet</p>
             <p style="font-size:13px; font-weight:600; color:#8B5E3C; margin:0;">Submit a complaint using the form above.</p>
