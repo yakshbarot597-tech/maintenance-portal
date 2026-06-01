@@ -3038,7 +3038,7 @@ function renderNotices() {
                 background:#8B5E3C;
                 border-radius:18px;
                 display:flex; align-items:center; justify-content:center;
-                font-size:45px;
+                font-size:54px;
                 margin:0 auto 16px auto;
                 box-shadow:0 4px 14px rgba(139,94,60,0.35);
             ">🔔</div>
@@ -3525,7 +3525,7 @@ function renderComplaints() {
                 background:#8B5E3C;
                 border-radius:18px;
                 display:flex; align-items:center; justify-content:center;
-                font-size:45px;
+                font-size:54px;
                 margin:0 auto 16px auto;
                 box-shadow:0 4px 14px rgba(139,94,60,0.35);
             ">💬</div>
