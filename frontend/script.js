@@ -2971,9 +2971,9 @@ function renderNotices() {
         recentBox.innerHTML = recent.length
             ? recent.map(n => `
         <div style="background:white;border-radius:14px;padding:16px 18px;margin-bottom:10px;box-shadow:0 1px 4px rgba(0,0,0,0.05);">
-            <p style="font-size:14px;font-weight:800;color:#1a1a1a;margin:0 0 4px 0;">${n.title}</p>
-            <p style="font-size:12px;font-weight:600;color:#7A6855;margin:0 0 6px 0;line-height:1.5;">${n.details}</p>
-            <span style="font-size:11px;font-weight:700;color:#B0998A;">📅 ${n.date}</span>
+            <p style="font-size:20px;font-weight:800;color:#1a1a1a;margin:0 0 4px 0;">${n.title}</p>
+            <p style="font-size:18px;font-weight:600;color:#7A6855;margin:0 0 6px 0;line-height:1.5;">${n.details}</p>
+            <span style="font-size:17px;font-weight:700;color:#B0998A;">📅 ${n.date}</span>
         </div>`).join("")
             : `<p style="font-size:12px;font-weight:800;color:#7A6855;">No recent notices.</p>`;
     }
@@ -3285,7 +3285,12 @@ function toggleExpensePage() {
     }
     checkFloatingComplaintVisibility();
 }
+let _isScrolling = false;
+let _scrollTimer = null;
+
 document.addEventListener("mousemove", (e) => {
+    // Don't show tooltips while the page is actively scrolling
+    if (_isScrolling) return;
 
     const rowTooltip = document.getElementById("rowHoverTooltip");
     const expenseTooltip = document.getElementById("expenseHoverTooltip");
@@ -3314,14 +3319,19 @@ document.addEventListener("mousemove", (e) => {
     }
 });
 
-// Hide tooltips on scroll (they get stuck because scroll fires no mousemove)
+// During scroll: hide & block tooltips. Re-enable 200ms after scroll stops.
 function hideAllTooltips() {
     const rowTooltip = document.getElementById("rowHoverTooltip");
     const expenseTooltip = document.getElementById("expenseHoverTooltip");
     if (rowTooltip) rowTooltip.style.display = "none";
     if (expenseTooltip) expenseTooltip.style.display = "none";
 }
-document.addEventListener("scroll", hideAllTooltips, true);
+document.addEventListener("scroll", () => {
+    _isScrolling = true;
+    hideAllTooltips();
+    clearTimeout(_scrollTimer);
+    _scrollTimer = setTimeout(() => { _isScrolling = false; }, 200);
+}, true);
 document.addEventListener("mouseleave", hideAllTooltips);
 document.addEventListener("input", function (e) {
 
