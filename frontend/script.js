@@ -1408,9 +1408,9 @@ ${(isOccupied && isAdmin)
         background:#16A34A;
         color:white;
         border:none;
-        padding:10px 18px;
+        padding:6px 14px;
         border-radius:10px;
-        font-size:19px;
+        font-size:15px;
         font-weight:800;
         cursor:pointer;
     "
@@ -1427,9 +1427,9 @@ ${(isOccupied && isAdmin)
                 background:rgba(139,94,60,0.12);
                 color:#8B5E3C;
                 border:1px solid rgba(139,94,60,0.25);
-                padding:10px 18px;
+                padding:6px 14px;
                 border-radius:10px;
-                font-size:19px;
+                font-size:15px;
                 font-weight:800;
                 cursor:pointer;
             "
