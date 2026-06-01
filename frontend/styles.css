@@ -355,8 +355,8 @@ tbody td:nth-child(5) {
 }
 
 tbody td button {
-    font-size: 19px !important;
-    padding: 10px 18px !important;
+    font-size: 15px !important;
+    padding: 6px 14px !important;
     border-radius: 10px !important;
     font-weight: 800 !important;
 }
