@@ -1503,10 +1503,10 @@ ${mData.yearlyActive ? `
 </div>
 ` : ''}
 </td>
-                <td class="p-6 text-[19px] font-bold text-[#7A6855]">
+                <td class="p-6 text-[22px] font-bold text-[#7A6855]">
 ${mData.status === 'Paid' ? (mData.paidDate || '-') : '-'}
 </td>
-                                <td class="p-6 font-mono text-[22px]">${isOccupied ? `₹${mData.amount || 0}` : '-'}</td>
+                                <td class="p-6 font-mono text-[25px]">${isOccupied ? `₹${mData.amount || 0}` : '-'}</td>
                 <td class="p-6 text-center">
 ${(isOccupied && isAdmin)
                     ? `
