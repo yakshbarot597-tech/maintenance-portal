@@ -2563,6 +2563,7 @@ function updateGlobalDueDay() {
     .catch(() => showToast("Failed to save due day.", "error"));
 
     displayFlats();
+    updateAnalytics();
 }
 function sendNotice(p, s, n, a, d, block, flat) {
     const phone = String(p || '').replace(/\D/g, '');

@@ -21,10 +21,19 @@ function getHeaders() {
 }
 
 async function fetchWithAuth(url, options = {}) {
+    const method = (options.method || 'GET').toUpperCase();
     if (!options.headers) {
         options.headers = getHeaders();
     } else {
         options.headers = { ...getHeaders(), ...options.headers };
+    }
+
+    if (method === 'GET') {
+        options.headers['Cache-Control'] = 'no-cache';
+        options.headers['Pragma'] = 'no-cache';
+        options.headers['Expires'] = '0';
+        const separator = url.includes('?') ? '&' : '?';
+        url = `${url}${separator}_t=${Date.now()}`;
     }
 
     const response = await fetch(url, options);
@@ -46,7 +55,7 @@ const Api = {
     setup: (data) => fetch(`${API_BASE}/setup`, { method: 'POST', headers: {'Content-Type': 'application/json', 'x-api-key': API_KEY}, body: JSON.stringify(data) }),
     login: (data) => fetch(`${API_BASE}/login`, { method: 'POST', headers: {'Content-Type': 'application/json', 'x-api-key': API_KEY}, body: JSON.stringify(data) }),
     residentLogin: (data) => fetch(`${API_BASE}/resident-login`, { method: 'POST', headers: {'Content-Type': 'application/json', 'x-api-key': API_KEY}, body: JSON.stringify(data) }),
-    getSocieties: () => fetch(`${API_BASE}/societies`, { headers: {'x-api-key': API_KEY} }),
+    getSocieties: () => fetch(`${API_BASE}/societies?_t=${Date.now()}`, { headers: {'x-api-key': API_KEY, 'Cache-Control': 'no-cache'} }),
     getSociety: (name, type) => fetchWithAuth(`${API_BASE}/society/${encodeURIComponent(name)}/${encodeURIComponent(type)}`),
     saveFlat: (data) => fetchWithAuth(`${API_BASE}/flat`, { method: 'POST', body: JSON.stringify(data) }),
     saveExpense: (data) => fetchWithAuth(`${API_BASE}/expense`, { method: 'POST', body: JSON.stringify(data) }),

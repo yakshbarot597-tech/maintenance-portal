@@ -226,6 +226,14 @@ const isPeriodBefore = (target, current) => {
 const app = express();
 app.set("trust proxy", 1);
 
+// Disable caching for API responses
+app.use("/api", (req, res, next) => {
+    res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate");
+    res.setHeader("Pragma", "no-cache");
+    res.setHeader("Expires", "0");
+    next();
+});
+
 // Secure Express headers (Helmet)
 app.use(helmet({
     contentSecurityPolicy: false // Disabled to support loading frontend assets from various third-party CDNs smoothly
