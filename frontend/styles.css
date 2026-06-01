@@ -1796,9 +1796,9 @@ body:not(.admin-view) #residentPanel {
 .rpd-secure-badge {
     background: linear-gradient(135deg, #D1FAE5, #A7F3D0);
     color: #065F46;
-    padding: 12px 22px;
+    padding: 8px 16px;
     border-radius: 999px;
-    font-size: 16px;
+    font-size: 11px;
     font-weight: 900;
     text-transform: uppercase;
     letter-spacing: 1px;
@@ -1827,7 +1827,7 @@ body:not(.admin-view) #residentPanel {
 }
 
 .rpd-bank-row span {
-    font-size: 16px;
+    font-size: 11px;
     font-weight: 900;
     letter-spacing: 1.5px;
     text-transform: uppercase;
@@ -1835,9 +1835,17 @@ body:not(.admin-view) #residentPanel {
 }
 
 .rpd-bank-row strong {
-    font-size: 22px;
+    font-size: 17px;
     font-weight: 950;
     color: #2C1A0E;
+}
+
+.rpd-bank-card .rpd-card-eyebrow {
+    font-size: 11px;
+}
+
+.rpd-bank-card .rpd-card-title {
+    font-size: 19px;
 }
 
 .rpd-qr-wrap {
@@ -1855,7 +1863,7 @@ body:not(.admin-view) #residentPanel {
 }
 
 .rpd-qr-hint {
-    font-size: 17px;
+    font-size: 12px;
     font-weight: 800;
     color: #9A6B45;
     margin-top: 10px;
