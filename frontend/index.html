@@ -1139,32 +1139,32 @@
 
     <div id="committeeModal" class="hidden fixed inset-0 flex items-center justify-center z-[110] p-4">
         <div class="absolute inset-0 bg-black/80 backdrop-blur-lg" onclick="toggleCommitteeModal()"></div>
-        <div class="card-bg w-full max-w-lg p-8 rounded-[40px] relative border-amber-400/20">
-            <h3 class="text-xl font-bold mb-6" style="color:#8B5E3C;">
+        <div class="card-bg w-full max-w-md p-6 rounded-[30px] relative border-amber-400/20 flex flex-col max-h-[90vh]" style="overflow-y: auto;">
+            <h3 class="text-lg font-bold mb-4" style="color:#8B5E3C;">
                 Committee
             </h3>
-            <div id="committeeListView" class="space-y-4 max-h-[400px] overflow-y-auto pr-2"></div>
-            <div id="adminCommitteeSection" class="hidden mt-8 pt-6 border-t border-amber-900/10">
+            <div id="committeeListView" class="space-y-4 max-h-[300px] overflow-y-auto pr-2"></div>
+            <div id="adminCommitteeSection" class="hidden mt-5 pt-4 border-t border-amber-900/10">
                 <input id="commName" maxlength="30" oninput="updateCommitteeButton()" placeholder="Name"
-                    class="p-3 input-field rounded-xl w-full mb-2" style="font-size:18px; font-weight:700;">
+                    class="p-2.5 input-field rounded-lg w-full mb-2" style="font-size:14px; font-weight:700;">
 
                 <input id="commRole" maxlength="30" oninput="updateCommitteeButton()"
-                    placeholder="Role (Secretary, Chairman...)" class="p-3 input-field rounded-xl w-full mb-2" style="font-size:18px; font-weight:700;">
+                    placeholder="Role (Secretary, Chairman...)" class="p-2.5 input-field rounded-lg w-full mb-2" style="font-size:14px; font-weight:700;">
 
                 <input id="commPhone" maxlength="10" oninput="updateCommitteeButton()" placeholder="Phone"
-                    class="p-3 input-field rounded-xl w-full mb-4" style="font-size:18px; font-weight:700;">
+                    class="p-2.5 input-field rounded-lg w-full mb-3" style="font-size:14px; font-weight:700;">
 
                 <button id="addMemberBtn" onclick="saveCommitteeMember()" style="
                     width:100%;
                     background:linear-gradient(135deg,#D97706,#F59E0B);
                     color:white;
-                    padding:14px;
-                    border-radius:14px;
-                    font-size:20px;
+                    padding:10px;
+                    border-radius:10px;
+                    font-size:14px;
                     font-weight:900;
                     border:none;
                     cursor:pointer;
-                    box-shadow:0 10px 24px rgba(217,119,6,0.22);
+                    box-shadow:0 6px 16px rgba(217,119,6,0.22);
                     letter-spacing:0.5px;
                 ">
                     Add Member
@@ -1173,9 +1173,9 @@
             <button onclick="toggleCommitteeModal()" style="
                 width:100%;
                 color:#7A6855;
-                font-size:20px;
+                font-size:14px;
                 font-weight:800;
-                margin-top:18px;
+                margin-top:10px;
                 background:none;
                 border:none;
                 cursor:pointer;
