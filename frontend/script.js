@@ -806,15 +806,17 @@ function loadDashboard() {
     }
 
     const soc = vault[currentSociety];
-    const defaultDueDay = soc.config?.defaultDueDay || 1;
     const mIdx = months.indexOf(document.getElementById('viewMonth').value);
     const year = parseInt(document.getElementById('viewYear').value);
-    const dueDate = new Date(year, mIdx, defaultDueDay);
+    const lastDateOfMonth = new Date(year, mIdx + 1, 0).getDate();
 
-    document.getElementById('globalDueDate').value =
-        `${dueDate.getFullYear()}-${String(dueDate.getMonth() + 1).padStart(2, '0')}-${String(dueDate.getDate()).padStart(2, '0')}`;
-
-    document.getElementById('globalDueDate').disabled = !isAdmin;
+    const globalDueDateInput = document.getElementById('globalDueDate');
+    if (globalDueDateInput) {
+        globalDueDateInput.min = `${year}-${String(mIdx + 1).padStart(2, '0')}-01`;
+        globalDueDateInput.max = `${year}-${String(mIdx + 1).padStart(2, '0')}-${String(lastDateOfMonth).padStart(2, '0')}`;
+        globalDueDateInput.value = getCalculatedDueDate();
+        globalDueDateInput.disabled = !isAdmin;
+    }
 
     const paymentDropdown = document.getElementById("paymentMethodFilter");
     if (paymentDropdown) {
@@ -1493,7 +1495,16 @@ function getCalculatedDueDate() {
 }
 
 function handlePeriodChange() {
-    document.getElementById('globalDueDate').value = getCalculatedDueDate();
+    const mIdx = months.indexOf(document.getElementById('viewMonth').value);
+    const year = parseInt(document.getElementById('viewYear').value);
+    const lastDateOfMonth = new Date(year, mIdx + 1, 0).getDate();
+
+    const globalDueDateInput = document.getElementById('globalDueDate');
+    if (globalDueDateInput) {
+        globalDueDateInput.min = `${year}-${String(mIdx + 1).padStart(2, '0')}-01`;
+        globalDueDateInput.max = `${year}-${String(mIdx + 1).padStart(2, '0')}-${String(lastDateOfMonth).padStart(2, '0')}`;
+        globalDueDateInput.value = getCalculatedDueDate();
+    }
 
     displayFlats();
     updateAnalytics();
@@ -2543,17 +2554,37 @@ function toggleResidentLogin() {
 }
 function updateGlobalDueDay() {
     if (!isAdmin) return;
-    const value = document.getElementById('globalDueDate').value;
+    let value = document.getElementById('globalDueDate').value;
     if (!value) return showToast("Please select a valid due date.");
 
+    const parts = value.split('-');
+    if (parts.length !== 3) return showToast("Invalid date format.");
+    
+    let Y = parseInt(parts[0]);
+    let M = parseInt(parts[1]) - 1; // 0-indexed month
+    let D = parseInt(parts[2]);
+
+    const viewMonth = document.getElementById('viewMonth').value;
+    const viewYear = parseInt(document.getElementById('viewYear').value);
+    const expectedMonthIndex = months.indexOf(viewMonth);
+    const lastDate = new Date(viewYear, expectedMonthIndex + 1, 0).getDate();
+
+    if (Y !== viewYear || M !== expectedMonthIndex || D > lastDate) {
+        Y = viewYear;
+        M = expectedMonthIndex;
+        D = Math.min(D, lastDate);
+        value = `${Y}-${String(M + 1).padStart(2, '0')}-${String(D).padStart(2, '0')}`;
+        document.getElementById('globalDueDate').value = value;
+        showToast(`Due date corrected to a valid date in ${viewMonth}: ${D}`, "warning");
+    }
+
     if (!vault[currentSociety].config) vault[currentSociety].config = {};
-    const d = new Date(value).getDate();
-    vault[currentSociety].config.defaultDueDay = d;
+    vault[currentSociety].config.defaultDueDay = D;
 
     // Use dedicated endpoint instead of saveVault() to prevent double-hashing admin password
     Api.updateDueDay({
             society_name: currentSociety,
-            default_due_day: d,
+            default_due_day: D,
             property_type: propertyType
         })
     .then(res => res.json())
