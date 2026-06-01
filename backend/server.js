@@ -384,28 +384,39 @@ function formatTransferPeriod(dateVal) {
     return `${monthsList[d.getMonth()]}-${d.getFullYear()}`;
 }
 
+// Returns current Date object adjusted to IST (UTC+5:30)
+function getNowIST() {
+    const now = new Date();
+    const istOffset = 5.5 * 60 * 60 * 1000; // IST is UTC+5:30
+    const utc = now.getTime() + (now.getTimezoneOffset() * 60 * 1000);
+    return new Date(utc + istOffset);
+}
+
+// Format a DB timestamp (may be UTC) to DD-MM-YYYY in IST
 function formatDateDDMMYYYY(dateVal) {
     if (!dateVal) return '';
     const d = new Date(dateVal);
     if (isNaN(d.getTime())) return '';
-    const day = String(d.getDate()).padStart(2, '0');
-    const month = String(d.getMonth() + 1).padStart(2, '0');
-    const year = d.getFullYear();
+    const ist = new Date(d.getTime() + (5.5 * 60 * 60 * 1000) + (d.getTimezoneOffset() * 60 * 1000));
+    const day   = String(ist.getDate()).padStart(2, '0');
+    const month = String(ist.getMonth() + 1).padStart(2, '0');
+    const year  = ist.getFullYear();
     return `${day}-${month}-${year}`;
 }
 
+// Format a DB timestamp (may be UTC) to DD-MM-YYYY HH:MM AM/PM in IST
 function formatDateTimeDDMMYYYY(dateVal) {
     if (!dateVal) return '';
     const d = new Date(dateVal);
     if (isNaN(d.getTime())) return '';
-    const day = String(d.getDate()).padStart(2, '0');
-    const month = String(d.getMonth() + 1).padStart(2, '0');
-    const year = d.getFullYear();
-    let hours = d.getHours();
-    const minutes = String(d.getMinutes()).padStart(2, '0');
-    const ampm = hours >= 12 ? 'PM' : 'AM';
-    hours = hours % 12;
-    hours = hours ? hours : 12; // the hour '0' should be '12'
+    const ist = new Date(d.getTime() + (5.5 * 60 * 60 * 1000) + (d.getTimezoneOffset() * 60 * 1000));
+    const day   = String(ist.getDate()).padStart(2, '0');
+    const month = String(ist.getMonth() + 1).padStart(2, '0');
+    const year  = ist.getFullYear();
+    let hours   = ist.getHours();
+    const minutes = String(ist.getMinutes()).padStart(2, '0');
+    const ampm  = hours >= 12 ? 'PM' : 'AM';
+    hours = hours % 12 || 12;
     const strHours = String(hours).padStart(2, '0');
     return `${day}-${month}-${year} ${strHours}:${minutes} ${ampm}`;
 }
@@ -2766,8 +2777,8 @@ app.post("/api/request-resident-otp", async (req, res) => {
 
         if (residentRows.length === 0) return res.json({ success: false, message: "wrong number entered" });
 
-        const now = new Date();
-        const currentPeriod = `${monthsList[now.getMonth() ]}-${now.getFullYear()}`;
+        const now = getNowIST();
+        const currentPeriod = `${monthsList[now.getMonth()]}-${now.getFullYear()}`;
 
         let activePhone = "";
         let rentalPhone = "";
