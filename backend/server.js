@@ -2643,6 +2643,22 @@ app.post("/api/complaint", async (req, res) => {
     }
 });
 
+// Update Complaint Status (e.g. to "resolved" / Fixed)
+app.post("/api/complaint/:id/status", async (req, res) => {
+    const complaintId = parseInt(req.params.id, 10);
+    const { status } = req.body;
+    try {
+        await db.promise().query(
+            "UPDATE complaints SET status=?, updated_at=NOW() WHERE id=?",
+            [status || 'resolved', complaintId]
+        );
+        res.json({ success: true });
+    } catch (err) {
+        console.error("Update complaint status error:", err);
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
+
 // Delete Complaint
 app.delete("/api/complaint/:id", (req, res) => {
     db.query("DELETE FROM complaints WHERE id=?", [parseInt(req.params.id, 10)], (err) => {

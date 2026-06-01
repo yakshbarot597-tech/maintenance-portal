@@ -66,6 +66,7 @@ const Api = {
     saveRule: (data) => fetchWithAuth(`${API_BASE}/rule`, { method: 'POST', body: JSON.stringify(data) }),
     deleteRule: (id) => fetchWithAuth(`${API_BASE}/rule/${id}`, { method: 'DELETE' }),
     saveComplaint: (data) => fetchWithAuth(`${API_BASE}/complaint`, { method: 'POST', body: JSON.stringify(data) }),
+    updateComplaintStatus: (id, status) => fetchWithAuth(`${API_BASE}/complaint/${id}/status`, { method: 'POST', body: JSON.stringify({ status }) }),
     deleteComplaint: (id) => fetchWithAuth(`${API_BASE}/complaint/${id}`, { method: 'DELETE' }),
     saveCommittee: (data) => fetchWithAuth(`${API_BASE}/committee`, { method: 'POST', body: JSON.stringify(data) }),
     deleteCommittee: (id) => fetchWithAuth(`${API_BASE}/committee/${id}`, { method: 'DELETE' }),

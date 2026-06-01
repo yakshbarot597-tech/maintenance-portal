@@ -3876,6 +3876,18 @@ function renderComplaints() {
         </div>
         ${ownerAccess ? `
         <div style="display:flex; gap:8px; flex-shrink:0;">
+            ${c.status !== 'resolved' ? `
+            <button onclick="markComplaintFixed(${c.id})" style="
+                background:#F0FDF4;
+                color:#15803D;
+                border:1.5px solid #BBF7D0;
+                border-radius:8px;
+                padding:7px 14px;
+                font-size:12px;
+                font-weight:800;
+                cursor:pointer;
+            ">Fixed</button>
+            ` : ''}
             <button onclick="editComplaint(${c.id})" style="
                 background:#EFF6FF;
                 color:#2563EB;
@@ -3938,6 +3950,35 @@ function deleteComplaint(id) {
                 if (data.success) {
                     loadDashboardData();
                 }
+            });
+    });
+}
+function markComplaintFixed(id) {
+    const c = vault[currentSociety].complaints.find(comp => String(comp.id) === String(id));
+    const loggedFlat = getLoggedInComplaintFlat();
+
+    if (!isAdmin && (loggedFlat === "" || (c.created_by !== loggedFlat && c.flat !== loggedFlat))) {
+        showToast(translateTerm("You can only mark your own complaint as fixed."));
+        return;
+    }
+
+    showConfirm(translateTerm("Mark this complaint as Fixed?"), translateTerm("Yes, Fixed"), false, () => {
+        Api.updateComplaintStatus(id, 'resolved')
+            .then(res => {
+                if (!res.ok) throw new Error("Status update failed");
+                return res.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    showToast(translateTerm("Complaint marked as resolved!"), "success");
+                    loadDashboardData();
+                } else {
+                    showToast(data.error || translateTerm("Failed to update status."), "error");
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                showToast(translateTerm("Failed to update status."), "error");
             });
     });
 }
@@ -4702,6 +4743,7 @@ Object.assign(window, {
     copyWaMessage,
     deleteComm,
     deleteComplaint,
+    markComplaintFixed,
     deleteNotice,
     deleteRule,
     downloadReceipt,
