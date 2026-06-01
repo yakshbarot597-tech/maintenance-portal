@@ -442,6 +442,10 @@ function parseDDMMYYYY(dateStr) {
         const month = parseInt(parts[1], 10) - 1;
         const year = parseInt(parts[2], 10);
         
+        let hours = 0;
+        let minutes = 0;
+        let seconds = 0;
+
         // Check if there is a time part
         const timeParts = dateStr.split(' ');
         if (timeParts.length >= 2) {
@@ -449,15 +453,18 @@ function parseDDMMYYYY(dateStr) {
             const ampm = timeParts[2]; // AM or PM
             const tParts = timeStr.split(':');
             if (tParts.length >= 2) {
-                let hours = parseInt(tParts[0], 10);
-                const minutes = parseInt(tParts[1], 10);
-                const seconds = tParts[2] ? parseInt(tParts[2], 10) : 0;
+                hours = parseInt(tParts[0], 10);
+                minutes = parseInt(tParts[1], 10);
+                seconds = tParts[2] ? parseInt(tParts[2], 10) : 0;
                 if (ampm === 'PM' && hours < 12) hours += 12;
                 if (ampm === 'AM' && hours === 12) hours = 0;
-                return new Date(year, month, day, hours, minutes, seconds);
             }
         }
-        return new Date(year, month, day);
+
+        // Create a UTC date from the components (as if they were in UTC)
+        const utcDate = new Date(Date.UTC(year, month, day, hours, minutes, seconds));
+        // Subtract 5.5 hours to represent the exact instant in absolute UTC
+        return new Date(utcDate.getTime() - (5.5 * 60 * 60 * 1000));
     }
     return new Date();
 }
@@ -2342,8 +2349,8 @@ app.post("/api/expense", async (req, res) => {
 
         if (expenseId) {
             await db.promise().query(
-                `UPDATE expenses SET title=?, amount=?, notes=? WHERE id=?`,
-                [title, amount, details, expenseId]
+                `UPDATE expenses SET title=?, amount=?, notes=?, expense_date=?, updated_at=NOW() WHERE id=?`,
+                [title, amount, details, expenseDate, expenseId]
             );
         } else {
             await db.promise().query(
@@ -2419,8 +2426,8 @@ app.post("/api/notice", async (req, res) => {
 
         if (noticeId) {
             await db.promise().query(
-                `UPDATE notices SET title=?, details=? WHERE id=?`,
-                [title, details, noticeId]
+                `UPDATE notices SET title=?, details=?, publish_date=?, updated_at=NOW() WHERE id=?`,
+                [title, details, publishDate, noticeId]
             );
         } else {
             await db.promise().query(
@@ -2498,8 +2505,8 @@ app.post("/api/rule", async (req, res) => {
 
         if (ruleId) {
             await db.promise().query(
-                `UPDATE notices SET title=?, details=? WHERE id=?`,
-                [ruleTitle, details, ruleId]
+                `UPDATE notices SET title=?, details=?, publish_date=?, updated_at=NOW() WHERE id=?`,
+                [ruleTitle, details, publishDate, ruleId]
             );
         } else {
             await db.promise().query(
@@ -2602,8 +2609,8 @@ app.post("/api/complaint", async (req, res) => {
 
         if (complaintId) {
             await db.promise().query(
-                `UPDATE complaints SET title=?, unit_id=?, raw_flat_number=?, details=? WHERE id=?`,
-                [title, unitId, rawFlatNumber, details, complaintId]
+                `UPDATE complaints SET title=?, unit_id=?, raw_flat_number=?, details=?, created_at=?, updated_at=NOW() WHERE id=?`,
+                [title, unitId, rawFlatNumber, details, publishDate, complaintId]
             );
         } else {
             await db.promise().query(
