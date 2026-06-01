@@ -2555,7 +2555,23 @@ function toggleResidentLogin() {
 function updateGlobalDueDay() {
     if (!isAdmin) return;
     let value = document.getElementById('globalDueDate').value;
-    if (!value) return showToast("Please select a valid due date.");
+    if (!value) {
+        const inputEl = document.getElementById('globalDueDate');
+        if (inputEl && !inputEl.validity.valid) {
+            const viewMonth = document.getElementById('viewMonth').value;
+            const viewYear = parseInt(document.getElementById('viewYear').value);
+            const expectedMonthIndex = months.indexOf(viewMonth);
+            const lastDate = new Date(viewYear, expectedMonthIndex + 1, 0).getDate();
+            
+            const correctedValue = `${viewYear}-${String(expectedMonthIndex + 1).padStart(2, '0')}-${String(lastDate).padStart(2, '0')}`;
+            inputEl.value = correctedValue;
+            
+            showToast(`Invalid date. Corrected to last day of ${viewMonth}: ${lastDate}`, "warning");
+            value = correctedValue;
+        } else {
+            return showToast("Please select a valid due date.");
+        }
+    }
 
     const parts = value.split('-');
     if (parts.length !== 3) return showToast("Invalid date format.");
