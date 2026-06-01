@@ -2965,27 +2965,31 @@ async function markAllBlockPaid(block) {
         return;
     }
 
-    const confirmed = confirm(`Mark ${flatsToMark.length} pending flat(s) in Block ${block} as Paid?`);
-    if (!confirmed) return;
-
-    try {
-        const res = await Api.markBlockPaid({
-            society_name: currentSociety,
-            block: block,
-            flats: flatsToMark,
-            period: period,
-            property_type: propertyType
-        });
-        const data = await res.json();
-        if (data.success) {
-            showToast(`Block ${block}: ${flatsToMark.length} flat(s) marked as Paid! ✅`, 'success');
-            loadDashboardData();
-        } else {
-            showToast(`Error: ${data.error || 'Failed to mark block as paid'}`, 'error');
+    showConfirm(
+        `Mark ${flatsToMark.length} pending flat(s) in Block ${block} as Paid?`,
+        '✅ Mark All Paid',
+        false,
+        async () => {
+            try {
+                const res = await Api.markBlockPaid({
+                    society_name: currentSociety,
+                    block: block,
+                    flats: flatsToMark,
+                    period: period,
+                    property_type: propertyType
+                });
+                const data = await res.json();
+                if (data.success) {
+                    showToast(`Block ${block}: ${flatsToMark.length} flat(s) marked as Paid! ✅`, 'success');
+                    loadDashboardData();
+                } else {
+                    showToast(`Error: ${data.error || 'Failed to mark block as paid'}`, 'error');
+                }
+            } catch (err) {
+                showToast('Network error. Please try again.', 'error');
+            }
         }
-    } catch (err) {
-        showToast('Network error. Please try again.', 'error');
-    }
+    );
 }
 
 // NOTE: Duplicate mousemove listener removed here.
