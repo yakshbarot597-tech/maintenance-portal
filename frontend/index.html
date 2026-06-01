@@ -883,30 +883,16 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
 
                 <div>
-                    <span style="
-            font-size:34px;
-            font-weight:900;
-            color:#8B5E3C;
-            display:block;
-            margin-bottom:10px;
-        ">
+                    <span style="font-size:14px; font-weight:900; color:#8B5E3C; display:block; margin-bottom:8px;">
                         Owner
                     </span>
-
                     <input id="ownerName" type="text" maxlength="30" class="p-4 rounded-xl input-field w-full">
                 </div>
 
                 <div>
-                    <span style="
-            font-size:34px;
-            font-weight:900;
-            color:#8B5E3C;
-            display:block;
-            margin-bottom:10px;
-        ">
+                    <span style="font-size:14px; font-weight:900; color:#8B5E3C; display:block; margin-bottom:8px;">
                         Phone
                     </span>
-
                     <input id="phone" type="text" maxlength="10" class="p-4 rounded-xl input-field w-full">
                 </div>
 
@@ -915,30 +901,16 @@
             <div id="residentCredentialsSection" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
 
                 <div>
-                    <span style="
-            font-size:34px;
-            font-weight:900;
-            color:#8B5E3C;
-            display:block;
-            margin-bottom:10px;
-        ">
+                    <span style="font-size:14px; font-weight:900; color:#8B5E3C; display:block; margin-bottom:8px;">
                         Resident Username
                     </span>
-
                     <input id="resUsername" type="text" maxlength="30" placeholder="Unique Resident Username" class="p-4 rounded-xl input-field w-full">
                 </div>
 
                 <div>
-                    <span style="
-            font-size:34px;
-            font-weight:900;
-            color:#8B5E3C;
-            display:block;
-            margin-bottom:10px;
-        ">
+                    <span style="font-size:14px; font-weight:900; color:#8B5E3C; display:block; margin-bottom:8px;">
                         Resident Password
                     </span>
-
                     <div class="pwd-wrapper">
                         <input id="resPasswordInput" type="password" maxlength="30" placeholder="Set Password (optional)" class="p-4 rounded-xl input-field w-full" style="padding-right:72px !important;">
                         <button type="button" class="pwd-eye" onclick="togglePasswordVisibility('resPasswordInput', this)" tabindex="-1"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" style="pointer-events:none;"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0z"/><circle cx="12" cy="12" r="3"/></svg></button>
@@ -951,12 +923,7 @@
 
                 <div class="flex items-center gap-4 mb-4">
 
-                    <span style="
-            font-size:34px;
-            font-weight:900;
-            color:#8B5E3C;
-            line-height:1.2;
-        ">
+                    <span style="font-size:14px; font-weight:900; color:#8B5E3C; line-height:1.2;">
                         Tenant Status
                     </span>
 
@@ -993,7 +960,7 @@
                         <input type="checkbox" id="enableTransfer" onchange="toggleTransferFields()" style="
                             width:16px; height:16px; accent-color:#8B5E3C; cursor:pointer;
                         ">
-                        <span style="font-size:22px; font-weight:900; color:#8B5E3C;">
+                        <span style="font-size:14px; font-weight:900; color:#8B5E3C;">
                             Schedule Ownership Transfer?
                         </span>
                     </label>
@@ -1111,54 +1078,26 @@
             <div class="flex justify-center mt-6">
 
                 <button onclick="saveFlat()" style="
-            position:relative;
-
-            overflow:hidden;
-
-            padding:18px 42px;
-
-            border:none;
-
-            border-radius:18px;
-
-            background:linear-gradient(135deg,#8B5E3C,#C08A5B);
-
-            color:white;
-
-            font-size:24px;
-
-            font-weight:900;
-
-            letter-spacing:1px;
-
-            cursor:pointer;
-
-            display:flex;
-
-            align-items:center;
-            
-            gap:14px;
-
-            box-shadow:
-                0 12px 28px rgba(139,94,60,0.28);
-
-            transition:0.25s ease;
-        " onmouseover="
-            this.style.transform='translateY(-3px) scale(1.03)';
-            this.style.boxShadow='0 18px 36px rgba(139,94,60,0.38)';
-        " onmouseout="
-            this.style.transform='translateY(0px) scale(1)';
-            this.style.boxShadow='0 12px 28px rgba(139,94,60,0.28)';
-        ">
-
-                    <span style="
-            font-size:28px;
-        ">
-                        💾
-                    </span>
-                        Save Changes
-                    </span>
-
+                    position:relative;
+                    overflow:hidden;
+                    padding:12px 36px;
+                    border:none;
+                    border-radius:14px;
+                    background:linear-gradient(135deg,#8B5E3C,#C08A5B);
+                    color:white;
+                    font-size:16px;
+                    font-weight:900;
+                    letter-spacing:0.5px;
+                    cursor:pointer;
+                    display:flex;
+                    align-items:center;
+                    gap:10px;
+                    box-shadow:0 8px 20px rgba(139,94,60,0.28);
+                    transition:0.25s ease;
+                " onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 14px 28px rgba(139,94,60,0.38)';"
+                   onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 8px 20px rgba(139,94,60,0.28)';">
+                    <span style="font-size:18px;">💾</span>
+                    Save Changes
                 </button>
 
             </div>
@@ -1592,12 +1531,13 @@
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:28px;">
                 <div style="display:flex; align-items:center; gap:14px;">
                     <div style="
-                        width:50px; height:50px;
-                        background:#fef3e8;
+                        width:54px; height:54px;
+                        background:#e8d8c8;
                         border-radius:14px;
                         display:flex; align-items:center; justify-content:center;
-                        font-size:22px;
+                        font-size:30px;
                         flex-shrink:0;
+                        box-shadow:0 2px 8px rgba(139,94,60,0.15);
                     ">💬</div>
                     <div>
                         <h1 style="font-size:24px; font-weight:900; color:#1a1a1a; margin:0 0 2px 0; letter-spacing:-0.3px;">Society Complaints</h1>
