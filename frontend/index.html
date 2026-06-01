@@ -1187,25 +1187,25 @@
 
     <div id="bankModal" class="hidden fixed inset-0 flex items-center justify-center z-[100] p-4">
         <div class="absolute inset-0 bg-black/70 backdrop-blur-md" onclick="toggleBankModal()"></div>
-        <div class="card-bg w-full max-w-md p-8 rounded-[40px] relative">
-            <h3 class="text-2xl font-bold text-[#8B5E3C] mb-6 text-center">Bank Account Info</h3>
-            <div id="bankView" class="bg-amber-900/5 p-6 rounded-3xl mb-6 text-center border border-amber-900/10">
+        <div class="card-bg w-full max-w-sm p-5 rounded-[30px] relative flex flex-col max-h-[90vh]" style="overflow-y: auto;">
+            <h3 class="text-xl font-bold text-[#8B5E3C] mb-3 text-center">Bank Account Info</h3>
+            <div id="bankView" class="bg-amber-900/5 p-4 rounded-2xl mb-3 text-center border border-amber-900/10">
                 <img id="qrPreview" src="" alt="QR"
-                    class="mx-auto hidden mb-4 max-w-[150px] border-2 border-cyan-400 rounded-lg">
-                <p id="vBank" class="text-[#3E2C1C] font-bold text-2xl">-</p>
-                <p id="vAcc" class="text-[#8B5E3C] font-mono text-2xl">-</p>
-                <p id="vIfsc" class="text-[#7A6855] font-mono text-2xl uppercase">-</p>
+                    class="mx-auto hidden mb-3 max-w-[100px] max-h-[100px] border-2 border-cyan-400 rounded-lg">
+                <p id="vBank" class="text-[#3E2C1C] font-bold text-lg">-</p>
+                <p id="vAcc" class="text-[#8B5E3C] font-mono text-base">-</p>
+                <p id="vIfsc" class="text-[#7A6855] font-mono text-sm uppercase">-</p>
             </div>
-            <div id="adminBankSection" class="hidden space-y-3">
-                <input id="ebank" maxlength="30" placeholder="Account Name" class="w-full p-4 input-field rounded-xl">
-                <input id="eacc" maxlength="20" placeholder="Account Number" class="w-full p-4 input-field rounded-xl">
-                <input id="eifsc" maxlength="11" placeholder="IFSC" class="w-full p-4 input-field rounded-xl">
-                <input type="file" id="eqr" class="text-2xl text-[#7A6855] mt-2">
+            <div id="adminBankSection" class="hidden space-y-2">
+                <input id="ebank" maxlength="30" placeholder="Account Name" class="w-full p-3 input-field rounded-lg text-sm">
+                <input id="eacc" maxlength="20" placeholder="Account Number" class="w-full p-3 input-field rounded-lg text-sm">
+                <input id="eifsc" maxlength="11" placeholder="IFSC" class="w-full p-3 input-field rounded-lg text-sm">
+                <input type="file" id="eqr" class="text-xs text-[#7A6855] mt-1">
                 <button onclick="saveBank()"
-                    class="w-full bg-emerald-600 py-4 rounded-xl font-bold mt-2 uppercase tracking-widest">Update
+                    class="w-full bg-emerald-600 py-3 rounded-lg font-bold mt-2 uppercase tracking-wider text-xs">Update
                     Details</button>
             </div>
-            <button onclick="toggleBankModal()" class="w-full text-[#7A6855] text-2xl mt-4">Close</button>
+            <button onclick="toggleBankModal()" class="w-full text-[#7A6855] text-base mt-3">Close</button>
         </div>
     </div>
 
