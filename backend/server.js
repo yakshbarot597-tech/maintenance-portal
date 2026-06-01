@@ -352,12 +352,12 @@ app.use([
 // --- DATABASE INITIALIZATION ---
 const monthsList = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
-function serializeNotes(plan, owner_name, customNotes = "") {
-    return JSON.stringify({ plan, owner_name, customNotes });
+function serializeNotes(plan, owner_name, customNotes = "", paymentMethod = "") {
+    return JSON.stringify({ plan, owner_name, customNotes, paymentMethod });
 }
 
 function deserializeNotes(notesStr) {
-    if (!notesStr) return { plan: 'monthly', owner_name: '', customNotes: '', notes: '' };
+    if (!notesStr) return { plan: 'monthly', owner_name: '', customNotes: '', notes: '', paymentMethod: '' };
     try {
         const parsed = JSON.parse(notesStr);
         const customNotes = parsed.customNotes || parsed.notes || '';
@@ -365,14 +365,16 @@ function deserializeNotes(notesStr) {
             plan: parsed.plan || 'monthly',
             owner_name: parsed.owner_name || '',
             customNotes: customNotes,
-            notes: customNotes
+            notes: customNotes,
+            paymentMethod: parsed.paymentMethod || ''
         };
     } catch (e) {
         return {
             plan: 'monthly',
             owner_name: '',
             customNotes: notesStr || '',
-            notes: notesStr || ''
+            notes: notesStr || '',
+            paymentMethod: ''
         };
     }
 }
@@ -1356,7 +1358,7 @@ app.get("/api/society/:name/:type", async (req, res) => {
         );
 
         const [latestInvoices] = await db.promise().query(
-            `SELECT mi.unit_id, mi.amount, pt.payment_method
+            `SELECT mi.unit_id, mi.amount, mi.notes, pt.payment_method
              FROM maintenance_invoices mi
              LEFT JOIN payment_transactions pt ON mi.id = pt.invoice_id
              WHERE mi.society_id = ?
@@ -1374,15 +1376,31 @@ app.get("/api/society/:name/:type", async (req, res) => {
                     has_payment_method: false
                 };
             }
-            if (!latestInvoiceMap[uId].has_payment_method && inv.payment_method) {
-                const ml = inv.payment_method.toLowerCase();
-                let method = 'Cash';
-                if (ml.includes('upi')) method = 'UPI';
-                else if (ml.includes('bank') || ml.includes('transfer')) method = 'Bank Transfer';
-                else if (ml.includes('card')) method = 'Card';
-                else if (ml.includes('cheque') || ml.includes('check')) method = 'Check';
-                latestInvoiceMap[uId].payment_method = method;
-                latestInvoiceMap[uId].has_payment_method = true;
+            if (!latestInvoiceMap[uId].has_payment_method) {
+                let method = null;
+                if (inv.payment_method) {
+                    const ml = inv.payment_method.toLowerCase();
+                    if (ml.includes('upi')) method = 'UPI';
+                    else if (ml.includes('bank') || ml.includes('transfer')) method = 'Bank Transfer';
+                    else if (ml.includes('card')) method = 'Card';
+                    else if (ml.includes('cheque') || ml.includes('check')) method = 'Check';
+                }
+                if (!method && inv.notes) {
+                    const notes = deserializeNotes(inv.notes);
+                    if (notes.paymentMethod) {
+                        const ml = notes.paymentMethod.toLowerCase();
+                        if (ml.includes('upi')) method = 'UPI';
+                        else if (ml.includes('bank') || ml.includes('transfer')) method = 'Bank Transfer';
+                        else if (ml.includes('card')) method = 'Card';
+                        else if (ml.includes('cheque') || ml.includes('check')) method = 'Check';
+                        else if (ml.includes('cash')) method = 'Cash';
+                        else method = notes.paymentMethod;
+                    }
+                }
+                if (method) {
+                    latestInvoiceMap[uId].payment_method = method;
+                    latestInvoiceMap[uId].has_payment_method = true;
+                }
             }
         }
 
@@ -1578,7 +1596,7 @@ app.get("/api/society/:name/:type", async (req, res) => {
                 amount: m.amount,
                 paid_date: m.paid_at ? formatDateDDMMYYYY(m.paid_at) : '-',
                 plan: notes.plan || 'monthly',
-                payment_method: method,
+                payment_method: method || (notes.paymentMethod ? (notes.paymentMethod.toLowerCase().includes('upi') ? 'UPI' : notes.paymentMethod.toLowerCase().includes('bank') || notes.paymentMethod.toLowerCase().includes('transfer') ? 'Bank Transfer' : notes.paymentMethod.toLowerCase().includes('card') ? 'Card' : notes.paymentMethod.toLowerCase().includes('cheque') || notes.paymentMethod.toLowerCase().includes('check') ? 'Check' : notes.paymentMethod || 'Cash') : 'Cash'),
                 owner_name: notes.owner_name || ''
             };
         });
@@ -1899,7 +1917,7 @@ app.post("/api/flat", async (req, res) => {
         const billingYear = parseInt(periodParts[1]);
 
         const invoiceNumber = `INV-${unitId}-${billingYear}-${billingMonth}`;
-        const notes = serializeNotes(plan || 'monthly', owner || '');
+        const notes = serializeNotes(plan || 'monthly', owner || '', '', paymentMethod || '');
         const dueDate = `${billingYear}-${String(billingMonth).padStart(2, '0')}-01`;
 
         const [existingInvoice] = await db.promise().query(
@@ -3473,7 +3491,7 @@ app.get("/api/society-flats/:name/:type", async (req, res) => {
         );
 
         const [latestInvoices] = await db.promise().query(
-            `SELECT mi.unit_id, mi.amount, pt.payment_method
+            `SELECT mi.unit_id, mi.amount, mi.notes, pt.payment_method
              FROM maintenance_invoices mi
              LEFT JOIN payment_transactions pt ON mi.id = pt.invoice_id
              WHERE mi.society_id = ?
@@ -3491,15 +3509,31 @@ app.get("/api/society-flats/:name/:type", async (req, res) => {
                     has_payment_method: false
                 };
             }
-            if (!latestInvoiceMap[uId].has_payment_method && inv.payment_method) {
-                const ml = inv.payment_method.toLowerCase();
-                let method = 'Cash';
-                if (ml.includes('upi')) method = 'UPI';
-                else if (ml.includes('bank') || ml.includes('transfer')) method = 'Bank Transfer';
-                else if (ml.includes('card')) method = 'Card';
-                else if (ml.includes('cheque') || ml.includes('check')) method = 'Check';
-                latestInvoiceMap[uId].payment_method = method;
-                latestInvoiceMap[uId].has_payment_method = true;
+            if (!latestInvoiceMap[uId].has_payment_method) {
+                let method = null;
+                if (inv.payment_method) {
+                    const ml = inv.payment_method.toLowerCase();
+                    if (ml.includes('upi')) method = 'UPI';
+                    else if (ml.includes('bank') || ml.includes('transfer')) method = 'Bank Transfer';
+                    else if (ml.includes('card')) method = 'Card';
+                    else if (ml.includes('cheque') || ml.includes('check')) method = 'Check';
+                }
+                if (!method && inv.notes) {
+                    const notes = deserializeNotes(inv.notes);
+                    if (notes.paymentMethod) {
+                        const ml = notes.paymentMethod.toLowerCase();
+                        if (ml.includes('upi')) method = 'UPI';
+                        else if (ml.includes('bank') || ml.includes('transfer')) method = 'Bank Transfer';
+                        else if (ml.includes('card')) method = 'Card';
+                        else if (ml.includes('cheque') || ml.includes('check')) method = 'Check';
+                        else if (ml.includes('cash')) method = 'Cash';
+                        else method = notes.paymentMethod;
+                    }
+                }
+                if (method) {
+                    latestInvoiceMap[uId].payment_method = method;
+                    latestInvoiceMap[uId].has_payment_method = true;
+                }
             }
         }
 
@@ -3602,7 +3636,7 @@ app.get("/api/society-flats/:name/:type", async (req, res) => {
                 amount: m.amount,
                 paid_date: m.paid_at ? formatDateDDMMYYYY(m.paid_at) : '-',
                 plan: notes.plan || 'monthly',
-                payment_method: method,
+                payment_method: method || (notes.paymentMethod ? (notes.paymentMethod.toLowerCase().includes('upi') ? 'UPI' : notes.paymentMethod.toLowerCase().includes('bank') || notes.paymentMethod.toLowerCase().includes('transfer') ? 'Bank Transfer' : notes.paymentMethod.toLowerCase().includes('card') ? 'Card' : notes.paymentMethod.toLowerCase().includes('cheque') || notes.paymentMethod.toLowerCase().includes('check') ? 'Check' : notes.paymentMethod || 'Cash') : 'Cash'),
                 owner_name: notes.owner_name || ''
             };
         });
