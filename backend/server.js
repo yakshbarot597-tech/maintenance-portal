@@ -1221,7 +1221,7 @@ app.post("/api/login", async (req, res) => {
         const token = jwt.sign(
             { username: soc.admin_username, role: 'admin', society_id: soc.id },
             JWT_SECRET,
-            { expiresIn: '24h' }
+            { expiresIn: '30d' }
         );
 
         res.json({ success: true, society: soc, token });
@@ -1289,7 +1289,7 @@ app.post("/api/resident-login", async (req, res) => {
         const token = jwt.sign(
             { username: flatRow.resident_username, role: 'resident', society_id: flatRow.society_id, unit_id: flatRow.unit_id },
             JWT_SECRET,
-            { expiresIn: '24h' }
+            { expiresIn: '30d' }
         );
 
         res.json({
