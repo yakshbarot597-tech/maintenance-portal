@@ -295,21 +295,21 @@ function renderExpenses() {
         <div style="display:flex; justify-content:space-between; gap:16px; align-items:flex-start;">
             <div style="flex:1; min-width:0;">
                 <div style="display:flex; align-items:center; gap:10px; margin-bottom:6px;">
-                    <p style="font-size:15px; font-weight:800; color:#1a1a1a; margin:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${e.title}</p>
+                    <p style="font-size:21px; font-weight:800; color:#1a1a1a; margin:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${e.title}</p>
                     <span style="
                         background:#fef3e8;
                         color:#8B5E3C;
-                        font-size:11px;
+                        font-size:17px;
                         font-weight:800;
                         padding:3px 10px;
                         border-radius:20px;
                         white-space:nowrap;
                     ">₹${Number(e.amount).toLocaleString('en-IN')}</span>
                 </div>
-                ${e.details ? `<p style="font-size:12px; font-weight:600; color:#7A6855; margin:0 0 8px 0; line-height:1.5;">${e.details}</p>` : ''}
+                ${e.details ? `<p style="font-size:18px; font-weight:600; color:#7A6855; margin:0 0 8px 0; line-height:1.5;">${e.details}</p>` : ''}
                 <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
-                    <span style="font-size:11px; font-weight:700; color:#B0998A;">📅 ${e.date}</span>
-                    ${e.updated_date ? `<span style="font-size:11px; font-weight:700; color:#D97706;">✏️ Updated: ${e.updated_date}</span>` : ''}
+                    <span style="font-size:17px; font-weight:700; color:#B0998A;">📅 ${e.date}</span>
+                    ${e.updated_date ? `<span style="font-size:17px; font-weight:700; color:#D97706;">✏️ Updated: ${e.updated_date}</span>` : ''}
                 </div>
             </div>
             ${isAdmin ? `
