@@ -1327,6 +1327,20 @@ function displayFlats() {
     let stats = { occ: 0, paid: 0, pend: 0, rent: 0 };
 
     Object.keys(soc.apartmentData).sort().forEach(block => {
+        let blockConfig = getBlockConfig(soc, block);
+        let flatList = getFlatList(blockConfig);
+
+        // Count how many occupied flats are pending
+        let pendingOccupiedFlats = 0;
+        for (let flatNum of flatList) {
+            const d = soc.apartmentData[block][flatNum] || {};
+            const mData = getEffectiveMonthData(d, period);
+            const isOccupied = (mData.owner && mData.owner.trim() !== "");
+            if (isOccupied && mData.status !== 'Paid') {
+                pendingOccupiedFlats++;
+            }
+        }
+
         // Add block header
         const blockHeaderRow = tbody.insertRow();
         blockHeaderRow.id = `block-header-${block}`;
@@ -1334,40 +1348,66 @@ function displayFlats() {
 
         const isCollapsed = blockStates[`${currentSociety}-${block}`] === true;
 
+        let actionHtml = '';
+        if (pendingOccupiedFlats === 0) {
+            actionHtml = `
+                <span style="
+                    color: #16A34A;
+                    font-size: 13px;
+                    font-weight: 900;
+                    letter-spacing: 0.5px;
+                    text-transform: uppercase;
+                    display: inline-block;
+                    padding: 5px 14px;
+                    background: rgba(22, 163, 74, 0.1);
+                    border: 1px solid rgba(22, 163, 74, 0.2);
+                    border-radius: 20px;
+                    white-space: nowrap;
+                ">All paid</span>
+            `;
+        } else if (isAdmin) {
+            actionHtml = `
+                <button
+                    onclick="event.stopPropagation(); markAllBlockPaid('${block}')"
+                    style="
+                        background: linear-gradient(135deg, #16A34A, #15803D);
+                        color: white;
+                        border: none;
+                        padding: 6px 16px;
+                        border-radius: 20px;
+                        font-size: 13px;
+                        font-weight: 800;
+                        cursor: pointer;
+                        letter-spacing: 0.5px;
+                        box-shadow: 0 2px 8px rgba(22,163,74,0.35);
+                        transition: opacity 0.2s;
+                        white-space: nowrap;
+                    "
+                    onmouseover="this.style.opacity='0.85'"
+                    onmouseout="this.style.opacity='1'"
+                >✅ Mark All Paid</button>
+            `;
+        } else {
+            actionHtml = `<span style="color: #9C6B45; font-size: 14px; font-weight: 700;">-</span>`;
+        }
+
         blockHeaderRow.innerHTML = `
-            <td colspan="6" style="padding: 0;">
-                <div class="block-header-text" onclick="toggleBlockCollapse('${block}')">
-                    <span class="block-toggle-icon ${isCollapsed ? 'collapsed' : ''}">▼</span>
+            <td colspan="5" style="padding: 0;">
+                <div class="block-header-text" onclick="toggleBlockCollapse('${block}')" style="display: flex; align-items: center; padding: 22px 28px; cursor: pointer;">
+                    <span class="block-toggle-icon ${isCollapsed ? 'collapsed' : ''}" style="margin-right: 12px;">▼</span>
                     <span>Block ${block}</span>
                     <span class="block-action-text" style="margin-left: auto; font-size: 12px; font-weight: normal;">Click to ${isCollapsed ? 'expand' : 'collapse'}</span>
-                    ${isAdmin ? `<button
-                        onclick="event.stopPropagation(); markAllBlockPaid('${block}')"
-                        style="
-                            margin-left: 18px;
-                            background: linear-gradient(135deg, #16A34A, #15803D);
-                            color: white;
-                            border: none;
-                            padding: 5px 16px;
-                            border-radius: 20px;
-                            font-size: 12px;
-                            font-weight: 800;
-                            cursor: pointer;
-                            letter-spacing: 0.5px;
-                            box-shadow: 0 2px 8px rgba(22,163,74,0.35);
-                            transition: opacity 0.2s;
-                        "
-                        onmouseover="this.style.opacity='0.85'"
-                        onmouseout="this.style.opacity='1'"
-                    >✅ Mark All Paid</button>` : ''}
+                </div>
+            </td>
+            <td class="text-center" style="padding: 0; vertical-align: middle; background: transparent;">
+                <div style="display: flex; justify-content: center; align-items: center; height: 100%; padding: 0 10px;">
+                    ${actionHtml}
                 </div>
             </td>
         `;
 
         // Add flat rows for this block
         const blockStartIdx = tbody.rows.length;
-
-        let blockConfig = getBlockConfig(soc, block);
-        let flatList = getFlatList(blockConfig);
 
         for (let flatNum of flatList) {
             const d = soc.apartmentData[block][flatNum] || {};
