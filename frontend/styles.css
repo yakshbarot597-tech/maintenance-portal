@@ -261,14 +261,14 @@ tbody td div.text-amber-700 {
             rgba(210, 180, 140, 0.12));
     border: 1px solid rgba(139, 94, 60, 0.12);
     color: #8B5E3C;
-    font-size: 28px !important;
+    font-size: 23px !important;
     padding: 22px 28px !important;
     font-weight: 900 !important;
     cursor: pointer;
 }
 
 .block-header-text {
-    font-size: 28px !important;
+    font-size: 23px !important;
 }
 
 #searchBox {
