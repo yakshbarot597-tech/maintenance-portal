@@ -339,6 +339,7 @@ const verifyAdmin = (req, res, next) => {
 
 app.use([
     '/api/flat',
+    '/api/block/mark-paid',
     '/api/expense',
     '/api/notice',
     '/api/rule',
@@ -2009,6 +2010,120 @@ app.post("/api/flat", async (req, res) => {
     } catch (err) {
         console.error(err);
         res.status(500).send(err);
+    }
+});
+
+// Mark all pending flats in a block as paid
+app.post("/api/block/mark-paid", async (req, res) => {
+    const { society_name, block, flats, period, property_type } = req.body;
+    try {
+        const [societies] = await db.promise().query("SELECT id FROM societies WHERE society_name=? AND property_type=?", [society_name, property_type || 'flat']);
+        if (societies.length === 0) return res.status(404).json({ success: false, error: "Society not found" });
+        const socId = societies[0].id;
+
+        let blockId = null;
+        if (block) {
+            const [blocks] = await db.promise().query(
+                "SELECT id FROM blocks WHERE society_id = ? AND block_name = ?",
+                [socId, block]
+            );
+            if (blocks.length > 0) {
+                blockId = blocks[0].id;
+            } else {
+                const [blockInsert] = await db.promise().query(
+                    "INSERT INTO blocks (society_id, block_name) VALUES (?, ?)",
+                    [socId, block]
+                );
+                blockId = blockInsert.insertId;
+            }
+        }
+
+        await db.promise().query("BEGIN");
+
+        const periodParts = period.split('-');
+        const billingMonth = monthsList.indexOf(periodParts[0]) + 1;
+        const billingYear = parseInt(periodParts[1]);
+        const dueDate = `${billingYear}-${String(billingMonth).padStart(2, '0')}-01`;
+
+        for (const flatData of flats) {
+            const { flat_number, owner, phone, isRental, rentalName, rentalPhone, amount, plan, paymentMethod, dateStr } = flatData;
+
+            const unitNumber = `${block}-${flat_number}`;
+            const occupancyStatus = (isRental === 'Yes' || owner) ? 'occupied' : 'vacant';
+            let unitId = null;
+            
+            const [units] = await db.promise().query(
+                "SELECT id, occupancy_status FROM units WHERE society_id=? AND unit_number=?",
+                [socId, unitNumber]
+            );
+            if (units.length > 0) {
+                unitId = units[0].id;
+                await db.promise().query(
+                    "UPDATE units SET occupancy_status=? WHERE id=?",
+                    [occupancyStatus, unitId]
+                );
+            } else {
+                const [unitInsert] = await db.promise().query(
+                    `INSERT INTO units (society_id, block_id, unit_number, occupancy_status) 
+                     VALUES (?, ?, ?, ?)`,
+                    [socId, blockId, unitNumber, occupancyStatus]
+                );
+                unitId = unitInsert.insertId;
+            }
+
+            const invoiceNumber = `INV-${unitId}-${billingYear}-${billingMonth}`;
+            const notes = serializeNotes(plan || 'monthly', owner || '');
+            let finalPaidDate = dateStr && dateStr !== '-' ? parsePaidDate(dateStr) : null;
+
+            const [existingInvoice] = await db.promise().query(
+                "SELECT id FROM maintenance_invoices WHERE unit_id=? AND billing_year=? AND billing_month=?",
+                [unitId, billingYear, billingMonth]
+            );
+
+            let invoiceId = null;
+            if (existingInvoice.length > 0) {
+                invoiceId = existingInvoice[0].id;
+                await db.promise().query(
+                    `UPDATE maintenance_invoices 
+                     SET status='Paid', amount=?, notes=?, paid_at=? 
+                     WHERE id=?`,
+                    [amount, notes, finalPaidDate, invoiceId]
+                );
+            } else {
+                const [invInsert] = await db.promise().query(
+                    `INSERT INTO maintenance_invoices (society_id, unit_id, invoice_number, billing_year, billing_month, amount, due_date, status, notes, paid_at)
+                     VALUES (?, ?, ?, ?, ?, ?, ?, 'Paid', ?, ?)`,
+                    [socId, unitId, invoiceNumber, billingYear, billingMonth, amount, dueDate, notes, finalPaidDate]
+                );
+                invoiceId = invInsert.insertId;
+            }
+
+            let method = 'cash';
+            if (paymentMethod) {
+                const mLower = paymentMethod.toLowerCase();
+                if (mLower.includes('upi')) method = 'upi';
+                else if (mLower.includes('bank') || mLower.includes('transfer')) method = 'bank_transfer';
+                else if (mLower.includes('card')) method = 'card';
+                else if (mLower.includes('cheque') || mLower.includes('check')) method = 'cheque';
+            }
+
+            await db.promise().query(
+                "DELETE FROM payment_transactions WHERE invoice_id = ?",
+                [invoiceId]
+            );
+            await db.promise().query(
+                `INSERT INTO payment_transactions (invoice_id, payment_method, amount, status, paid_at)
+                 VALUES (?, ?, ?, 'Success', ?)`,
+                [invoiceId, method, amount, finalPaidDate]
+            );
+        }
+
+        await db.promise().query("COMMIT");
+        res.json({ success: true });
+    } catch (err) {
+        await db.promise().query("ROLLBACK");
+        console.error("Mark block paid error:", err);
+        res.status(500).json({ success: false, error: err.message });
     }
 });
 

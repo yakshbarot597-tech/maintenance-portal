@@ -1340,6 +1340,25 @@ function displayFlats() {
                     <span class="block-toggle-icon ${isCollapsed ? 'collapsed' : ''}">▼</span>
                     <span>Block ${block}</span>
                     <span class="block-action-text" style="margin-left: auto; font-size: 12px; font-weight: normal;">Click to ${isCollapsed ? 'expand' : 'collapse'}</span>
+                    ${isAdmin ? `<button
+                        onclick="event.stopPropagation(); markAllBlockPaid('${block}')"
+                        style="
+                            margin-left: 18px;
+                            background: linear-gradient(135deg, #16A34A, #15803D);
+                            color: white;
+                            border: none;
+                            padding: 5px 16px;
+                            border-radius: 20px;
+                            font-size: 12px;
+                            font-weight: 800;
+                            cursor: pointer;
+                            letter-spacing: 0.5px;
+                            box-shadow: 0 2px 8px rgba(22,163,74,0.35);
+                            transition: opacity 0.2s;
+                        "
+                        onmouseover="this.style.opacity='0.85'"
+                        onmouseout="this.style.opacity='1'"
+                    >✅ Mark All Paid</button>` : ''}
                 </div>
             </td>
         `;
@@ -2906,6 +2925,69 @@ function markMaintenancePaid(block, flat) {
             }
         });
 }
+
+async function markAllBlockPaid(block) {
+    const period = `${document.getElementById('viewMonth').value}-${document.getElementById('viewYear').value}`;
+    const soc = vault[currentSociety];
+    if (!soc) return;
+
+    const now = new Date();
+    const paidDate = `${String(now.getDate()).padStart(2, '0')}-${String(now.getMonth() + 1).padStart(2, '0')}-${now.getFullYear()}`;
+
+    // Collect all pending occupied flats in this block
+    const blockConfig = getBlockConfig(soc, block);
+    const flatList = getFlatList(blockConfig);
+    const flatsToMark = [];
+
+    for (const flatNum of flatList) {
+        const flatDataObj = soc.apartmentData[block]?.[flatNum];
+        if (!flatDataObj) continue;
+        const mData = getEffectiveMonthData(flatDataObj, period);
+        const isOccupied = mData.owner && mData.owner.trim() !== '';
+        if (isOccupied && mData.status !== 'Paid') {
+            flatsToMark.push({
+                flat_number: flatNum,
+                owner: flatDataObj.owner,
+                phone: flatDataObj.phone,
+                isRental: flatDataObj.isRental,
+                rentalName: flatDataObj.rentalName,
+                rentalPhone: flatDataObj.rentalPhone,
+                amount: mData.amount,
+                plan: mData.plan,
+                paymentMethod: mData.paymentMethod || 'Cash',
+                dateStr: paidDate
+            });
+        }
+    }
+
+    if (flatsToMark.length === 0) {
+        showToast(`All flats in Block ${block} are already Paid! ✅`, 'success');
+        return;
+    }
+
+    const confirmed = confirm(`Mark ${flatsToMark.length} pending flat(s) in Block ${block} as Paid?`);
+    if (!confirmed) return;
+
+    try {
+        const res = await Api.markBlockPaid({
+            society_name: currentSociety,
+            block: block,
+            flats: flatsToMark,
+            period: period,
+            property_type: propertyType
+        });
+        const data = await res.json();
+        if (data.success) {
+            showToast(`Block ${block}: ${flatsToMark.length} flat(s) marked as Paid! ✅`, 'success');
+            loadDashboardData();
+        } else {
+            showToast(`Error: ${data.error || 'Failed to mark block as paid'}`, 'error');
+        }
+    } catch (err) {
+        showToast('Network error. Please try again.', 'error');
+    }
+}
+
 // NOTE: Duplicate mousemove listener removed here.
 // The combined handler below (line ~2934) handles both rowTooltip and expenseTooltip.
 function updateYearlyAmount() {
@@ -4485,6 +4567,7 @@ Object.assign(window, {
     handleConfirm,
     handlePeriodChange,
     markMaintenancePaid,
+    markAllBlockPaid,
     openComplaintPage,
     openWhatsAppBlast,
     rfGoBack,

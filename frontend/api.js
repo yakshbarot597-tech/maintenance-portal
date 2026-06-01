@@ -58,6 +58,7 @@ const Api = {
     getSocieties: () => fetch(`${API_BASE}/societies?_t=${Date.now()}`, { headers: {'x-api-key': API_KEY, 'Cache-Control': 'no-cache'} }),
     getSociety: (name, type) => fetchWithAuth(`${API_BASE}/society/${encodeURIComponent(name)}/${encodeURIComponent(type)}`),
     saveFlat: (data) => fetchWithAuth(`${API_BASE}/flat`, { method: 'POST', body: JSON.stringify(data) }),
+    markBlockPaid: (data) => fetchWithAuth(`${API_BASE}/block/mark-paid`, { method: 'POST', body: JSON.stringify(data) }),
     saveExpense: (data) => fetchWithAuth(`${API_BASE}/expense`, { method: 'POST', body: JSON.stringify(data) }),
     deleteExpense: (id) => fetchWithAuth(`${API_BASE}/expense/${id}`, { method: 'DELETE' }),
     saveNotice: (data) => fetchWithAuth(`${API_BASE}/notice`, { method: 'POST', body: JSON.stringify(data) }),
