@@ -45,6 +45,7 @@ async function fetchWithAuth(url, options = {}) {
         localStorage.removeItem('propertyType');
         localStorage.removeItem('residentFlat');
         window.location.reload();
+        return new Promise(() => {}); // Halt execution of subsequent promises
     }
     return response;
 }
