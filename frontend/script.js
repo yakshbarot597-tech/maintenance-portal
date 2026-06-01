@@ -1396,7 +1396,6 @@ function displayFlats() {
                 <div class="block-header-text" onclick="toggleBlockCollapse('${block}')" style="display: flex; align-items: center; padding: 22px 28px; cursor: pointer;">
                     <span class="block-toggle-icon ${isCollapsed ? 'collapsed' : ''}" style="margin-right: 12px;">▼</span>
                     <span>Block ${block}</span>
-                    <span class="block-action-text" style="margin-left: auto; font-size: 12px; font-weight: normal;">Click to ${isCollapsed ? 'expand' : 'collapse'}</span>
                 </div>
             </td>
             <td class="text-center" style="padding: 0; vertical-align: middle; background: transparent;">
@@ -1538,9 +1537,6 @@ function toggleBlockCollapse(block) {
 
     const icon = document.querySelector(`#block-header-${block} .block-toggle-icon`);
     if (icon) icon.classList.toggle('collapsed', isCollapsed);
-
-    const label = document.querySelector(`#block-header-${block} .block-action-text`);
-    if (label) label.innerText = `Click to ${isCollapsed ? 'expand' : 'collapse'}`;
 }
 
 // --- COMMON UTILS ---
