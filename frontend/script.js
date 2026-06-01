@@ -64,6 +64,23 @@ function translateTerm(text) {
     return res;
 }
 
+function getDeterministicReceiptNumber(society, block, flat, period, paidDate) {
+    const str = `${society.toUpperCase()}-${block}-${flat}-${period}-${paidDate}`;
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+        hash = (hash * 31 + str.charCodeAt(i)) % 9000;
+    }
+    const suffix = 1000 + Math.abs(hash);
+    
+    // Period might be "January-2026"
+    const parts = period.split('-');
+    const year = parts[1] || new Date().getFullYear();
+    const socPrefix = society.substring(0, 3).toUpperCase();
+    
+    return `RCPT-${socPrefix}-${year}-${block}${flat}-${suffix}`;
+}
+
+
 function updatePageTerminology() {
     const isBunglow = propertyType === 'bungalow';
     
@@ -2742,9 +2759,6 @@ function sendNotice(p, s, n, a, d, block, flat) {
         }
     }
 
-    if (s === 'Paid') {
-        adminSendReceiptPDF(block, flat, period);
-    }
     window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
 }
 function exportToExcel() {
@@ -4318,7 +4332,7 @@ async function downloadReceipt(period) {
         period: (mData.plan === 'yearly' && mData.startPeriod) ? mData.startPeriod : period,
         amount: Number(mData.amount || 0),
         bank: soc.bank || {},
-        receiptId: `RCPT-${currentSociety.substring(0, 3).toUpperCase()}-${new Date().getFullYear()}-${loggedInFlat.block}${loggedInFlat.num}-${Math.floor(1000 + Math.random() * 9000)}`,
+        receiptId: getDeterministicReceiptNumber(currentSociety, loggedInFlat.block, loggedInFlat.num, (mData.plan === 'yearly' && mData.startPeriod) ? mData.startPeriod : period, mData.paidDate || '-'),
         plan: mData.plan || 'monthly'
     };
 
@@ -4593,7 +4607,7 @@ async function adminSendReceiptPDF(block, flat, period) {
         period: (mData.plan === 'yearly' && mData.startPeriod) ? mData.startPeriod : period,
         amount: Number(mData.amount || 0),
         bank: soc.bank || {},
-        receiptId: `RCPT-${currentSociety.substring(0, 3).toUpperCase()}-${new Date().getFullYear()}-${block}${flat}-${Math.floor(1000 + Math.random() * 9000)}`,
+        receiptId: getDeterministicReceiptNumber(currentSociety, block, flat, (mData.plan === 'yearly' && mData.startPeriod) ? mData.startPeriod : period, mData.paidDate || '-'),
         plan: mData.plan || 'monthly'
     };
 
