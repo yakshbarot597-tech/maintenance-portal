@@ -3034,11 +3034,11 @@ function renderNotices() {
             background:rgba(255,255,255,0.5);
         ">
             <span style="
-                width:71px; height:71px;
+                width:57px; height:57px;
                 background:#8B5E3C;
-                border-radius:18px;
+                border-radius:14px;
                 display:flex; align-items:center; justify-content:center;
-                font-size:54px !important;
+                font-size:40px !important;
                 margin:0 auto 16px auto;
                 box-shadow:0 4px 14px rgba(139,94,60,0.35);
             ">🔔</span>
@@ -3521,11 +3521,11 @@ function renderComplaints() {
             background:rgba(255,255,255,0.5);
         ">
             <span style="
-                width:71px; height:71px;
+                width:57px; height:57px;
                 background:#8B5E3C;
-                border-radius:18px;
+                border-radius:14px;
                 display:flex; align-items:center; justify-content:center;
-                font-size:54px !important;
+                font-size:40px !important;
                 margin:0 auto 16px auto;
                 box-shadow:0 4px 14px rgba(139,94,60,0.35);
             ">💬</span>
