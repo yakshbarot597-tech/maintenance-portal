@@ -3171,25 +3171,27 @@ app.post("/api/update-monthly-maintenance", async (req, res) => {
             const newMonthly = parseFloat(monthly_maintenance) || 0;
             const newYearly = newMonthly * 11;
 
-            // 3a. Update all Pending monthly invoices for this society
+            // 3a. Update all Pending monthly invoices for this society (PostgreSQL syntax)
             await db.promise().query(
-                `UPDATE maintenance_invoices mi
-                 JOIN units u ON mi.unit_id = u.id
-                 SET mi.amount = ?
-                 WHERE u.society_id = ?
-                   AND mi.status = 'Pending'
-                   AND (mi.notes IS NULL OR mi.notes NOT LIKE '%"plan":"yearly"%')`,
+                `UPDATE maintenance_invoices
+                 SET amount = ?
+                 FROM units
+                 WHERE maintenance_invoices.unit_id = units.id
+                   AND units.society_id = ?
+                   AND maintenance_invoices.status = 'Pending'
+                   AND (maintenance_invoices.notes IS NULL OR maintenance_invoices.notes NOT LIKE '%"plan":"yearly"%')`,
                 [newMonthly, socId]
             );
 
-            // 3b. Update all Pending yearly invoices for this society
+            // 3b. Update all Pending yearly invoices for this society (PostgreSQL syntax)
             await db.promise().query(
-                `UPDATE maintenance_invoices mi
-                 JOIN units u ON mi.unit_id = u.id
-                 SET mi.amount = ?
-                 WHERE u.society_id = ?
-                   AND mi.status = 'Pending'
-                   AND mi.notes LIKE '%"plan":"yearly"%'`,
+                `UPDATE maintenance_invoices
+                 SET amount = ?
+                 FROM units
+                 WHERE maintenance_invoices.unit_id = units.id
+                   AND units.society_id = ?
+                   AND maintenance_invoices.status = 'Pending'
+                   AND maintenance_invoices.notes LIKE '%"plan":"yearly"%'`,
                 [newYearly, socId]
             );
         }
