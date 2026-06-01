@@ -1037,24 +1037,24 @@ select option {
 }
 
 #bankModal input {
-    font-size: 26px !important;
+    font-size: 18px !important;
     font-weight: 800 !important;
-    height: 70px !important;
-    padding: 16px 20px !important;
+    height: 48px !important;
+    padding: 10px 16px !important;
 }
 
 #bankModal input::placeholder {
-    font-size: 24px !important;
+    font-size: 16px !important;
     font-weight: 700 !important;
 }
 
 #bankModal .text-sm {
-    font-size: 24px !important;
+    font-size: 16px !important;
     font-weight: 800 !important;
 }
 
 #bankModal .font-mono {
-    font-size: 22px !important;
+    font-size: 14px !important;
     font-weight: 900 !important;
 }
 
