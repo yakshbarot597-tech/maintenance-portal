@@ -3554,11 +3554,11 @@ function renderComplaints() {
     <div style="display:flex; justify-content:space-between; gap:16px; align-items:flex-start;">
         <div style="flex:1; min-width:0;">
             <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:6px;">
-                <p style="font-size:15px; font-weight:800; color:#1a1a1a; margin:0;">${c.title}</p>
+                <p style="font-size:21px; font-weight:800; color:#1a1a1a; margin:0;">${c.title}</p>
                 <span style="
                     background:${statusBg};
                     color:${statusColor};
-                    font-size:11px;
+                    font-size:17px;
                     font-weight:800;
                     padding:3px 10px;
                     border-radius:20px;
@@ -3566,13 +3566,13 @@ function renderComplaints() {
                 ">${statusLabel}</span>
             </div>
             <div style="display:flex; align-items:center; gap:6px; margin-bottom:6px;">
-                <span style="font-size:12px;">🏢</span>
-                <span style="font-size:12px; font-weight:700; color:#8B5E3C;">${translateTerm('Flat')}: ${c.flat}</span>
+                <span style="font-size:18px;">🏢</span>
+                <span style="font-size:18px; font-weight:700; color:#8B5E3C;">${translateTerm('Flat')}: ${c.flat}</span>
             </div>
-            <p style="font-size:12px; font-weight:600; color:#7A6855; margin:0 0 8px 0; line-height:1.6;">${c.details}</p>
+            <p style="font-size:18px; font-weight:600; color:#7A6855; margin:0 0 8px 0; line-height:1.6;">${c.details}</p>
             <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
-                <span style="font-size:11px; font-weight:700; color:#B0998A;">📅 ${c.date}</span>
-                ${c.updated_date ? `<span style="font-size:11px; font-weight:700; color:#D97706;">✏️ Updated: ${c.updated_date}</span>` : ''}
+                <span style="font-size:17px; font-weight:700; color:#B0998A;">📅 ${c.date}</span>
+                ${c.updated_date ? `<span style="font-size:17px; font-weight:700; color:#D97706;">✏️ Updated: ${c.updated_date}</span>` : ''}
             </div>
         </div>
         ${ownerAccess ? `
