@@ -709,38 +709,38 @@ select option {
 
 #bankModal input[type="text"] {
     width: 100% !important;
-    height: 48px !important;
-    font-size: 18px !important;
+    height: 38px !important;
+    font-size: 14px !important;
     font-weight: 700 !important;
-    padding: 10px 16px !important;
-    border-radius: 12px !important;
-    margin-bottom: 10px !important;
+    padding: 8px 12px !important;
+    border-radius: 8px !important;
+    margin-bottom: 6px !important;
 }
 
 #bankModal input[type="text"]::placeholder {
-    font-size: 16px !important;
+    font-size: 13px !important;
     font-weight: 700 !important;
 }
 
 #bankModal input[type="file"] {
-    font-size: 16px !important;
+    font-size: 13px !important;
     font-weight: 700 !important;
-    margin-top: 8px !important;
-    margin-bottom: 14px !important;
+    margin-top: 4px !important;
+    margin-bottom: 8px !important;
 }
 
 #bankModal button:first-of-type {
     width: 100% !important;
-    height: 48px !important;
-    font-size: 22px !important;
+    height: 38px !important;
+    font-size: 14px !important;
     font-weight: 900 !important;
-    border-radius: 12px !important;
+    border-radius: 8px !important;
 }
 
 #bankModal button:last-of-type {
-    font-size: 18px !important;
+    font-size: 14px !important;
     font-weight: 800 !important;
-    margin-top: 14px !important;
+    margin-top: 8px !important;
 }
 
 .readonly-dashboard .monthly-dues-card,
@@ -1037,24 +1037,24 @@ select option {
 }
 
 #bankModal input {
-    font-size: 18px !important;
+    font-size: 14px !important;
     font-weight: 800 !important;
-    height: 48px !important;
-    padding: 10px 16px !important;
+    height: 38px !important;
+    padding: 8px 12px !important;
 }
 
 #bankModal input::placeholder {
-    font-size: 16px !important;
+    font-size: 13px !important;
     font-weight: 700 !important;
 }
 
 #bankModal .text-sm {
-    font-size: 16px !important;
+    font-size: 13px !important;
     font-weight: 800 !important;
 }
 
 #bankModal .font-mono {
-    font-size: 14px !important;
+    font-size: 12px !important;
     font-weight: 900 !important;
 }
 
