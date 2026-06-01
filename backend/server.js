@@ -367,11 +367,59 @@ function formatDateDDMMYYYY(dateVal) {
     return `${day}-${month}-${year}`;
 }
 
+function formatDateTimeDDMMYYYY(dateVal) {
+    if (!dateVal) return '';
+    const d = new Date(dateVal);
+    if (isNaN(d.getTime())) return '';
+    const day = String(d.getDate()).padStart(2, '0');
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const year = d.getFullYear();
+    let hours = d.getHours();
+    const minutes = String(d.getMinutes()).padStart(2, '0');
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    hours = hours % 12;
+    hours = hours ? hours : 12; // the hour '0' should be '12'
+    const strHours = String(hours).padStart(2, '0');
+    return `${day}-${month}-${year} ${strHours}:${minutes} ${ampm}`;
+}
+
+function combineDateAndTime(dateVal, timestampVal) {
+    if (!dateVal) return timestampVal;
+    if (!timestampVal) return dateVal;
+    const d = new Date(dateVal);
+    const ts = new Date(timestampVal);
+    if (isNaN(d.getTime())) return timestampVal;
+    if (isNaN(ts.getTime())) return dateVal;
+    d.setHours(ts.getHours(), ts.getMinutes(), ts.getSeconds(), ts.getMilliseconds());
+    return d;
+}
+
 function parseDDMMYYYY(dateStr) {
     if (!dateStr) return new Date();
-    const parts = dateStr.split('-');
+    // Split by space first to isolate the date part from any time part
+    const datePart = dateStr.split(' ')[0];
+    const parts = datePart.split('-');
     if (parts.length === 3) {
-        return new Date(parts[2], parts[1] - 1, parts[0]);
+        const day = parseInt(parts[0], 10);
+        const month = parseInt(parts[1], 10) - 1;
+        const year = parseInt(parts[2], 10);
+        
+        // Check if there is a time part
+        const timeParts = dateStr.split(' ');
+        if (timeParts.length >= 2) {
+            const timeStr = timeParts[1];
+            const ampm = timeParts[2]; // AM or PM
+            const tParts = timeStr.split(':');
+            if (tParts.length >= 2) {
+                let hours = parseInt(tParts[0], 10);
+                const minutes = parseInt(tParts[1], 10);
+                const seconds = tParts[2] ? parseInt(tParts[2], 10) : 0;
+                if (ampm === 'PM' && hours < 12) hours += 12;
+                if (ampm === 'AM' && hours === 12) hours = 0;
+                return new Date(year, month, day, hours, minutes, seconds);
+            }
+        }
+        return new Date(year, month, day);
     }
     return new Date();
 }
@@ -1360,8 +1408,8 @@ app.get("/api/society/:name/:type", async (req, res) => {
                 society_id: n.society_id,
                 title: n.title,
                 details: n.details,
-                date: formatDateDDMMYYYY(n.publish_date || n.created_at),
-                updated_date: isEdited ? formatDateDDMMYYYY(n.updated_at) : null
+                date: formatDateTimeDDMMYYYY(n.publish_date || n.created_at),
+                updated_date: isEdited ? formatDateTimeDDMMYYYY(n.updated_at) : null
             };
         });
 
@@ -1378,8 +1426,8 @@ app.get("/api/society/:name/:type", async (req, res) => {
                 details: e.notes || '',
                 period: period,
                 year: d.getFullYear(),
-                date: formatDateDDMMYYYY(e.expense_date || e.created_at),
-                updated_date: isEdited ? formatDateDDMMYYYY(e.updated_at) : null
+                date: formatDateTimeDDMMYYYY(combineDateAndTime(e.expense_date, e.created_at)),
+                updated_date: isEdited ? formatDateTimeDDMMYYYY(e.updated_at) : null
             };
         });
 
@@ -1414,8 +1462,8 @@ app.get("/api/society/:name/:type", async (req, res) => {
                 society_id: r.society_id,
                 title: r.title.replace('_rule_', ''),
                 details: r.details,
-                date: formatDateDDMMYYYY(r.publish_date || r.created_at),
-                updated_date: isEdited ? formatDateDDMMYYYY(r.updated_at) : null
+                date: formatDateTimeDDMMYYYY(r.publish_date || r.created_at),
+                updated_date: isEdited ? formatDateTimeDDMMYYYY(r.updated_at) : null
             };
         });
 
@@ -1439,8 +1487,8 @@ app.get("/api/society/:name/:type", async (req, res) => {
                 title: c.title,
                 flat: c.unit_flat || c.raw_flat_number || 'ADMIN',
                 details: c.details,
-                date: formatDateDDMMYYYY(c.date),
-                updated_date: isEdited ? formatDateDDMMYYYY(c.updated_date) : null,
+                date: formatDateTimeDDMMYYYY(c.date),
+                updated_date: isEdited ? formatDateTimeDDMMYYYY(c.updated_date) : null,
                 created_by: c.created_by
             };
         });
@@ -2111,8 +2159,8 @@ app.get("/api/expense", async (req, res) => {
                 details: e.notes || '',
                 period: period,
                 year: d.getFullYear(),
-                date: formatDateDDMMYYYY(e.expense_date || e.created_at),
-                updated_date: isEdited ? formatDateDDMMYYYY(e.updated_at) : null
+                date: formatDateTimeDDMMYYYY(combineDateAndTime(e.expense_date, e.created_at)),
+                updated_date: isEdited ? formatDateTimeDDMMYYYY(e.updated_at) : null
             };
         });
 
@@ -2182,12 +2230,14 @@ app.get("/api/notice", async (req, res) => {
             [socId]
         );
         const notices = noticeRows.map(n => {
+            const isEdited = n.updated_at && n.created_at && (new Date(n.updated_at).getTime() - new Date(n.created_at).getTime() > 2000);
             return {
                 id: n.id,
                 society_id: n.society_id,
                 title: n.title,
                 details: n.details,
-                date: formatDateDDMMYYYY(n.publish_date || n.created_at)
+                date: formatDateTimeDDMMYYYY(n.publish_date || n.created_at),
+                updated_date: isEdited ? formatDateTimeDDMMYYYY(n.updated_at) : null
             };
         });
 
@@ -2258,12 +2308,14 @@ app.get("/api/rule", async (req, res) => {
         );
         const rules = ruleRows.map(r => {
             const title = r.title.startsWith('_rule_') ? r.title.substring(6) : r.title;
+            const isEdited = r.updated_at && r.created_at && (new Date(r.updated_at).getTime() - new Date(r.created_at).getTime() > 2000);
             return {
                 id: r.id,
                 society_id: r.society_id,
                 title: title,
                 details: r.details,
-                date: formatDateDDMMYYYY(r.publish_date || r.created_at)
+                date: formatDateTimeDDMMYYYY(r.publish_date || r.created_at),
+                updated_date: isEdited ? formatDateTimeDDMMYYYY(r.updated_at) : null
             };
         });
 
@@ -2339,13 +2391,15 @@ app.get("/api/complaint", async (req, res) => {
             [socId]
         );
         const complaints = complaintRows.map(c => {
+            const isEdited = c.updated_at && c.created_at && (new Date(c.updated_at).getTime() - new Date(c.created_at).getTime() > 2000);
             return {
                 id: c.id,
                 society_id: c.society_id,
                 title: c.title,
                 flat: c.unit_number || c.raw_flat_number || '',
                 details: c.details,
-                date: formatDateDDMMYYYY(c.created_at),
+                date: formatDateTimeDDMMYYYY(c.created_at),
+                updated_date: isEdited ? formatDateTimeDDMMYYYY(c.updated_at) : null,
                 createdBy: c.username || ''
             };
         });
@@ -3089,8 +3143,8 @@ app.get("/api/society-data/:name/:type", async (req, res) => {
                 society_id: n.society_id,
                 title: n.title,
                 details: n.details,
-                date: formatDateDDMMYYYY(n.publish_date || n.created_at),
-                updated_date: isEdited ? formatDateDDMMYYYY(n.updated_at) : null
+                date: formatDateTimeDDMMYYYY(n.publish_date || n.created_at),
+                updated_date: isEdited ? formatDateTimeDDMMYYYY(n.updated_at) : null
             };
         });
 
@@ -3106,8 +3160,8 @@ app.get("/api/society-data/:name/:type", async (req, res) => {
                 society_id: r.society_id,
                 title: r.title.replace('_rule_', ''),
                 details: r.details,
-                date: formatDateDDMMYYYY(r.publish_date || r.created_at),
-                updated_date: isEdited ? formatDateDDMMYYYY(r.updated_at) : null
+                date: formatDateTimeDDMMYYYY(r.publish_date || r.created_at),
+                updated_date: isEdited ? formatDateTimeDDMMYYYY(r.updated_at) : null
             };
         });
 
@@ -3133,8 +3187,8 @@ app.get("/api/society-data/:name/:type", async (req, res) => {
                 title: c.title,
                 flat: c.unit_flat || c.raw_flat_number || 'ADMIN',
                 details: c.details,
-                date: formatDateDDMMYYYY(c.date),
-                updated_date: isEdited ? formatDateDDMMYYYY(c.updated_date) : null,
+                date: formatDateTimeDDMMYYYY(c.date),
+                updated_date: isEdited ? formatDateTimeDDMMYYYY(c.updated_date) : null,
                 created_by: c.created_by
             };
         });
@@ -3156,8 +3210,8 @@ app.get("/api/society-data/:name/:type", async (req, res) => {
                 details: e.notes || '',
                 period: period,
                 year: d.getFullYear(),
-                date: formatDateDDMMYYYY(e.expense_date || e.created_at),
-                updated_date: isEdited ? formatDateDDMMYYYY(e.updated_at) : null
+                date: formatDateTimeDDMMYYYY(combineDateAndTime(e.expense_date, e.created_at)),
+                updated_date: isEdited ? formatDateTimeDDMMYYYY(e.updated_at) : null
             };
         });
 

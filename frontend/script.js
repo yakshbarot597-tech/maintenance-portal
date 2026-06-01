@@ -98,6 +98,20 @@ function updatePageTerminology() {
 }
 
 
+function getCurrentDateTimeString() {
+    const now = new Date();
+    const day = String(now.getDate()).padStart(2, '0');
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const year = now.getFullYear();
+    let hours = now.getHours();
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    hours = hours % 12;
+    hours = hours ? hours : 12; // the hour '0' should be '12'
+    const strHours = String(hours).padStart(2, '0');
+    return `${day}-${month}-${year} ${strHours}:${minutes} ${ampm}`;
+}
+
 // ================================================================
 //  GLOBAL TOAST NOTIFICATION — replaces all alert() calls
 // ================================================================
@@ -224,8 +238,7 @@ function saveExpense() {
     const year = document.getElementById("viewYear").value;
     const period = `${month}-${year}`;
 
-    const now = new Date();
-    const date = `${String(now.getDate()).padStart(2, '0')}-${String(now.getMonth() + 1).padStart(2, '0')}-${now.getFullYear()}`;
+    const date = getCurrentDateTimeString();
 
     const expenseData = {
         id: editingExpenseIndex, // This will be the DB ID if editing
@@ -306,7 +319,7 @@ function renderExpenses() {
                         white-space:nowrap;
                     ">₹${Number(e.amount).toLocaleString('en-IN')}</span>
                 </div>
-                ${e.details ? `<p style="font-size:18px; font-weight:600; color:#7A6855; margin:0 0 8px 0; line-height:1.5;">${e.details}</p>` : ''}
+                ${e.details ? `<p style="font-size:22px; font-weight:600; color:#7A6855; margin:0 0 8px 0; line-height:1.5;">${e.details}</p>` : ''}
                 <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
                     <span style="font-size:11px; font-weight:700; color:#B0998A;">📅 ${e.date}</span>
                     ${e.updated_date ? `<span style="font-size:11px; font-weight:700; color:#D97706;">✏️ Updated: ${e.updated_date}</span>` : ''}
@@ -2930,8 +2943,7 @@ function addNotice() {
     if (!title) return showToast("Please enter notice title.");
     if (!details) return showToast("Please enter notice details.");
 
-    const now = new Date();
-    const date = `${String(now.getDate()).padStart(2, '0')}-${String(now.getMonth() + 1).padStart(2, '0')}-${now.getFullYear()}`;
+    const date = getCurrentDateTimeString();
 
     const noticeData = {
         id: editingNoticeIndex,
@@ -2972,7 +2984,7 @@ function renderNotices() {
             ? recent.map(n => `
         <div style="background:white;border-radius:14px;padding:16px 18px;margin-bottom:10px;box-shadow:0 1px 4px rgba(0,0,0,0.05);">
             <p style="font-size:20px;font-weight:800;color:#1a1a1a;margin:0 0 4px 0;">${n.title}</p>
-            <p style="font-size:18px;font-weight:600;color:#7A6855;margin:0 0 6px 0;line-height:1.5;">${n.details}</p>
+            <p style="font-size:22px;font-weight:600;color:#7A6855;margin:0 0 6px 0;line-height:1.5;">${n.details}</p>
             <span style="font-size:11px;font-weight:700;color:#B0998A;">📅 ${n.date}</span>
         </div>`).join("")
             : `<p style="font-size:12px;font-weight:800;color:#7A6855;">No recent notices.</p>`;
@@ -2995,7 +3007,7 @@ function renderNotices() {
                     <span style="font-size:16px;">📋</span>
                     <p style="font-size:15px; font-weight:800; color:#1a1a1a; margin:0;">${n.title}</p>
                 </div>
-                <p style="font-size:12px; font-weight:600; color:#7A6855; margin:0 0 8px 0; line-height:1.6;">${n.details}</p>
+                <p style="font-size:16px; font-weight:600; color:#7A6855; margin:0 0 8px 0; line-height:1.6;">${n.details}</p>
                 <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
                     <span style="font-size:11px; font-weight:700; color:#B0998A;">📅 ${n.date}</span>
                     ${n.updated_date ? `<span style="font-size:11px; font-weight:700; color:#D97706;">✏️ Updated: ${n.updated_date}</span>` : ''}
@@ -3108,8 +3120,7 @@ function saveRule() {
     if (!title) return showToast("Please enter rule title.");
     if (!details) return showToast("Please enter rule details.");
 
-    const now = new Date();
-    const date = `${String(now.getDate()).padStart(2, '0')}-${String(now.getMonth() + 1).padStart(2, '0')}-${now.getFullYear()}`;
+    const date = getCurrentDateTimeString();
 
     const ruleData = {
         id: editingRuleIndex, // This will be the DB ID if editing
@@ -3187,7 +3198,7 @@ function renderRules() {
                 ${index + 1}. ${r.title}
             </h3>
 
-            <p style="font-size:24px;color:#7A6855;margin-top:10px;line-height:1.7;">
+            <p style="font-size:28px;color:#7A6855;margin-top:10px;line-height:1.7;">
                 ${r.details}
             </p>
 
@@ -3465,8 +3476,7 @@ function saveComplaint() {
     const soc = vault[currentSociety];
     if (!soc.complaints) soc.complaints = [];
 
-    const now = new Date();
-    const date = `${String(now.getDate()).padStart(2, '0')}-${String(now.getMonth() + 1).padStart(2, '0')}-${now.getFullYear()}`;
+    const date = getCurrentDateTimeString();
 
     const complaintData = {
         id: editingComplaintIndex,
@@ -3571,7 +3581,7 @@ function renderComplaints() {
                 <span style="font-size:18px;">🏢</span>
                 <span style="font-size:18px; font-weight:700; color:#8B5E3C;">${translateTerm('Flat')}: ${c.flat}</span>
             </div>
-            <p style="font-size:18px; font-weight:600; color:#7A6855; margin:0 0 8px 0; line-height:1.6;">${c.details}</p>
+            <p style="font-size:22px; font-weight:600; color:#7A6855; margin:0 0 8px 0; line-height:1.6;">${c.details}</p>
             <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
                 <span style="font-size:11px; font-weight:700; color:#B0998A;">📅 ${c.date}</span>
                 ${c.updated_date ? `<span style="font-size:11px; font-weight:700; color:#D97706;">✏️ Updated: ${c.updated_date}</span>` : ''}
