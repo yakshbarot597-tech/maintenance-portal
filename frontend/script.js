@@ -3003,7 +3003,7 @@ async function markAllBlockPaid(block) {
 
     showConfirm(
         `Mark ${flatsToMark.length} pending flat(s) in Block ${block} as Paid?`,
-        '✅ Mark All Paid',
+        'Yes, Paid',
         false,
         async () => {
             try {
