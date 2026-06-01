@@ -1531,7 +1531,7 @@ app.get("/api/society/:name/:type", async (req, res) => {
         });
 
         const [complaintsRows] = await db.promise().query(
-            `SELECT c.id, c.society_id, c.title, c.details,
+            `SELECT c.id, c.society_id, c.title, c.details, c.status,
                     c.raw_flat_number,
                     u.unit_number AS unit_flat,
                     c.created_at AS date, c.updated_at AS updated_date,
@@ -1552,7 +1552,8 @@ app.get("/api/society/:name/:type", async (req, res) => {
                 details: c.details,
                 date: formatDateTimeDDMMYYYY(c.date),
                 updated_date: isEdited ? formatDateTimeDDMMYYYY(c.updated_date) : null,
-                created_by: c.created_by
+                created_by: c.created_by,
+                status: c.status ? c.status.toLowerCase().replace(' ', '-') : 'open'
             };
         });
  
@@ -2583,7 +2584,8 @@ app.get("/api/complaint", async (req, res) => {
                 details: c.details,
                 date: formatDateTimeDDMMYYYY(c.created_at),
                 updated_date: isEdited ? formatDateTimeDDMMYYYY(c.updated_at) : null,
-                createdBy: c.username || ''
+                createdBy: c.username || '',
+                status: c.status ? c.status.toLowerCase().replace(' ', '-') : 'open'
             };
         });
 
@@ -2647,10 +2649,18 @@ app.post("/api/complaint", async (req, res) => {
 app.post("/api/complaint/:id/status", async (req, res) => {
     const complaintId = parseInt(req.params.id, 10);
     const { status } = req.body;
+    let dbStatus = 'Resolved';
+    if (status) {
+        const sLower = status.toLowerCase();
+        if (sLower === 'resolved' || sLower === 'fixed') dbStatus = 'Resolved';
+        else if (sLower === 'in-progress') dbStatus = 'In Progress';
+        else if (sLower === 'open') dbStatus = 'Open';
+        else if (sLower === 'closed') dbStatus = 'Closed';
+    }
     try {
         await db.promise().query(
             "UPDATE complaints SET status=?, updated_at=NOW() WHERE id=?",
-            [status || 'resolved', complaintId]
+            [dbStatus, complaintId]
         );
         res.json({ success: true });
     } catch (err) {
