@@ -44,7 +44,6 @@ async function fetchWithAuth(url, options = {}) {
         localStorage.removeItem('isAdmin');
         localStorage.removeItem('propertyType');
         localStorage.removeItem('residentFlat');
-        alert('Your session has expired. Please log in again.');
         window.location.reload();
     }
     return response;
