@@ -2015,7 +2015,7 @@ app.post("/api/flat", async (req, res) => {
 
 // Mark all pending flats in a block as paid
 app.post("/api/block/mark-paid", async (req, res) => {
-    const { society_name, block, flats, period, property_type } = req.body;
+    const { society_name, block, flats, period, property_type, status } = req.body;
     try {
         const [societies] = await db.promise().query("SELECT id FROM societies WHERE society_name=? AND property_type=?", [society_name, property_type || 'flat']);
         if (societies.length === 0) return res.status(404).json({ success: false, error: "Society not found" });
@@ -2045,6 +2045,9 @@ app.post("/api/block/mark-paid", async (req, res) => {
         const billingYear = parseInt(periodParts[1]);
         const dueDate = `${billingYear}-${String(billingMonth).padStart(2, '0')}-01`;
 
+        const targetStatus = status || 'Paid';
+        const isPaid = targetStatus === 'Paid';
+
         for (const flatData of flats) {
             const { flat_number, owner, phone, isRental, rentalName, rentalPhone, amount, plan, paymentMethod, dateStr } = flatData;
 
@@ -2073,7 +2076,7 @@ app.post("/api/block/mark-paid", async (req, res) => {
 
             const invoiceNumber = `INV-${unitId}-${billingYear}-${billingMonth}`;
             const notes = serializeNotes(plan || 'monthly', owner || '');
-            let finalPaidDate = dateStr && dateStr !== '-' ? parsePaidDate(dateStr) : null;
+            let finalPaidDate = isPaid && dateStr && dateStr !== '-' ? parsePaidDate(dateStr) : null;
 
             const [existingInvoice] = await db.promise().query(
                 "SELECT id FROM maintenance_invoices WHERE unit_id=? AND billing_year=? AND billing_month=?",
@@ -2085,37 +2088,40 @@ app.post("/api/block/mark-paid", async (req, res) => {
                 invoiceId = existingInvoice[0].id;
                 await db.promise().query(
                     `UPDATE maintenance_invoices 
-                     SET status='Paid', amount=?, notes=?, paid_at=? 
+                     SET status=?, amount=?, notes=?, paid_at=? 
                      WHERE id=?`,
-                    [amount, notes, finalPaidDate, invoiceId]
+                    [targetStatus, amount, notes, finalPaidDate, invoiceId]
                 );
             } else {
                 const [invInsert] = await db.promise().query(
                     `INSERT INTO maintenance_invoices (society_id, unit_id, invoice_number, billing_year, billing_month, amount, due_date, status, notes, paid_at)
-                     VALUES (?, ?, ?, ?, ?, ?, ?, 'Paid', ?, ?)`,
-                    [socId, unitId, invoiceNumber, billingYear, billingMonth, amount, dueDate, notes, finalPaidDate]
+                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+                    [socId, unitId, invoiceNumber, billingYear, billingMonth, amount, dueDate, targetStatus, notes, finalPaidDate]
                 );
                 invoiceId = invInsert.insertId;
-            }
-
-            let method = 'cash';
-            if (paymentMethod) {
-                const mLower = paymentMethod.toLowerCase();
-                if (mLower.includes('upi')) method = 'upi';
-                else if (mLower.includes('bank') || mLower.includes('transfer')) method = 'bank_transfer';
-                else if (mLower.includes('card')) method = 'card';
-                else if (mLower.includes('cheque') || mLower.includes('check')) method = 'cheque';
             }
 
             await db.promise().query(
                 "DELETE FROM payment_transactions WHERE invoice_id = ?",
                 [invoiceId]
             );
-            await db.promise().query(
-                `INSERT INTO payment_transactions (invoice_id, payment_method, amount, status, paid_at)
-                 VALUES (?, ?, ?, 'Success', ?)`,
-                [invoiceId, method, amount, finalPaidDate]
-            );
+
+            if (isPaid) {
+                let method = 'cash';
+                if (paymentMethod) {
+                    const mLower = paymentMethod.toLowerCase();
+                    if (mLower.includes('upi')) method = 'upi';
+                    else if (mLower.includes('bank') || mLower.includes('transfer')) method = 'bank_transfer';
+                    else if (mLower.includes('card')) method = 'card';
+                    else if (mLower.includes('cheque') || mLower.includes('check')) method = 'cheque';
+                }
+
+                await db.promise().query(
+                    `INSERT INTO payment_transactions (invoice_id, payment_method, amount, status, paid_at)
+                     VALUES (?, ?, ?, 'Success', ?)`,
+                    [invoiceId, method, amount, finalPaidDate]
+                );
+            }
         }
 
         await db.promise().query("COMMIT");

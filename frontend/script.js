@@ -1330,14 +1330,16 @@ function displayFlats() {
         let blockConfig = getBlockConfig(soc, block);
         let flatList = getFlatList(blockConfig);
 
-        // Count how many occupied flats are pending
+        // Count pending and total occupied flats in this block
         let pendingOccupiedFlats = 0;
+        let occupiedFlatsCount = 0;
         for (let flatNum of flatList) {
             const d = soc.apartmentData[block][flatNum] || {};
             const mData = getEffectiveMonthData(d, period);
             const isOccupied = (mData.owner && mData.owner.trim() !== "");
-            if (isOccupied && mData.status !== 'Paid') {
-                pendingOccupiedFlats++;
+            if (isOccupied) {
+                occupiedFlatsCount++;
+                if (mData.status !== 'Paid') pendingOccupiedFlats++;
             }
         }
 
@@ -1349,22 +1351,49 @@ function displayFlats() {
         const isCollapsed = blockStates[`${currentSociety}-${block}`] === true;
 
         let actionHtml = '';
-        if (pendingOccupiedFlats === 0) {
-            actionHtml = `
-                <span style="
-                    color: #16A34A;
-                    font-size: 13px;
-                    font-weight: 900;
-                    letter-spacing: 0.5px;
-                    text-transform: uppercase;
-                    display: inline-block;
-                    padding: 5px 14px;
-                    background: rgba(22, 163, 74, 0.1);
-                    border: 1px solid rgba(22, 163, 74, 0.2);
-                    border-radius: 20px;
-                    white-space: nowrap;
-                ">All paid</span>
-            `;
+        if (occupiedFlatsCount === 0) {
+            actionHtml = `<span style="color: #9C6B45; font-size: 14px; font-weight: 700;">-</span>`;
+        } else if (pendingOccupiedFlats === 0) {
+            // All flats are paid
+            if (isAdmin) {
+                actionHtml = `
+                    <button
+                        onclick="event.stopPropagation(); undoBlockPaid('${block}')"
+                        style="
+                            background: linear-gradient(135deg, #DC2626, #B91C1C);
+                            color: white;
+                            border: none;
+                            padding: 6px 16px;
+                            border-radius: 20px;
+                            font-size: 13px;
+                            font-weight: 800;
+                            cursor: pointer;
+                            letter-spacing: 0.5px;
+                            box-shadow: 0 2px 8px rgba(220,38,38,0.3);
+                            transition: opacity 0.2s;
+                            white-space: nowrap;
+                        "
+                        onmouseover="this.style.opacity='0.85'"
+                        onmouseout="this.style.opacity='1'"
+                    >↩ Undo Paid</button>
+                `;
+            } else {
+                actionHtml = `
+                    <span style="
+                        color: #16A34A;
+                        font-size: 13px;
+                        font-weight: 900;
+                        letter-spacing: 0.5px;
+                        text-transform: uppercase;
+                        display: inline-block;
+                        padding: 5px 14px;
+                        background: rgba(22, 163, 74, 0.1);
+                        border: 1px solid rgba(22, 163, 74, 0.2);
+                        border-radius: 20px;
+                        white-space: nowrap;
+                    ">All paid</span>
+                `;
+            }
         } else if (isAdmin) {
             actionHtml = `
                 <button
@@ -3028,6 +3057,70 @@ async function markAllBlockPaid(block) {
     );
 }
 
+async function undoBlockPaid(block) {
+    const period = `${document.getElementById('viewMonth').value}-${document.getElementById('viewYear').value}`;
+    const soc = vault[currentSociety];
+    if (!soc) return;
+
+    // Collect ALL occupied flats in this block (they are all Paid, we revert them)
+    const blockConfig = getBlockConfig(soc, block);
+    const flatList = getFlatList(blockConfig);
+    const flatsToRevert = [];
+
+    for (const flatNum of flatList) {
+        const flatDataObj = soc.apartmentData[block]?.[flatNum];
+        if (!flatDataObj) continue;
+        const mData = getEffectiveMonthData(flatDataObj, period);
+        const isOccupied = mData.owner && mData.owner.trim() !== '';
+        if (isOccupied) {
+            flatsToRevert.push({
+                flat_number: flatNum,
+                owner: flatDataObj.owner,
+                phone: flatDataObj.phone,
+                isRental: flatDataObj.isRental,
+                rentalName: flatDataObj.rentalName,
+                rentalPhone: flatDataObj.rentalPhone,
+                amount: mData.amount,
+                plan: mData.plan,
+                paymentMethod: mData.paymentMethod || 'Cash',
+                dateStr: '-'
+            });
+        }
+    }
+
+    if (flatsToRevert.length === 0) {
+        showToast(`No occupied flats found in Block ${block}.`, 'error');
+        return;
+    }
+
+    showConfirm(
+        `Revert ${flatsToRevert.length} flat(s) in Block ${block} back to Pending?`,
+        'Yes, Undo',
+        true,
+        async () => {
+            try {
+                const res = await Api.markBlockPaid({
+                    society_name: currentSociety,
+                    block: block,
+                    flats: flatsToRevert,
+                    period: period,
+                    property_type: propertyType,
+                    status: 'Pending'
+                });
+                const data = await res.json();
+                if (data.success) {
+                    showToast(`Block ${block}: ${flatsToRevert.length} flat(s) reverted to Pending ↩`, 'success');
+                    loadDashboardData();
+                } else {
+                    showToast(`Error: ${data.error || 'Failed to undo'}`, 'error');
+                }
+            } catch (err) {
+                showToast('Network error. Please try again.', 'error');
+            }
+        }
+    );
+}
+
 // NOTE: Duplicate mousemove listener removed here.
 // The combined handler below (line ~2934) handles both rowTooltip and expenseTooltip.
 function updateYearlyAmount() {
@@ -4608,6 +4701,7 @@ Object.assign(window, {
     handlePeriodChange,
     markMaintenancePaid,
     markAllBlockPaid,
+    undoBlockPaid,
     openComplaintPage,
     openWhatsAppBlast,
     rfGoBack,
