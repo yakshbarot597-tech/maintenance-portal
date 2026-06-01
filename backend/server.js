@@ -3155,10 +3155,45 @@ app.post("/api/update-due-day", async (req, res) => {
 app.post("/api/update-monthly-maintenance", async (req, res) => {
     const { society_name, monthly_maintenance, property_type } = req.body;
     try {
+        // 1. Update the society-level config
         await db.promise().query(
             "UPDATE societies SET monthly_maintenance=? WHERE society_name=? AND property_type=?",
             [monthly_maintenance, society_name, property_type || 'flat']
         );
+
+        // 2. Find the society id
+        const [societies] = await db.promise().query(
+            "SELECT id FROM societies WHERE society_name=? AND property_type=?",
+            [society_name, property_type || 'flat']
+        );
+        if (societies.length > 0) {
+            const socId = societies[0].id;
+            const newMonthly = parseFloat(monthly_maintenance) || 0;
+            const newYearly = newMonthly * 11;
+
+            // 3a. Update all Pending monthly invoices for this society
+            await db.promise().query(
+                `UPDATE maintenance_invoices mi
+                 JOIN units u ON mi.unit_id = u.id
+                 SET mi.amount = ?
+                 WHERE u.society_id = ?
+                   AND mi.status = 'Pending'
+                   AND (mi.notes IS NULL OR mi.notes NOT LIKE '%"plan":"yearly"%')`,
+                [newMonthly, socId]
+            );
+
+            // 3b. Update all Pending yearly invoices for this society
+            await db.promise().query(
+                `UPDATE maintenance_invoices mi
+                 JOIN units u ON mi.unit_id = u.id
+                 SET mi.amount = ?
+                 WHERE u.society_id = ?
+                   AND mi.status = 'Pending'
+                   AND mi.notes LIKE '%"plan":"yearly"%'`,
+                [newYearly, socId]
+            );
+        }
+
         res.json({ success: true });
     } catch (err) {
         console.error("Update monthly maintenance error:", err);
