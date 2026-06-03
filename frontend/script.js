@@ -3046,7 +3046,7 @@ function renderCommercialOwners(owners) {
                     </span>
                     <div style="display: flex; align-items: center; gap: 8px;">
                         <input type="radio" name="payerRadio" value="ownerName_${i}" class="payer-radio-btn" title="Set as Payer">
-                        <input id="ownerName_${i}" type="text" maxlength="30" class="p-4 rounded-xl input-field w-full" value="${owner.name || ''}" onfocus="checkAssociatedRadio('ownerName_${i}')">
+                        <input id="ownerName_${i}" name="ownerName_${i}" autocomplete="name" type="text" maxlength="30" class="p-4 rounded-xl input-field w-full" value="${owner.name || ''}" onfocus="checkAssociatedRadio('ownerName_${i}')">
                     </div>
                 </div>
                 <div class="relative">
@@ -3054,7 +3054,7 @@ function renderCommercialOwners(owners) {
                         Owner / Proprietor ${i} Phone
                     </span>
                     <div class="flex gap-2">
-                        <input id="phone_${i}" type="text" maxlength="10" class="p-4 rounded-xl input-field w-full" value="${owner.phone || ''}">
+                        <input id="phone_${i}" name="phone_${i}" autocomplete="tel" type="text" maxlength="10" class="p-4 rounded-xl input-field w-full" value="${owner.phone || ''}">
                         <button type="button" onclick="removeCommercialOwner(${i - 1})" class="p-3 bg-red-950/10 hover:bg-red-950/20 text-red-700 rounded-xl font-bold flex items-center justify-center" style="min-width:44px;" title="Remove Owner">
                             🗑️
                         </button>
@@ -3088,7 +3088,7 @@ function renderCommercialRentals(rentals) {
                     </span>
                     <div style="display: flex; align-items: center; gap: 8px;">
                         <input type="radio" name="payerRadio" value="rentalName_${j}" class="payer-radio-btn" title="Set as Payer">
-                        <input id="rentalName_${j}" type="text" maxlength="30" class="p-4 rounded-xl input-field w-full" value="${tenant.name || ''}" onfocus="checkAssociatedRadio('rentalName_${j}')">
+                        <input id="rentalName_${j}" name="rentalName_${j}" autocomplete="name" type="text" maxlength="30" class="p-4 rounded-xl input-field w-full" value="${tenant.name || ''}" onfocus="checkAssociatedRadio('rentalName_${j}')">
                     </div>
                 </div>
                 <div class="relative">
@@ -3096,7 +3096,7 @@ function renderCommercialRentals(rentals) {
                         Tenant / Business ${j} Phone
                     </span>
                     <div class="flex gap-2">
-                        <input id="rentalPhone_${j}" type="text" maxlength="10" class="p-4 rounded-xl input-field w-full" value="${tenant.phone || ''}">
+                        <input id="rentalPhone_${j}" name="rentalPhone_${j}" autocomplete="tel" type="text" maxlength="10" class="p-4 rounded-xl input-field w-full" value="${tenant.phone || ''}">
                         <button type="button" onclick="removeCommercialRental(${j - 1})" class="p-3 bg-red-950/10 hover:bg-red-950/20 text-red-700 rounded-xl font-bold flex items-center justify-center" style="min-width:44px;" title="Remove Tenant">
                             🗑️
                         </button>

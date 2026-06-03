@@ -892,29 +892,30 @@
         <div class="absolute inset-0 bg-black/60 backdrop-blur-md modal-backdrop" onclick="closeForm()"></div>
         <div
             class="card-bg relative w-full max-w-5xl p-8 rounded-[35px] shadow-2xl border border-amber-800/20 max-h-[90vh] overflow-y-auto">
-            <div class="flex items-center justify-between mb-6">
-                <h2 id="editFormHeading" class="text-2xl font-bold text-[#8B5E3C]">
-                    Edit Record
-                </h2>
+            <form onsubmit="event.preventDefault();" style="margin: 0; padding: 0;">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 id="editFormHeading" class="text-2xl font-bold text-[#8B5E3C]">
+                        Edit Record
+                    </h2>
 
-                <button onclick="closeForm()" style="
-            width:48px;
-            height:48px;
-            border-radius:50%;
-            background:#A67C52;
-            color:white;
-            font-size:28px;
-            font-weight:900;
-            border:none;
-            cursor:pointer;
-            display:flex;
-            align-items:center;
-            justify-content:center;
-            transition:0.2s;
-        ">
-                    ×
-                </button>
-            </div>
+                    <button type="button" onclick="closeForm()" style="
+                width:48px;
+                height:48px;
+                border-radius:50%;
+                background:#A67C52;
+                color:white;
+                font-size:28px;
+                font-weight:900;
+                border:none;
+                cursor:pointer;
+                display:flex;
+                align-items:center;
+                justify-content:center;
+                transition:0.2s;
+            ">
+                        ×
+                    </button>
+                </div>
 
 
             <div id="ownersSectionContainer">
@@ -925,14 +926,14 @@
                         </span>
                         <div style="display: flex; align-items: center; gap: 8px;">
                             <input type="radio" name="payerRadio" value="ownerName" class="payer-radio-btn" title="Set as Payer">
-                            <input id="ownerName" type="text" maxlength="30" class="p-4 rounded-xl input-field w-full" onfocus="checkAssociatedRadio('ownerName')">
+                            <input id="ownerName" name="ownerName" autocomplete="name" type="text" maxlength="30" class="p-4 rounded-xl input-field w-full" onfocus="checkAssociatedRadio('ownerName')">
                         </div>
                     </div>
                     <div>
                         <span id="phoneLabel" style="font-size:14px; font-weight:900; color:#8B5E3C; display:block; margin-bottom:8px;">
                             Phone
                         </span>
-                        <input id="phone" type="text" maxlength="10" class="p-4 rounded-xl input-field w-full">
+                        <input id="phone" name="phone" autocomplete="tel" type="text" maxlength="10" class="p-4 rounded-xl input-field w-full">
                     </div>
                 </div>
                 <div id="dynamicOwnersContainer" class="space-y-4 mb-6 hidden"></div>
@@ -962,7 +963,7 @@
                     <span id="resUsernameLabel" style="font-size:14px; font-weight:900; color:#8B5E3C; display:block; margin-bottom:8px;">
                         Resident Username
                     </span>
-                    <input id="resUsername" type="text" maxlength="30" placeholder="Unique Resident Username" class="p-4 rounded-xl input-field w-full">
+                    <input id="resUsername" name="username" autocomplete="username" type="text" maxlength="30" placeholder="Unique Resident Username" class="p-4 rounded-xl input-field w-full">
                 </div>
 
                 <div>
@@ -970,7 +971,7 @@
                         Resident Password
                     </span>
                     <div class="pwd-wrapper">
-                        <input id="resPasswordInput" type="password" maxlength="30" placeholder="Set Password (optional)" class="p-4 rounded-xl input-field w-full" style="padding-right:72px !important;">
+                        <input id="resPasswordInput" name="password" autocomplete="new-password" type="password" maxlength="30" placeholder="Set Password (optional)" class="p-4 rounded-xl input-field w-full" style="padding-right:72px !important;">
                         <button type="button" class="pwd-eye" onclick="togglePasswordVisibility('resPasswordInput', this)" tabindex="-1"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" style="pointer-events:none;"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0z"/><circle cx="12" cy="12" r="3"/></svg></button>
                     </div>
                 </div>
@@ -996,12 +997,12 @@
                 <div id="rentalInputs" class="hidden grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div style="display: flex; align-items: center; gap: 8px;">
                         <input type="radio" name="payerRadio" value="rentalName" class="payer-radio-btn" title="Set as Payer">
-                        <input id="rentalName" type="text" placeholder="Tenant Name" maxlength="30"
+                        <input id="rentalName" name="rentalName" autocomplete="name" type="text" placeholder="Tenant Name" maxlength="30"
                             class="p-4 rounded-xl input-field w-full" onfocus="checkAssociatedRadio('rentalName')">
                     </div>
 
-                    <input id="rentalPhone" type="text" maxlength="10" placeholder="Tenant Mobile"
-                        class="p-4 rounded-xl input-field">
+                    <input id="rentalPhone" name="rentalPhone" autocomplete="tel" type="text" maxlength="10" placeholder="Tenant Mobile"
+                        class="p-4 rounded-xl input-field w-full">
 
                 </div>
 
@@ -1167,7 +1168,7 @@
 
             <div class="flex justify-center mt-6">
 
-                <button onclick="saveFlat()" style="
+                <button type="button" onclick="saveFlat()" style="
                     position:relative;
                     overflow:hidden;
                     padding:12px 36px;
@@ -1191,6 +1192,7 @@
                 </button>
 
             </div>
+            </form>
         </div>
     </div>
 
