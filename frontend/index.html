@@ -51,14 +51,14 @@
             ">Select your property type to get started</p>
 
             <!-- Property Type Cards -->
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:24px;">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
 
                 <!-- FLAT Card -->
                 <button onclick="selectPropertyType('flat')" id="flatCard" style="
                     background: rgba(255,255,255,0.92);
                     border: 2px solid rgba(139,94,60,0.18);
                     border-radius:22px;
-                    padding: 24px 16px;
+                    padding: 24px 10px;
                     cursor:pointer;
                     transition: all 0.25s ease;
                     box-shadow: 0 6px 20px rgba(139,94,60,0.08);
@@ -75,7 +75,7 @@
                         font-size:30px;
                     ">🏢</div>
                     <span style="
-                        font-size:24px;
+                        font-size:20px;
                         font-weight:900;
                         color:#3E2C1C;
                         letter-spacing:0.5px;
@@ -93,13 +93,13 @@
                     background: rgba(255,255,255,0.92);
                     border: 2px solid rgba(139,94,60,0.18);
                     border-radius:22px;
-                    padding: 24px 16px;
+                    padding: 24px 10px;
                     cursor:pointer;
                     transition: all 0.25s ease;
                     box-shadow: 0 6px 20px rgba(139,94,60,0.08);
                     display:flex; flex-direction:column; align-items:center; gap:10px;
                     position:relative; overflow:hidden;
-                " onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 12px 30px rgba(139,94,60,0.18)'; this.style.borderColor='#8B5E3C';"
+                " onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 12px 30px rgba(91,140,60,0.18)'; this.style.borderColor='#5B8C3C';"
                     onmouseout="this.style.transform=''; this.style.boxShadow='0 6px 20px rgba(139,94,60,0.08)'; this.style.borderColor='rgba(139,94,60,0.18)';">
                     <div style="
                         width:64px; height:64px;
@@ -110,7 +110,7 @@
                         font-size:30px;
                     ">🏡</div>
                     <span style="
-                        font-size:24px;
+                        font-size:20px;
                         font-weight:900;
                         color:#3E2C1C;
                         letter-spacing:0.5px;
@@ -121,6 +121,41 @@
                         color:#7A6855;
                         line-height:1.4;
                     ">Villas &amp;<br>Independent houses</span>
+                </button>
+
+                <!-- COMMERCIAL Card -->
+                <button onclick="selectPropertyType('commercial')" id="commercialCard" style="
+                    background: rgba(255,255,255,0.92);
+                    border: 2px solid rgba(139,94,60,0.18);
+                    border-radius:22px;
+                    padding: 24px 10px;
+                    cursor:pointer;
+                    transition: all 0.25s ease;
+                    box-shadow: 0 6px 20px rgba(139,94,60,0.08);
+                    display:flex; flex-direction:column; align-items:center; gap:10px;
+                    position:relative; overflow:hidden;
+                " onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 12px 30px rgba(31,58,96,0.18)'; this.style.borderColor='#1F3A60';"
+                    onmouseout="this.style.transform=''; this.style.boxShadow='0 6px 20px rgba(139,94,60,0.08)'; this.style.borderColor='rgba(139,94,60,0.18)';">
+                    <div style="
+                        width:64px; height:64px;
+                        background:linear-gradient(135deg,#1F3A60,#3B6F9E);
+                        border-radius:18px;
+                        display:flex; align-items:center; justify-content:center;
+                        box-shadow:0 6px 16px rgba(31,58,96,0.22);
+                        font-size:30px;
+                    ">🏬</div>
+                    <span style="
+                        font-size:20px;
+                        font-weight:900;
+                        color:#3E2C1C;
+                        letter-spacing:0.5px;
+                    ">Commercial</span>
+                    <span style="
+                        font-size:14px;
+                        font-weight:700;
+                        color:#7A6855;
+                        line-height:1.4;
+                    ">Shops &amp;<br>Business complexes</span>
                 </button>
 
             </div>
@@ -273,7 +308,7 @@
                         font-size:18px;
                         font-weight:900;
                         cursor:pointer;
-                    ">
+                    " id="resLoginBtn">
                         Resident Login
                     </button>
                     <p style="
@@ -318,8 +353,7 @@
 
         <div class="card-bg w-full max-w-xl p-8 rounded-[30px] shadow-2xl">
 
-            <!-- Heading -->
-            <h2 style="
+            <h2 id="resLoginHeading" style="
             font-size:58px;
             font-weight:900;
             color:#8B5E3C;
@@ -855,7 +889,7 @@
     </div>
 
     <div id="adminForm" class="hidden fixed inset-0 z-[200] flex items-center justify-center p-4">
-        <div class="absolute inset-0 bg-black/60 backdrop-blur-md" onclick="closeForm()"></div>
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-md modal-backdrop" onclick="closeForm()"></div>
         <div
             class="card-bg relative w-full max-w-5xl p-8 rounded-[35px] shadow-2xl border border-amber-800/20 max-h-[90vh] overflow-y-auto">
             <div class="flex items-center justify-between mb-6">
@@ -881,35 +915,58 @@
                     ×
                 </button>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
 
-                <div>
-                    <span style="font-size:14px; font-weight:900; color:#8B5E3C; display:block; margin-bottom:8px;">
-                        Owner
-                    </span>
-                    <input id="ownerName" type="text" maxlength="30" class="p-4 rounded-xl input-field w-full">
+
+            <div id="ownersSectionContainer">
+                <div id="standardOwnersRow" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                    <div>
+                        <span id="ownerLabel" style="font-size:14px; font-weight:900; color:#8B5E3C; display:block; margin-bottom:8px;">
+                            Owner
+                        </span>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <input type="radio" name="payerRadio" value="ownerName" class="payer-radio-btn" title="Set as Payer">
+                            <input id="ownerName" type="text" maxlength="30" class="p-4 rounded-xl input-field w-full" onfocus="checkAssociatedRadio('ownerName')">
+                        </div>
+                    </div>
+                    <div>
+                        <span id="phoneLabel" style="font-size:14px; font-weight:900; color:#8B5E3C; display:block; margin-bottom:8px;">
+                            Phone
+                        </span>
+                        <input id="phone" type="text" maxlength="10" class="p-4 rounded-xl input-field w-full">
+                    </div>
                 </div>
-
-                <div>
-                    <span style="font-size:14px; font-weight:900; color:#8B5E3C; display:block; margin-bottom:8px;">
-                        Phone
-                    </span>
-                    <input id="phone" type="text" maxlength="10" class="p-4 rounded-xl input-field w-full">
+                <div id="dynamicOwnersContainer" class="space-y-4 mb-6 hidden"></div>
+                <div id="commercialOwnerActionRow" class="hidden mb-6">
+                    <button type="button" onclick="addCommercialOwner()" style="
+                        background: rgba(139,94,60,0.1);
+                        color: #8B5E3C;
+                        border: 1px dashed rgba(139,94,60,0.4);
+                        padding: 8px 16px;
+                        border-radius: 12px;
+                        font-size: 13px;
+                        font-weight: 800;
+                        cursor: pointer;
+                        display: flex;
+                        align-items: center;
+                        gap: 6px;
+                        transition: 0.2s;
+                    " onmouseover="this.style.background='rgba(139,94,60,0.15)'" onmouseout="this.style.background='rgba(139,94,60,0.1)'">
+                        <span>➕</span> Add Owner
+                    </button>
                 </div>
-
             </div>
 
             <div id="residentCredentialsSection" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
 
                 <div>
-                    <span style="font-size:14px; font-weight:900; color:#8B5E3C; display:block; margin-bottom:8px;">
+                    <span id="resUsernameLabel" style="font-size:14px; font-weight:900; color:#8B5E3C; display:block; margin-bottom:8px;">
                         Resident Username
                     </span>
                     <input id="resUsername" type="text" maxlength="30" placeholder="Unique Resident Username" class="p-4 rounded-xl input-field w-full">
                 </div>
 
                 <div>
-                    <span style="font-size:14px; font-weight:900; color:#8B5E3C; display:block; margin-bottom:8px;">
+                    <span id="resPasswordLabel" style="font-size:14px; font-weight:900; color:#8B5E3C; display:block; margin-bottom:8px;">
                         Resident Password
                     </span>
                     <div class="pwd-wrapper">
@@ -920,7 +977,7 @@
 
             </div>
 
-            <div class="p-5 bg-amber-900/5 rounded-2xl mb-6 border border-amber-900/10">
+            <div id="standardRentalSection" class="p-5 bg-amber-900/5 rounded-2xl mb-6 border border-amber-900/10">
 
                 <div class="flex items-center gap-4 mb-4">
 
@@ -937,15 +994,40 @@
                 </div>
 
                 <div id="rentalInputs" class="hidden grid grid-cols-1 md:grid-cols-2 gap-4">
-
-                    <input id="rentalName" type="text" placeholder="Tenant Name" maxlength="30"
-                        class="p-4 rounded-xl input-field">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <input type="radio" name="payerRadio" value="rentalName" class="payer-radio-btn" title="Set as Payer">
+                        <input id="rentalName" type="text" placeholder="Tenant Name" maxlength="30"
+                            class="p-4 rounded-xl input-field w-full" onfocus="checkAssociatedRadio('rentalName')">
+                    </div>
 
                     <input id="rentalPhone" type="text" maxlength="10" placeholder="Tenant Mobile"
                         class="p-4 rounded-xl input-field">
 
                 </div>
 
+            </div>
+
+            <div id="dynamicRentalsSection" class="p-5 bg-amber-900/5 rounded-2xl mb-6 border border-amber-900/10 hidden">
+                <span id="rentalsHeading" style="font-size:14px; font-weight:900; color:#8B5E3C; display:block; margin-bottom:12px;">
+                    Rentals / Tenants
+                </span>
+                <div id="dynamicRentalsContainer" class="space-y-4 mb-4"></div>
+                <button type="button" id="addRentalBtn" onclick="addCommercialRental()" style="
+                    background: rgba(139,94,60,0.1);
+                    color: #8B5E3C;
+                    border: 1px dashed rgba(139,94,60,0.4);
+                    padding: 8px 16px;
+                    border-radius: 12px;
+                    font-size: 13px;
+                    font-weight: 800;
+                    cursor: pointer;
+                    display: flex;
+                    align-items: center;
+                    gap: 6px;
+                    transition: 0.2s;
+                " onmouseover="this.style.background='rgba(139,94,60,0.15)'" onmouseout="this.style.background='rgba(139,94,60,0.1)'">
+                    <span id="addRentalBtnText">➕ Add Tenant</span>
+                </button>
             </div>
 
             <!-- OWNERSHIP TRANSFER SECTION -->
@@ -1072,6 +1154,13 @@
                     </select>
                 </div>
 
+                <div class="edit-field" id="paidByContainer" style="display:none;">
+                    <span>Paid By</span>
+                    <select id="paidBy" class="input-field">
+                        <!-- Populated dynamically -->
+                    </select>
+                </div>
+
             </div>
             <input type="hidden" id="block"><input type="hidden" id="flatNumber"><input type="hidden"
                 id="editMonth"><input type="hidden" id="editYear">
@@ -1107,7 +1196,7 @@
 
     <!-- ==================== MONTHLY MAINTENANCE MODAL ==================== -->
     <div id="maintenanceModal" class="hidden fixed inset-0 flex items-center justify-center z-[110] p-4">
-        <div class="absolute inset-0 bg-black/80 backdrop-blur-lg" onclick="toggleMaintenanceModal()"></div>
+        <div class="absolute inset-0 bg-black/80 backdrop-blur-lg modal-backdrop" onclick="toggleMaintenanceModal()"></div>
         <div class="card-bg w-full max-w-md p-8 rounded-[40px] relative border-amber-400/20">
             <button onclick="toggleMaintenanceModal()" style="
                 position:absolute; top:20px; right:20px;
@@ -1139,7 +1228,7 @@
     </div>
 
     <div id="committeeModal" class="hidden fixed inset-0 flex items-center justify-center z-[110] p-4">
-        <div class="absolute inset-0 bg-black/80 backdrop-blur-lg" onclick="toggleCommitteeModal()"></div>
+        <div class="absolute inset-0 bg-black/80 backdrop-blur-lg modal-backdrop" onclick="toggleCommitteeModal()"></div>
         <div class="card-bg w-full max-w-md p-6 rounded-[30px] relative border-amber-400/20 flex flex-col max-h-[90vh]" style="overflow-y: auto;">
             <h3 class="text-lg font-bold mb-4" style="color:#8B5E3C;">
                 Committee
@@ -1187,7 +1276,7 @@
     </div>
 
     <div id="bankModal" class="hidden fixed inset-0 flex items-center justify-center z-[100] p-4">
-        <div class="absolute inset-0 bg-black/70 backdrop-blur-md" onclick="toggleBankModal()"></div>
+        <div class="absolute inset-0 bg-black/70 backdrop-blur-md modal-backdrop" onclick="toggleBankModal()"></div>
         <div class="card-bg w-full max-w-xs p-4 rounded-[24px] relative flex flex-col max-h-[90vh]" style="overflow-y: auto;">
             <h3 class="text-base font-bold text-[#8B5E3C] mb-2 text-center">Bank Account Info</h3>
             <div id="bankView" class="bg-amber-900/5 p-3 rounded-xl mb-2 text-center border border-amber-900/10">
@@ -1675,7 +1764,7 @@
 
     <!-- ==================== RESIDENT FORGOT PASSWORD MODAL ==================== -->
     <div id="residentForgotModal" class="hidden fixed inset-0 z-[500] flex items-center justify-center p-4">
-        <div class="absolute inset-0 bg-black/60 backdrop-blur-md" onclick="closeResidentForgotModal()"></div>
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-md modal-backdrop" onclick="closeResidentForgotModal()"></div>
         <div class="card-bg relative w-full max-w-xl p-10 rounded-[40px] shadow-2xl border border-amber-800/20">
 
             <!-- Close Button -->
@@ -1817,7 +1906,7 @@
     </div>
     <!-- ==================== WHATSAPP BLAST MODAL ==================== -->
     <div id="waBlastModal" class="hidden fixed inset-0 z-[700] flex items-center justify-center p-4">
-        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" onclick="closeWaBlastModal()"></div>
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm modal-backdrop" onclick="closeWaBlastModal()"></div>
         <div class="relative w-full max-w-2xl rounded-2xl overflow-hidden shadow-2xl"
             style="background:#ffffff;max-height:90vh;display:flex;flex-direction:column;border: 1px solid #e2e8f0;">
 
@@ -1909,7 +1998,7 @@
 
     <!-- ==================== GLOBAL CONFIRM MODAL ==================== -->
     <div id="globalConfirmModal" class="hidden fixed inset-0 z-[600] flex items-center justify-center p-4">
-        <div class="absolute inset-0 bg-black/60 backdrop-blur-md" onclick="handleConfirm(false)"></div>
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-md modal-backdrop" onclick="handleConfirm(false)"></div>
         <div
             class="card-bg relative w-full max-w-sm p-8 rounded-[32px] shadow-2xl border border-amber-800/20 text-center">
             <h3 id="confirmMsg"
@@ -1931,7 +2020,7 @@
 
     <!-- ==================== ADMIN FORGOT PASSWORD MODAL ==================== -->
     <div id="adminForgotModal" class="hidden fixed inset-0 z-[500] flex items-center justify-center p-4">
-        <div class="absolute inset-0 bg-black/60 backdrop-blur-md" onclick="closeAdminForgotModal()"></div>
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-md modal-backdrop" onclick="closeAdminForgotModal()"></div>
         <div class="card-bg relative w-full max-w-xl p-10 rounded-[40px] shadow-2xl border border-amber-800/20">
 
             <button onclick="closeAdminForgotModal()" style="

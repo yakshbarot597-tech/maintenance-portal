@@ -1,7 +1,7 @@
 const PRODUCTION_API_URL = 'https://maintenance-portal-5cds.onrender.com'; 
 
 const API_BASE = (typeof window !== 'undefined' && window.VITE_API_URL) || 
-    ((window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+    ((window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:' || !window.location.hostname)
         ? 'http://localhost:5000/api'
         : (PRODUCTION_API_URL ? `${PRODUCTION_API_URL.replace(/\/$/, '')}/api` : window.location.origin + '/api'));
 

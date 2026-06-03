@@ -44,23 +44,39 @@ let editingComplaintIndex = null;
 // ================================================================
 function translateTerm(text) {
     if (!text) return text;
-    if (propertyType !== 'bungalow') return text;
     
-    // Replace terms preserving casing
     let res = text;
-    res = res.replace(/Flat Number/g, 'Bunglow Number');
-    res = res.replace(/flat number/g, 'bunglow number');
-    res = res.replace(/Same flats/g, 'Same bunglows');
-    res = res.replace(/same flats/g, 'same bunglows');
-    res = res.replace(/Overdue Flats/g, 'Overdue Bunglows');
-    res = res.replace(/Search any flat/g, 'Search any bunglow');
-    res = res.replace(/Flat saved/g, 'Bunglow saved');
-    res = res.replace(/Flat/g, 'Bunglow');
-    res = res.replace(/Flats/g, 'Bunglows');
-    res = res.replace(/flat/g, 'bunglow');
-    res = res.replace(/flats/g, 'bunglows');
-    res = res.replace(/FLAT/g, 'BUNGLOW');
-    res = res.replace(/FLATS/g, 'BUNGLOWS');
+    if (propertyType === 'bungalow') {
+        // Replace terms preserving casing
+        res = res.replace(/Flat Number/g, 'Bunglow Number');
+        res = res.replace(/flat number/g, 'bunglow number');
+        res = res.replace(/Same flats/g, 'Same bunglows');
+        res = res.replace(/same flats/g, 'same bunglows');
+        res = res.replace(/Overdue Flats/g, 'Overdue Bunglows');
+        res = res.replace(/Search any flat/g, 'Search any bunglow');
+        res = res.replace(/Flat saved/g, 'Bunglow saved');
+        res = res.replace(/Flat/g, 'Bunglow');
+        res = res.replace(/Flats/g, 'Bunglows');
+        res = res.replace(/flat/g, 'bunglow');
+        res = res.replace(/flats/g, 'bunglows');
+        res = res.replace(/FLAT/g, 'BUNGLOW');
+        res = res.replace(/FLATS/g, 'BUNGLOWS');
+    } else if (propertyType === 'commercial') {
+        // Replace terms preserving casing
+        res = res.replace(/Flat Number/g, 'Unit Number');
+        res = res.replace(/flat number/g, 'unit number');
+        res = res.replace(/Same flats/g, 'Same units');
+        res = res.replace(/same flats/g, 'same units');
+        res = res.replace(/Overdue Flats/g, 'Overdue Units');
+        res = res.replace(/Search any flat/g, 'Search any unit');
+        res = res.replace(/Flat saved/g, 'Unit saved');
+        res = res.replace(/Flat/g, 'Unit');
+        res = res.replace(/Flats/g, 'Units');
+        res = res.replace(/flat/g, 'unit');
+        res = res.replace(/flats/g, 'units');
+        res = res.replace(/FLAT/g, 'UNIT');
+        res = res.replace(/FLATS/g, 'UNITS');
+    }
     return res;
 }
 
@@ -83,33 +99,43 @@ function getDeterministicReceiptNumber(society, block, flat, period, paidDate) {
 
 function updatePageTerminology() {
     const isBunglow = propertyType === 'bungalow';
+    const isCommercial = propertyType === 'commercial';
     
     // Elements to update textContent
     const textElements = [
-        { id: 'sameFlatsLabel', flatVal: 'Same flats in all blocks', bunglowVal: 'Same bunglows in all blocks' },
-        { id: 'overdueFlatsLabel', flatVal: 'Overdue Flats', bunglowVal: 'Overdue Bunglows' },
-        { id: 'thFlatHeader', flatVal: 'FLAT', bunglowVal: 'BUNGLOW' },
+        { id: 'sameFlatsLabel', flatVal: 'Same flats in all blocks', bunglowVal: 'Same bunglows in all blocks', commercialVal: 'Same units in all blocks' },
+        { id: 'overdueFlatsLabel', flatVal: 'Overdue Flats', bunglowVal: 'Overdue Bunglows', commercialVal: 'Overdue Units' },
+        { id: 'thFlatHeader', flatVal: 'FLAT', bunglowVal: 'BUNGLOW', commercialVal: 'UNIT' },
+        { id: 'ownerLabel', flatVal: 'Owner', bunglowVal: 'Owner', commercialVal: 'Owner / Proprietor' },
+        { id: 'phoneLabel', flatVal: 'Phone', bunglowVal: 'Phone', commercialVal: 'Owner Phone' },
+        { id: 'resUsernameLabel', flatVal: 'Resident Username', bunglowVal: 'Resident Username', commercialVal: 'Occupant / Business Username' },
+        { id: 'resPasswordLabel', flatVal: 'Resident Password', bunglowVal: 'Resident Password', commercialVal: 'Occupant / Business Password' },
+        { id: 'resLoginBtn', flatVal: 'Resident Login', bunglowVal: 'Resident Login', commercialVal: 'Occupant / Business Login' },
+        { id: 'resLoginHeading', flatVal: 'Resident Login', bunglowVal: 'Resident Login', commercialVal: 'Occupant / Business Login' },
+        { id: 'rentalsHeading', flatVal: 'Rentals / Tenants', bunglowVal: 'Rentals / Tenants', commercialVal: 'Tenants / Occupying Businesses' },
+        { id: 'addRentalBtnText', flatVal: '➕ Add Tenant', bunglowVal: '➕ Add Tenant', commercialVal: '➕ Add Tenant / Business' },
     ];
     
     textElements.forEach(item => {
         const el = document.getElementById(item.id);
         if (el) {
-            el.textContent = isBunglow ? item.bunglowVal : item.flatVal;
+            el.textContent = isCommercial ? item.commercialVal : (isBunglow ? item.bunglowVal : item.flatVal);
         }
     });
 
     // Elements to update placeholders
     const placeholderElements = [
-        { id: 'resFlatNum', flatVal: 'Flat Number (e.g. A-1)', bunglowVal: 'Bunglow Number (e.g. A-1)' },
-        { id: 'searchBox', flatVal: 'Search any flat details...', bunglowVal: 'Search any bunglow details...' },
-        { id: 'rfFlat', flatVal: 'Flat Number (e.g. A-1)', bunglowVal: 'Bunglow Number (e.g. A-1)' },
-        { id: 'complaintFlat', flatVal: 'Flat Number e.g. A-1', bunglowVal: 'Bunglow Number e.g. A-1' },
+        { id: 'resFlatNum', flatVal: 'Flat Number (e.g. A-1)', bunglowVal: 'Bunglow Number (e.g. A-1)', commercialVal: 'Unit Number (e.g. A-1)' },
+        { id: 'searchBox', flatVal: 'Search any flat details...', bunglowVal: 'Search any bunglow details...', commercialVal: 'Search any unit details...' },
+        { id: 'rfFlat', flatVal: 'Flat Number (e.g. A-1)', bunglowVal: 'Bunglow Number (e.g. A-1)', commercialVal: 'Unit Number (e.g. A-1)' },
+        { id: 'complaintFlat', flatVal: 'Flat Number e.g. A-1', bunglowVal: 'Bunglow Number e.g. A-1', commercialVal: 'Unit Number e.g. A-1' },
+        { id: 'resLoginUsername', flatVal: 'Resident Username', bunglowVal: 'Resident Username', commercialVal: 'Occupant / Business Username' },
     ];
 
     placeholderElements.forEach(item => {
         const el = document.getElementById(item.id);
         if (el) {
-            el.setAttribute('placeholder', isBunglow ? item.bunglowVal : item.flatVal);
+            el.setAttribute('placeholder', isCommercial ? item.commercialVal : (isBunglow ? item.bunglowVal : item.flatVal));
         }
     });
 }
@@ -642,13 +668,23 @@ function selectPropertyType(type) {
     localStorage.setItem('propertyType', type);
 
     // Animate the selected card briefly before navigating
-    const card = document.getElementById(type === 'flat' ? 'flatCard' : 'bungalowCard');
+    const card = document.getElementById(type === 'flat' ? 'flatCard' : (type === 'bungalow' ? 'bungalowCard' : 'commercialCard'));
     if (card) {
         card.style.transform = 'scale(0.95)';
-        card.style.background = type === 'flat'
-            ? 'linear-gradient(135deg,rgba(139,94,60,0.12),rgba(192,138,91,0.18))'
-            : 'linear-gradient(135deg,rgba(91,140,60,0.12),rgba(125,181,90,0.18))';
-        card.style.borderColor = type === 'flat' ? '#8B5E3C' : '#5B8C3C';
+        let cardBg = '';
+        let borderCol = '';
+        if (type === 'flat') {
+            cardBg = 'linear-gradient(135deg,rgba(139,94,60,0.12),rgba(192,138,91,0.18))';
+            borderCol = '#8B5E3C';
+        } else if (type === 'bungalow') {
+            cardBg = 'linear-gradient(135deg,rgba(91,140,60,0.12),rgba(125,181,90,0.18))';
+            borderCol = '#5B8C3C';
+        } else {
+            cardBg = 'linear-gradient(135deg,rgba(31,58,96,0.12),rgba(59,111,158,0.18))';
+            borderCol = '#1F3A60';
+        }
+        card.style.background = cardBg;
+        card.style.borderColor = borderCol;
         setTimeout(() => showSocietyPortal(), 200);
     } else {
         showSocietyPortal();
@@ -1132,7 +1168,10 @@ function renderResidentSidebar() {
                     <div class="rpd-pill-label">${d.isRental === 'Yes' ? 'Rental' : 'Occupancy'}</div>
                     <div class="rpd-pill-value">
                         ${d.isRental === 'Yes'
-                            ? `${d.rentalName || 'Tenant'}<br><span style="font-size:18px; font-weight:800; color:#9C6B45; letter-spacing:0.5px; display:inline-block; margin-top:2px;">${d.rentalPhone || ''}</span>`
+                            ? (d.rentals && d.rentals.length > 1
+                                ? `Yes<br><span style="font-size:18px; font-weight:800; color:#9C6B45; letter-spacing:0.5px; display:inline-block; margin-top:2px;">${d.rentals.length} Rentals</span>`
+                                : `${(d.rentals && d.rentals[0]) ? d.rentals[0].name : (d.rentalName || 'Tenant')}<br><span style="font-size:18px; font-weight:800; color:#9C6B45; letter-spacing:0.5px; display:inline-block; margin-top:2px;">${(d.rentals && d.rentals[0]) ? d.rentals[0].phone : (d.rentalPhone || '')}</span>`
+                              )
                             : 'Self Occupied'
                         }
                     </div>
@@ -1144,7 +1183,75 @@ function renderResidentSidebar() {
 
             <div class="rpd-left-col">
 
+                <div class="rpd-card rpd-occupants-card" style="margin-bottom: 20px;">
+                    <div class="rpd-card-header" style="margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid rgba(139, 94, 60, 0.08);">
+                        <div>
+                            <div class="rpd-card-eyebrow" style="font-size: 13px; font-weight: 800; letter-spacing: 2px; color: #C08A5B; text-transform: uppercase;">Property Directory</div>
+                            <div class="rpd-card-title" style="font-size: 22px; font-weight: 950; color: #2C1A0E;">${propertyType === 'commercial' ? 'Owners & Businesses' : 'Owners & Residents'}</div>
+                        </div>
+                    </div>
+                    <div class="rpd-occupants-body" style="display: flex; flex-direction: column; gap: 24px;">
+                        
 
+                        <!-- Owners Section -->
+                        <div>
+                            <div class="rpd-section-label">
+                                <span>${propertyType === 'commercial' ? 'Owners / Proprietors' : 'Owners'}</span>
+                                <span class="rpd-section-badge">${d.owners?.length || 0} Total</span>
+                            </div>
+                            <div style="display: flex; flex-direction: column; gap: 12px;">
+                                ${d.owners && d.owners.length ? d.owners.map((owner, idx) => {
+                                    const cleanName = (owner.name || '').split('<br>')[0].trim();
+                                    return `
+                                    <div class="rpd-item-row">
+                                        <div class="rpd-item-name-wrap">
+                                            <span class="rpd-item-number">${idx + 1}</span>
+                                            <span class="rpd-item-name">${cleanName}</span>
+                                        </div>
+                                        <a href="tel:${owner.phone}" class="rpd-btn-phone">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display: block;"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                                            <span>${owner.phone}</span>
+                                        </a>
+                                    </div>
+                                    `;
+                                }).join('') : `
+                                    <div style="font-size: 15px; font-weight: 600; color: #7A6855; font-style: italic; padding: 4px 8px;">No owners registered.</div>
+                                `}
+                            </div>
+                        </div>
+
+                        <!-- Tenants/Rentals Section -->
+                        <div>
+                            <div class="rpd-section-label">
+                                <span>${propertyType === 'commercial' ? 'Tenants / Businesses' : 'Rentals / Tenants'}</span>
+                                <span class="rpd-section-badge-tenant">${d.rentals?.length || 0} Total</span>
+                            </div>
+                            <div style="display: flex; flex-direction: column; gap: 12px;">
+                                ${d.rentals && d.rentals.length ? d.rentals.map((rental, idx) => {
+                                    const cleanRentalName = (rental.name || '').split('<br>')[0].trim();
+                                    return `
+                                    <div class="rpd-item-row">
+                                        <div class="rpd-item-name-wrap">
+                                            <span class="rpd-item-number-tenant">${idx + 1}</span>
+                                            <span class="rpd-item-name">${cleanRentalName}</span>
+                                        </div>
+                                        <a href="tel:${rental.phone}" class="rpd-btn-phone-tenant">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display: block;"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                                            <span>${rental.phone}</span>
+                                        </a>
+                                    </div>
+                                    `;
+                                }).join('') : `
+                                    <div style="display: flex; align-items: center; gap: 10px; background: rgba(5, 150, 105, 0.06); padding: 14px 18px; border-radius: 18px; border: 1px solid rgba(5, 150, 105, 0.12); color: #059669; font-weight: 800; font-size: 15px;">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 11 2 2 4-4"/></svg>
+                                        <span>Self Occupied / No Tenants</span>
+                                    </div>
+                                `}
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
 
                 <div class="rpd-card rpd-bank-card">
                     <div class="rpd-card-header">
@@ -1272,6 +1379,7 @@ function getEffectiveMonthData(d, period) {
 
     const globalMaintenance = Number(vault[currentSociety]?.config?.monthlyMaintenance || 0);
     const plan = existingMonth.plan || 'monthly';
+    let calculatedAmount;
     if (existingMonth.amount !== undefined && existingMonth.amount !== null && Number(existingMonth.amount) > 0) {
         calculatedAmount = Number(existingMonth.amount);
     } else {
@@ -1284,7 +1392,8 @@ function getEffectiveMonthData(d, period) {
         paidDate: existingMonth.paidDate || '-',
         plan: plan,
         paymentMethod: existingMonth.paymentMethod || d.latestPaymentMethod || 'Cash',
-        owner: (existingMonth && existingMonth.hasOwnProperty('owner') && existingMonth.owner !== null) ? existingMonth.owner : defaultOwner, // Historical owner if exists, else current/resolved
+        owner: (existingMonth && existingMonth.owner && existingMonth.owner.trim() !== '') ? existingMonth.owner : defaultOwner, // Historical owner if exists, else current/resolved
+        resolvedOwner: defaultOwner,
         phone: defaultPhone,
         isRental: defaultIsRental,
         rentalName: defaultRentalName,
@@ -1314,6 +1423,7 @@ function getEffectiveMonthData(d, period) {
                     plan: 'yearly',
                     paymentMethod: m.paymentMethod || 'Cash',
                     owner: m.owner || mData.owner, // Preserve owner in yearly logic
+                    resolvedOwner: mData.resolvedOwner,
                     isRental: mData.isRental,
                     rentalName: mData.rentalName,
                     rentalPhone: mData.rentalPhone,
@@ -1465,8 +1575,70 @@ function displayFlats() {
                 if (mData.isRental === 'Yes') stats.rent++;
             }
 
-            let residentDisplay = `<span class="font-bold text-[#3E2C1C]">${displayOwner || 'Vacant'}</span> ${isOccupied && mData.phone ? `<span class="phone-badge">(${mData.phone})</span>` : ''}`;
-            if (mData.isRental === 'Yes' && mData.rentalName) residentDisplay += `<div class="text-[20px] text-amber-400 mt-1 uppercase tracking-tighter">Tenant: ${mData.rentalName} ${mData.rentalPhone ? `(${mData.rentalPhone})` : ''}</div>`;
+            let residentDisplay = '';
+            let tooltipAttr = '';
+            if (propertyType === 'commercial') {
+                const ownersList = d.owners || [];
+                const tenantsList = d.rentals || [];
+                
+                if (ownersList.length > 1) {
+                    const primaryOwner = ownersList[0];
+                    let collapsedHtml = `<span class="font-bold text-[#3E2C1C]">Owner: ${primaryOwner.name}</span>` + 
+                                       (primaryOwner.phone ? ` <span class="phone-badge">(${primaryOwner.phone})</span>` : '') +
+                                       ` <span class="more-badge" onclick="event.stopPropagation(); toggleResidentView(this)" style="font-size: 16px; font-weight: 800; background: rgba(139,94,60,0.12); color: #8B5E3C; padding: 3px 10px; border-radius: 12px; margin-left: 8px; vertical-align: middle; cursor: pointer; display: inline-block; transition: background 0.2s, transform 0.1s;" onmouseover="this.style.background='rgba(139,94,60,0.22)'; this.style.transform='scale(1.05)'" onmouseout="this.style.background='rgba(139,94,60,0.12)'; this.style.transform='none'">+${ownersList.length - 1} More</span>`;
+                    
+                    let expandedHtml = ownersList.map((o, idx) => `
+                        <div style="margin-bottom: 4px;">
+                            <span class="font-bold text-[#3E2C1C]">Owner ${idx + 1}: ${o.name}</span>
+                            ${o.phone ? ` <span class="phone-badge">(${o.phone})</span>` : ''}
+                        </div>
+                    `).join('') + ` <span class="less-link" onclick="event.stopPropagation(); toggleResidentView(this)" style="font-size: 16px; font-weight: 800; color: #8B5E3C; text-decoration: underline; cursor: pointer; display: inline-block; margin-top: 4px; transition: color 0.2s;" onmouseover="this.style.color='#5b3c1d'" onmouseout="this.style.color='#8B5E3C'">Show Less</span>`;
+                    
+                    residentDisplay = `
+                        <div class="resident-group">
+                            <div class="collapsed-view">${collapsedHtml}</div>
+                            <div class="expanded-view hidden" style="line-height: 1.6;">${expandedHtml}</div>
+                        </div>
+                    `;
+                } else if (ownersList.length === 1) {
+                    const primaryOwner = ownersList[0];
+                    let ownerStr = `<span class="font-bold text-[#3E2C1C]">Owner: ${primaryOwner.name}</span>` + 
+                                   (primaryOwner.phone ? ` <span class="phone-badge">(${primaryOwner.phone})</span>` : '');
+                    residentDisplay = `<div>${ownerStr}</div>`;
+                } else {
+                    residentDisplay = `<div><span class="font-bold text-[#3E2C1C]">${displayOwner || 'Vacant'}</span> ${isOccupied && mData.phone ? `<span class="phone-badge">(${mData.phone})</span>` : ''}</div>`;
+                }
+                
+                if (mData.isRental === 'Yes') {
+                    if (tenantsList.length > 1) {
+                        const primaryTenant = tenantsList[0];
+                        let collapsedTenantHtml = `Tenant: ${primaryTenant.name}` + (primaryTenant.phone ? ` (${primaryTenant.phone})` : '') +
+                                                  ` <span class="more-badge" onclick="event.stopPropagation(); toggleResidentView(this)" style="font-size: 14px; font-weight: 800; background: rgba(196,139,36,0.12); color: #C48B24; padding: 2px 8px; border-radius: 10px; margin-left: 8px; vertical-align: middle; cursor: pointer; display: inline-block; transition: background 0.2s, transform 0.1s;" onmouseover="this.style.background='rgba(196,139,36,0.22)'; this.style.transform='scale(1.05)'" onmouseout="this.style.background='rgba(196,139,36,0.12)'; this.style.transform='none'">+${tenantsList.length - 1} More</span>`;
+                        
+                        let expandedTenantHtml = tenantsList.map((t, idx) => `
+                            <div style="margin-bottom: 2px;">
+                                Tenant ${idx + 1}: ${t.name} ${t.phone ? `(${t.phone})` : ''}
+                            </div>
+                        `).join('') + ` <span class="less-link" onclick="event.stopPropagation(); toggleResidentView(this)" style="font-size: 14px; font-weight: 800; color: #C48B24; text-decoration: underline; cursor: pointer; display: inline-block; margin-top: 4px; transition: color 0.2s;" onmouseover="this.style.color='#9a6409'" onmouseout="this.style.color='#C48B24'">Show Less</span>`;
+                        
+                        residentDisplay += `
+                            <div class="resident-group text-[20px] text-amber-400 mt-1 uppercase tracking-tighter">
+                                <div class="collapsed-view">${collapsedTenantHtml}</div>
+                                <div class="expanded-view hidden" style="line-height: 1.5; text-transform: uppercase;">${expandedTenantHtml}</div>
+                            </div>
+                        `;
+                    } else if (tenantsList.length === 1) {
+                        const primaryTenant = tenantsList[0];
+                        let tenantStr = `Tenant: ${primaryTenant.name}` + (primaryTenant.phone ? ` (${primaryTenant.phone})` : '');
+                        residentDisplay += `<div class="text-[20px] text-amber-400 mt-1 uppercase tracking-tighter">${tenantStr}</div>`;
+                    } else if (mData.rentalName) {
+                        residentDisplay += `<div class="text-[20px] text-amber-400 mt-1 uppercase tracking-tighter">Tenant: ${mData.rentalName} ${mData.rentalPhone ? `(${mData.rentalPhone})` : ''}</div>`;
+                    }
+                }
+            } else {
+                residentDisplay = `<span class="font-bold text-[#3E2C1C]">${displayOwner || 'Vacant'}</span> ${isOccupied && mData.phone ? `<span class="phone-badge">(${mData.phone})</span>` : ''}`;
+                if (mData.isRental === 'Yes' && mData.rentalName) residentDisplay += `<div class="text-[20px] text-amber-400 mt-1 uppercase tracking-tighter">Tenant: ${mData.rentalName} ${mData.rentalPhone ? `(${mData.rentalPhone})` : ''}</div>`;
+            }
 
             const row = tbody.insertRow();
             row.className = `hover:bg-amber-900/5 transition-colors ${isAdmin ? 'cursor-pointer admin-flat-row' : ''} block-row-${block}`;
@@ -1481,7 +1653,7 @@ function displayFlats() {
                 <td class="p-6 font-bold text-[#8B5E3C] whitespace-nowrap">
 ${block}-${flatNum}
 </td>
-                <td class="p-6">${residentDisplay}</td>
+                <td class="p-6"${tooltipAttr}>${residentDisplay}</td>
                 <td class="p-6">
                     <span class="${isOccupied ? (mData.status === 'Paid' ? 'status-pill-paid' : 'status-pill-pending') : 'text-[#9C6B45]'} px-2 py-0.5 rounded-full text-[12px] font-bold">
                         ${isOccupied ? mData.status : '-'}
@@ -1624,6 +1796,18 @@ function handlePeriodChange() {
     }
 }
 
+function toggleResidentView(btn) {
+    const parent = btn.closest('.resident-group');
+    if (parent) {
+        const collapsed = parent.querySelector('.collapsed-view');
+        const expanded = parent.querySelector('.expanded-view');
+        if (collapsed && expanded) {
+            collapsed.classList.toggle('hidden');
+            expanded.classList.toggle('hidden');
+        }
+    }
+}
+
 let flatSaveInProgress = false;
 
 function saveFlat() {
@@ -1642,12 +1826,40 @@ function saveFlat() {
     const residentUsername = credentialsVisible ? document.getElementById('resUsername').value.trim() : '';
     const residentPassword = credentialsVisible ? document.getElementById('resPasswordInput').value.trim() : '';
 
-    if (!ownerName) return showToast("Please fill Owner Name.");
-    if (!phone) return showToast("Please fill Owner Phone Number.");
+    let owners = [];
+    let rentals = [];
+    let isRentalVal = isRental;
 
-    if (isRental === "Yes") {
-        if (!rentalName) return showToast("Please fill Tenant Name.");
-        if (!rentalPhone) return showToast("Please fill Tenant Phone Number.");
+    if (propertyType === 'commercial') {
+        owners = collectCommercialOwners();
+        rentals = collectCommercialRentals();
+
+        if (owners.length === 0 || !owners[0].name) {
+            return showToast("Please fill Owner 1 Name.");
+        }
+        if (!owners[0].phone) {
+            return showToast("Please fill Owner 1 Phone Number.");
+        }
+
+        for (let i = 1; i < owners.length; i++) {
+            if (!owners[i].name) return showToast(`Please fill Owner ${i + 1} Name.`);
+            if (!owners[i].phone) return showToast(`Please fill Owner ${i + 1} Phone Number.`);
+        }
+
+        for (let j = 0; j < rentals.length; j++) {
+            if (!rentals[j].name) return showToast(`Please fill Tenant ${j + 1} Name.`);
+            if (!rentals[j].phone) return showToast(`Please fill Tenant ${j + 1} Phone Number.`);
+        }
+
+        isRentalVal = rentals.length > 0 ? 'Yes' : 'No';
+    } else {
+        if (!ownerName) return showToast("Please fill Owner Name.");
+        if (!phone) return showToast("Please fill Owner Phone Number.");
+
+        if (isRental === "Yes") {
+            if (!rentalName) return showToast("Please fill Tenant Name.");
+            if (!rentalPhone) return showToast("Please fill Tenant Phone Number.");
+        }
     }
 
     if (!maintenanceAmount) return showToast("Please fill Maintenance Amount.");
@@ -1662,6 +1874,14 @@ function saveFlat() {
     const period = `${document.getElementById('editMonth').value}-${document.getElementById('editYear').value}`;
     const status = document.getElementById('maintenance').value;
     const paymentMethod = document.getElementById('paymentMethod').value;
+    const checkedRadio = document.querySelector('input[name="payerRadio"]:checked');
+    const payerInputId = checkedRadio ? checkedRadio.value : 'ownerName';
+    const payerInputEl = document.getElementById(payerInputId);
+    const paidBy = payerInputEl ? payerInputEl.value.trim() : '';
+
+    if (!paidBy) {
+        return showToast("Selected payer's name cannot be empty.");
+    }
 
     const now = new Date();
     const dateStr = status === 'Paid' ? `${String(now.getDate()).padStart(2, '0')}-${String(now.getMonth() + 1).padStart(2, '0')}-${now.getFullYear()}` : '-';
@@ -1688,9 +1908,9 @@ function saveFlat() {
         flat_number: f,
         owner: ownerName,
         phone: phone,
-        isRental: isRental,
-        rentalName: rentalName,
-        rentalPhone: rentalPhone,
+        isRental: isRentalVal,
+        rentalName: propertyType === 'commercial' ? (rentals[0] ? rentals[0].name : '') : rentalName,
+        rentalPhone: propertyType === 'commercial' ? (rentals[0] ? rentals[0].phone : '') : rentalPhone,
         amount: maintenanceAmount,
         period: period,
         status: status,
@@ -1704,7 +1924,10 @@ function saveFlat() {
         transferYear: transferEnabled ? transferYear : null,
         property_type: propertyType,
         residentUsername: residentUsername,
-        residentPassword: residentPassword
+        residentPassword: residentPassword,
+        owners: propertyType === 'commercial' ? owners : null,
+        rentals: propertyType === 'commercial' ? rentals : null,
+        paidBy: paidBy
     };
 
     flatSaveInProgress = true;
@@ -1746,6 +1969,130 @@ function scrollToEdit(b, f) {
     form.classList.remove('hidden');
 }
 
+function getCheckedPayerRadioId() {
+    const checked = document.querySelector('input[name="payerRadio"]:checked');
+    return checked ? checked.value : 'ownerName';
+}
+
+function setCheckedPayerRadioId(id) {
+    if (!id) return;
+    const radio = document.querySelector(`input[name="payerRadio"][value="${id}"]`);
+    if (radio) {
+        radio.checked = true;
+    }
+}
+
+function checkAssociatedRadio(inputId) {
+    const radio = document.querySelector(`input[name="payerRadio"][value="${inputId}"]`);
+    if (radio) {
+        radio.checked = true;
+    }
+}
+window.checkAssociatedRadio = checkAssociatedRadio;
+
+function selectActivePayerRadio(savedPayerName) {
+    const radios = document.querySelectorAll('input[name="payerRadio"]');
+    let matched = false;
+
+    if (savedPayerName) {
+        const cleanSavedPayer = savedPayerName.trim().toLowerCase();
+        for (const radio of radios) {
+            const inputEl = document.getElementById(radio.value);
+            if (inputEl) {
+                const currentName = inputEl.value.trim().toLowerCase();
+                if (currentName === cleanSavedPayer) {
+                    radio.checked = true;
+                    matched = true;
+                    break;
+                }
+            }
+        }
+    }
+
+    if (!matched) {
+        const ownerRadio = document.querySelector('input[name="payerRadio"][value="ownerName"]');
+        if (ownerRadio) {
+            ownerRadio.checked = true;
+        } else if (radios.length > 0) {
+            radios[0].checked = true;
+        }
+    }
+}
+
+function refreshPaidByDropdown() {
+    const paidBySelect = document.getElementById('paidBy');
+    if (!paidBySelect) return;
+    
+    const currentVal = paidBySelect.value;
+    paidBySelect.innerHTML = '';
+    
+    const isComm = propertyType === 'commercial';
+    let payersList = [];
+    
+    // Scrape owners
+    if (isComm) {
+        const owners = collectCommercialOwners();
+        owners.forEach((o, i) => {
+            if (o.name) payersList.push({ name: o.name, role: `Owner ${i + 1}` });
+        });
+    } else {
+        const name = document.getElementById('ownerName').value.trim();
+        if (name) payersList.push({ name, role: 'Owner' });
+    }
+    
+    // Scrape rentals
+    if (isComm) {
+        const rentals = collectCommercialRentals();
+        rentals.forEach((r, i) => {
+            if (r.name) payersList.push({ name: r.name, role: `Tenant ${i + 1}` });
+        });
+    } else {
+        const rentalName = document.getElementById('rentalName').value.trim();
+        if (rentalName) payersList.push({ name: rentalName, role: 'Tenant' });
+    }
+    
+    // Deduplicate
+    const seen = new Set();
+    const uniquePayers = [];
+    payersList.forEach(p => {
+        const cleanName = p.name.trim();
+        if (!seen.has(cleanName.toLowerCase())) {
+            seen.add(cleanName.toLowerCase());
+            uniquePayers.push({ name: cleanName, role: p.role });
+        }
+    });
+    
+    // Ensure we keep the currently saved period payer if it's there
+    const activePeriod = `${document.getElementById('editMonth').value}-${document.getElementById('editYear').value}`;
+    const b = document.getElementById('block').value;
+    const f = document.getElementById('flatNumber').value;
+    const soc = vault[currentSociety];
+    const flatData = soc?.apartmentData?.[b]?.[f];
+    const periodData = flatData?.months?.[activePeriod];
+    if (periodData && periodData.owner && periodData.owner.trim() !== '') {
+        const cleanPayer = periodData.owner.trim();
+        if (!seen.has(cleanPayer.toLowerCase())) {
+            seen.add(cleanPayer.toLowerCase());
+            uniquePayers.push({ name: cleanPayer, role: 'Saved Payer' });
+        }
+    }
+    
+    // Populate select options
+    uniquePayers.forEach(p => {
+        paidBySelect.add(new Option(`${p.name} (${p.role})`, p.name));
+    });
+    
+    // Restore selected value
+    if (currentVal && seen.has(currentVal.toLowerCase())) {
+        paidBySelect.value = currentVal;
+    } else if (periodData && periodData.owner) {
+        paidBySelect.value = periodData.owner;
+    } else if (uniquePayers[0]) {
+        paidBySelect.value = uniquePayers[0].name;
+    }
+}
+window.refreshPaidByDropdown = refreshPaidByDropdown;
+
 function loadFlatData(b, f) {
 
     const soc = vault[currentSociety],
@@ -1754,7 +2101,7 @@ function loadFlatData(b, f) {
     const d = soc.apartmentData[b][f] || { months: {} },
         m = getEffectiveMonthData(d, period);
 
-    document.getElementById('ownerName').value = (m.hasOwnProperty('owner') && m.owner !== null) ? m.owner : (d.owner || '');
+    document.getElementById('ownerName').value = m.resolvedOwner || d.owner || '';
 
     document.getElementById('phone').value = m.phone || d.phone || '';
 
@@ -1764,16 +2111,41 @@ function loadFlatData(b, f) {
 
     document.getElementById('rentalPhone').value = m.rentalPhone || '';
 
+    const isComm = propertyType === 'commercial';
+    const ownerActionRow = document.getElementById('commercialOwnerActionRow');
+    const stdRentalSec = document.getElementById('standardRentalSection');
+    const dynRentalsSec = document.getElementById('dynamicRentalsSection');
+    if (ownerActionRow) ownerActionRow.classList.toggle('hidden', !isComm);
+    if (stdRentalSec) stdRentalSec.classList.toggle('hidden', isComm);
+    if (dynRentalsSec) dynRentalsSec.classList.toggle('hidden', !isComm);
+
+    if (isComm) {
+        let owners = d.owners || [];
+        if (owners.length === 0 && (d.owner || d.phone)) {
+            owners = [{ name: d.owner || '', phone: d.phone || '' }];
+        }
+        let rentals = d.rentals || [];
+        if (rentals.length === 0 && d.isRental === 'Yes' && (d.rentalName || d.rentalPhone)) {
+            rentals = [{ name: d.rentalName || '', phone: d.rentalPhone || '' }];
+        }
+        renderCommercialOwners(owners);
+        renderCommercialRentals(rentals);
+    } else {
+        const dynOwnersCont = document.getElementById('dynamicOwnersContainer');
+        if (dynOwnersCont) dynOwnersCont.classList.add('hidden');
+    }
+
     const hasRealResidentUsername = d.residentUsername && !/^_(owner|tenant|placeholder_owner)_/i.test(d.residentUsername);
     document.getElementById('resUsername').value = hasRealResidentUsername ? d.residentUsername : '';
     document.getElementById('resPasswordInput').value = '';
 
     const resSection = document.getElementById('residentCredentialsSection');
-    if (hasRealResidentUsername) {
-        resSection.style.display = 'none';
-    } else {
-        resSection.style.display = '';
+    if (resSection) {
+        resSection.style.display = hasRealResidentUsername ? 'none' : '';
     }
+
+    // Populate Paid By dropdown dynamically
+    refreshPaidByDropdown();
 
     document.getElementById('maintenance').value =
         m.status || 'Pending';
@@ -1786,7 +2158,11 @@ function loadFlatData(b, f) {
     document.getElementById('paymentMethod').value =
         m.paymentMethod || 'Cash';
 
-    toggleRentalFields();
+    if (!isComm) {
+        toggleRentalFields();
+    }
+
+    selectActivePayerRadio(m.owner || d.owner || '');
 
     // --- Reset ownership transfer section ---
     const enableTransferEl = document.getElementById('enableTransfer');
@@ -2034,10 +2410,11 @@ function generateFlatInputs(blocksVal) {
 
     // Generate Global Inputs based on Property Type
     let globalHtml = '';
-    if (propertyType === 'flat') {
+    if (propertyType === 'flat' || propertyType === 'commercial') {
+        const term = propertyType === 'commercial' ? 'Units' : 'Flats';
         globalHtml = `
             <input id="globalFloors" type="number" min="1" max="99" oninput="applyAllFlats()" placeholder="Floors" style="flex:1; min-width:0; height:48px; padding:8px 12px; border-radius:10px; font-size:15px; font-weight:700;" class="input-field">
-            <input id="globalFlats" type="number" min="1" max="99" oninput="applyAllFlats()" placeholder="Flats/Floor" style="flex:1; min-width:0; height:48px; padding:8px 12px; border-radius:10px; font-size:15px; font-weight:700;" class="input-field">
+            <input id="globalFlats" type="number" min="1" max="99" oninput="applyAllFlats()" placeholder="${term}/Floor" style="flex:1; min-width:0; height:48px; padding:8px 12px; border-radius:10px; font-size:15px; font-weight:700;" class="input-field">
             <select id="globalBase" onchange="applyAllFlats()" style="flex:1.2; min-width:0; height:48px; min-height:48px; padding:0 8px; border-radius:10px; font-size:14px; font-weight:700;" class="input-field">
                 <option value="1">A-1, A-2, A-3...</option>
                 <option value="10" selected>A-11, A-12, A-13...</option>
@@ -2063,16 +2440,17 @@ function generateFlatInputs(blocksVal) {
 
     // Build individual block inputs
     let html = '';
-    container.className = propertyType === 'flat' ? 'grid grid-cols-1 gap-4' : 'grid grid-cols-2 gap-4';
+    container.className = (propertyType === 'flat' || propertyType === 'commercial') ? 'grid grid-cols-1 gap-4' : 'grid grid-cols-2 gap-4';
 
     for (let i = 0; i < blocks; i++) {
         const bName = String.fromCharCode(65 + i);
-        if (propertyType === 'flat') {
+        if (propertyType === 'flat' || propertyType === 'commercial') {
+            const term = propertyType === 'commercial' ? 'Units' : 'Flats';
             html += `
                 <div style="display:flex; gap:8px; align-items:center; background:white; padding:8px 12px; border-radius:12px; border:1px solid rgba(139,94,60,0.15);">
                     <span style="font-size:18px; font-weight:900; color:#8B5E3C; min-width:24px; text-align:center;">${bName}</span>
                     <input id="setupFloors_${bName}" type="number" min="1" max="99" placeholder="Floors" style="flex:1; min-width:0; height:48px; padding:8px 12px; border-radius:10px; font-size:15px; font-weight:700;" class="input-field">
-                    <input id="setupFlats_${bName}" type="number" min="1" max="99" placeholder="Flats/Floor" style="flex:1; min-width:0; height:48px; padding:8px 12px; border-radius:10px; font-size:15px; font-weight:700;" class="input-field">
+                    <input id="setupFlats_${bName}" type="number" min="1" max="99" placeholder="${term}/Floor" style="flex:1; min-width:0; height:48px; padding:8px 12px; border-radius:10px; font-size:15px; font-weight:700;" class="input-field">
                     <select id="setupBase_${bName}" style="flex:1.2; min-width:0; height:48px; min-height:48px; padding:0 8px; border-radius:10px; font-size:14px; font-weight:700;" class="input-field">
                         <option value="1">${bName}-1, ${bName}-2, ${bName}-3...</option>
                         <option value="10" selected>${bName}-11, ${bName}-12, ${bName}-13...</option>
@@ -2117,7 +2495,7 @@ function toggleSameFlats() {
         const blocks = parseInt(document.getElementById('setupBlocks').value) || 0;
         for (let i = 0; i < blocks; i++) {
             const bName = String.fromCharCode(65 + i);
-            if (propertyType === 'flat') {
+            if (propertyType === 'flat' || propertyType === 'commercial') {
                 const elFloors = document.getElementById('setupFloors_' + bName);
                 const elFlats = document.getElementById('setupFlats_' + bName);
                 const elBase = document.getElementById('setupBase_' + bName);
@@ -2135,7 +2513,7 @@ function toggleSameFlats() {
         const blocks = parseInt(document.getElementById('setupBlocks').value) || 0;
         for (let i = 0; i < blocks; i++) {
             const bName = String.fromCharCode(65 + i);
-            if (propertyType === 'flat') {
+            if (propertyType === 'flat' || propertyType === 'commercial') {
                 const elFloors = document.getElementById('setupFloors_' + bName);
                 const elFlats = document.getElementById('setupFlats_' + bName);
                 const elBase = document.getElementById('setupBase_' + bName);
@@ -2156,7 +2534,7 @@ function applyAllFlats() {
 
     const blocks = parseInt(document.getElementById('setupBlocks').value) || 0;
 
-    if (propertyType === 'flat') {
+    if (propertyType === 'flat' || propertyType === 'commercial') {
         const fVal = document.getElementById('globalFloors').value;
         const perFVal = document.getElementById('globalFlats').value;
         const bVal = document.getElementById('globalBase').value;
@@ -2226,13 +2604,14 @@ function runSetup() {
             const bName = String.fromCharCode(65 + i);
             let blockFlats = [];
 
-            if (propertyType === 'flat') {
+            if (propertyType === 'flat' || propertyType === 'commercial') {
                 const floorsEl = document.getElementById('setupFloors_' + bName);
                 const flatsEl = document.getElementById('setupFlats_' + bName);
                 const baseEl = document.getElementById('setupBase_' + bName);
 
+                const unitTerm = propertyType === 'commercial' ? 'units' : 'flats';
                 if (!floorsEl || !floorsEl.value || !flatsEl || !flatsEl.value) {
-                    showSetupErr(`Please specify floors and flats for Block ${bName}.`);
+                    showSetupErr(`Please specify floors and ${unitTerm} for Block ${bName}.`);
                     return;
                 }
 
@@ -2240,8 +2619,9 @@ function runSetup() {
                 const flatsPerFloor = parseInt(flatsEl.value);
                 const base = parseInt(baseEl.value) || 10;
 
+                const singleTerm = propertyType === 'commercial' ? 'unit' : 'flat';
                 if (floors < 1 || flatsPerFloor < 1) {
-                    showSetupErr(`Block ${bName} must have at least 1 floor and 1 flat.`);
+                    showSetupErr(`Block ${bName} must have at least 1 floor and 1 ${singleTerm}.`);
                     return;
                 }
 
@@ -2634,7 +3014,191 @@ function toggleLoginMode() {
     document.getElementById('loginInterface').classList.remove('hidden');
     clearLoginForms();
 }
-function toggleRentalFields() { document.getElementById('rentalInputs').classList.toggle('hidden', document.getElementById('isRental').value === 'No'); }
+function toggleRentalFields() {
+    const isRental = document.getElementById('isRental').value;
+    document.getElementById('rentalInputs').classList.toggle('hidden', isRental === 'No');
+    if (isRental === 'No') {
+        const currentPayerId = getCheckedPayerRadioId();
+        if (currentPayerId === 'rentalName') {
+            setCheckedPayerRadioId('ownerName');
+        }
+    }
+}
+
+function renderCommercialOwners(owners) {
+    if (owners && owners.length > 0) {
+        document.getElementById('ownerName').value = owners[0].name || '';
+        document.getElementById('phone').value = owners[0].phone || '';
+    }
+
+    const dynamicOwnersContainer = document.getElementById('dynamicOwnersContainer');
+    dynamicOwnersContainer.innerHTML = '';
+    if (owners.length > 1) {
+        dynamicOwnersContainer.classList.remove('hidden');
+        for (let i = 2; i <= owners.length; i++) {
+            const owner = owners[i - 1] || { name: '', phone: '' };
+            const div = document.createElement('div');
+            div.className = "grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 p-4 rounded-xl border border-amber-900/10 bg-amber-900/5 relative";
+            div.innerHTML = `
+                <div>
+                    <span style="font-size:14px; font-weight:900; color:#8B5E3C; display:block; margin-bottom:8px;">
+                        Owner / Proprietor ${i} Name
+                    </span>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <input type="radio" name="payerRadio" value="ownerName_${i}" class="payer-radio-btn" title="Set as Payer">
+                        <input id="ownerName_${i}" type="text" maxlength="30" class="p-4 rounded-xl input-field w-full" value="${owner.name || ''}" onfocus="checkAssociatedRadio('ownerName_${i}')">
+                    </div>
+                </div>
+                <div class="relative">
+                    <span style="font-size:14px; font-weight:900; color:#8B5E3C; display:block; margin-bottom:8px;">
+                        Owner / Proprietor ${i} Phone
+                    </span>
+                    <div class="flex gap-2">
+                        <input id="phone_${i}" type="text" maxlength="10" class="p-4 rounded-xl input-field w-full" value="${owner.phone || ''}">
+                        <button type="button" onclick="removeCommercialOwner(${i - 1})" class="p-3 bg-red-950/10 hover:bg-red-950/20 text-red-700 rounded-xl font-bold flex items-center justify-center" style="min-width:44px;" title="Remove Owner">
+                            🗑️
+                        </button>
+                    </div>
+                </div>
+            `;
+            dynamicOwnersContainer.appendChild(div);
+        }
+    } else {
+        dynamicOwnersContainer.classList.add('hidden');
+    }
+
+    const addOwnerBtnRow = document.getElementById('commercialOwnerActionRow');
+    if (addOwnerBtnRow) {
+        addOwnerBtnRow.classList.toggle('hidden', owners.length >= 5);
+    }
+}
+
+function renderCommercialRentals(rentals) {
+    const dynamicRentalsContainer = document.getElementById('dynamicRentalsContainer');
+    dynamicRentalsContainer.innerHTML = '';
+    if (rentals.length > 0) {
+        for (let j = 1; j <= rentals.length; j++) {
+            const tenant = rentals[j - 1] || { name: '', phone: '' };
+            const div = document.createElement('div');
+            div.className = "grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 p-4 rounded-xl border border-amber-900/10 bg-amber-900/5 relative";
+            div.innerHTML = `
+                <div>
+                    <span style="font-size:14px; font-weight:900; color:#8B5E3C; display:block; margin-bottom:8px;">
+                        Tenant / Business ${j} Name
+                    </span>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <input type="radio" name="payerRadio" value="rentalName_${j}" class="payer-radio-btn" title="Set as Payer">
+                        <input id="rentalName_${j}" type="text" maxlength="30" class="p-4 rounded-xl input-field w-full" value="${tenant.name || ''}" onfocus="checkAssociatedRadio('rentalName_${j}')">
+                    </div>
+                </div>
+                <div class="relative">
+                    <span style="font-size:14px; font-weight:900; color:#8B5E3C; display:block; margin-bottom:8px;">
+                        Tenant / Business ${j} Phone
+                    </span>
+                    <div class="flex gap-2">
+                        <input id="rentalPhone_${j}" type="text" maxlength="10" class="p-4 rounded-xl input-field w-full" value="${tenant.phone || ''}">
+                        <button type="button" onclick="removeCommercialRental(${j - 1})" class="p-3 bg-red-950/10 hover:bg-red-950/20 text-red-700 rounded-xl font-bold flex items-center justify-center" style="min-width:44px;" title="Remove Tenant">
+                            🗑️
+                        </button>
+                    </div>
+                </div>
+            `;
+            dynamicRentalsContainer.appendChild(div);
+        }
+    }
+
+    const addRentalBtn = document.getElementById('addRentalBtn');
+    if (addRentalBtn) {
+        addRentalBtn.style.display = rentals.length >= 5 ? 'none' : '';
+    }
+}
+
+function addCommercialOwner() {
+    const owners = collectCommercialOwners();
+    if (owners.length >= 5) {
+        showToast("Maximum 5 owners allowed.", "error");
+        return;
+    }
+    const currentPayerId = getCheckedPayerRadioId();
+    owners.push({ name: '', phone: '' });
+    renderCommercialOwners(owners);
+    setCheckedPayerRadioId(currentPayerId);
+}
+
+function removeCommercialOwner(idx) {
+    const owners = collectCommercialOwners();
+    const currentPayerId = getCheckedPayerRadioId();
+    owners.splice(idx, 1);
+    renderCommercialOwners(owners);
+    
+    if (currentPayerId === `ownerName_${idx + 1}`) {
+        setCheckedPayerRadioId('ownerName');
+    } else {
+        setCheckedPayerRadioId(currentPayerId);
+    }
+}
+
+function addCommercialRental() {
+    const rentals = collectCommercialRentals();
+    if (rentals.length >= 5) {
+        showToast("Maximum 5 tenants allowed.", "error");
+        return;
+    }
+    const currentPayerId = getCheckedPayerRadioId();
+    rentals.push({ name: '', phone: '' });
+    renderCommercialRentals(rentals);
+    setCheckedPayerRadioId(currentPayerId);
+}
+
+// Function helper to handle removal of rental at index
+function removeCommercialRental(idx) {
+    const rentals = collectCommercialRentals();
+    const currentPayerId = getCheckedPayerRadioId();
+    rentals.splice(idx, 1);
+    renderCommercialRentals(rentals);
+    
+    if (currentPayerId === `rentalName_${idx + 1}`) {
+        setCheckedPayerRadioId('ownerName');
+    } else {
+        setCheckedPayerRadioId(currentPayerId);
+    }
+}
+
+function collectCommercialOwners() {
+    const owners = [];
+    const oName1 = document.getElementById('ownerName').value.trim();
+    const phone1 = document.getElementById('phone').value.trim();
+    owners.push({ name: oName1, phone: phone1 });
+
+    let idx = 2;
+    while (true) {
+        const nameEl = document.getElementById(`ownerName_${idx}`);
+        const phoneEl = document.getElementById(`phone_${idx}`);
+        if (!nameEl) break;
+        owners.push({
+            name: nameEl.value.trim(),
+            phone: phoneEl.value.trim()
+        });
+        idx++;
+    }
+    return owners;
+}
+
+function collectCommercialRentals() {
+    const rentals = [];
+    let idx = 1;
+    while (true) {
+        const nameEl = document.getElementById(`rentalName_${idx}`);
+        const phoneEl = document.getElementById(`rentalPhone_${idx}`);
+        if (!nameEl) break;
+        rentals.push({
+            name: nameEl.value.trim(),
+            phone: phoneEl.value.trim()
+        });
+        idx++;
+    }
+    return rentals;
+}
 function closeForm() {
     const form = document.getElementById('adminForm');
     if (form) {
@@ -2733,7 +3297,7 @@ function sendNotice(p, s, n, a, d, block, flat) {
 
     const period = `${month}-${year}`;
     const flatData = vault[currentSociety]?.apartmentData?.[block]?.[flat] || {};
-    const monthData = flatData.months?.[period] || {};
+    const monthData = getEffectiveMonthData(flatData, period);
 
     const planText =
         monthData.plan === "yearly"
@@ -2776,17 +3340,17 @@ function exportToExcel() {
         let flatList = getFlatList(blockConfig);
 
         for (let flatNum of flatList) {
-            let f = soc.apartmentData[b][flatNum] || {}, md = (f.months && f.months[period]) || {};
-            const displayOwner = (f.months && f.months[period] && f.months[period].owner) || f.owner || '';
-            const isOccupied = (displayOwner && displayOwner.trim() !== "");
+            let f = soc.apartmentData[b][flatNum] || {};
+            const mData = getEffectiveMonthData(f, period);
+            const isOccupied = (mData.owner && mData.owner.trim() !== "");
             
             maintenanceData.push({
                 [translateTerm("Flat")]: `${b}-${flatNum}`,
-                Owner: displayOwner || '-',
-                Status: isOccupied ? (md.status || 'Pending') : '-',
-                Amount: isOccupied ? (md.amount || 0) : '-',
-                "Payment Method": md.paymentMethod || '-',
-                "Paid Date": md.paidDate || '-'
+                Owner: mData.owner || '-',
+                Status: isOccupied ? (mData.status || 'Pending') : '-',
+                Amount: isOccupied ? (mData.amount || 0) : '-',
+                "Payment Method": isOccupied && mData.status === 'Paid' ? (mData.paymentMethod || '-') : '-',
+                "Paid Date": isOccupied && mData.status === 'Paid' ? (mData.paidDate || '-') : '-'
             });
         }
     });
@@ -2897,12 +3461,7 @@ function checkMaintenanceDueAlerts() {
             const period =
                 `${document.getElementById('viewMonth').value}-${document.getElementById('viewYear').value}`;
 
-            const mData =
-                (d.months && d.months[period])
-                    ? d.months[period]
-                    : null;
-
-            if (!mData) return;
+            const mData = getEffectiveMonthData(d, period);
 
             const displayOwner = mData.owner || d.owner || '';
             if (!displayOwner || displayOwner.trim() === "") return;
@@ -3462,15 +4021,17 @@ function renderRules() {
     ];
 
     if (!soc.rules || soc.rules.length === 0) {
-        // If no rules, persist default rules one by one
-        defaultRules.forEach(r => {
-            Api.saveRule({
-                society_name: currentSociety,
-                title: r.title,
-                details: r.details,
-                date: "Default Rule"
+        if (isAdmin) {
+            // If no rules, persist default rules one by one
+            defaultRules.forEach(r => {
+                Api.saveRule({
+                    society_name: currentSociety,
+                    title: r.title,
+                    details: r.details,
+                    date: "Default Rule"
+                });
             });
-        });
+        }
         // We don't call loadDashboardData here to avoid loops, 
         // the user will see them on next refresh or we can manually push them
         soc.rules = defaultRules;
@@ -4690,6 +5251,28 @@ document.addEventListener('click', function(event) {
     }
 });
 
+// Prevent modal closing on accidental clicks (e.g. Chrome autofill click, drag-selection)
+let activeBackdropMouseDownElement = null;
+
+document.addEventListener('mousedown', function(e) {
+    if (e.target.classList.contains('modal-backdrop')) {
+        activeBackdropMouseDownElement = e.target;
+    } else {
+        activeBackdropMouseDownElement = null;
+    }
+}, true);
+
+document.addEventListener('click', function(e) {
+    if (e.target.classList.contains('modal-backdrop')) {
+        if (e.target !== activeBackdropMouseDownElement) {
+            e.preventDefault();
+            e.stopPropagation();
+            e.stopImmediatePropagation();
+            return false;
+        }
+    }
+}, true);
+
 // Watch setupInterface visibility to toggle zoom class on body
 const setupInterfaceEl = document.getElementById('setupInterface');
 if (setupInterfaceEl) {
@@ -4705,6 +5288,20 @@ if (setupInterfaceEl) {
     if (!setupInterfaceEl.classList.contains('hidden')) {
         document.body.classList.add('society-portal-active');
     }
+}
+
+// Open date picker when clicking anywhere on the Global Due Date field
+const globalDueDateEl = document.getElementById('globalDueDate');
+if (globalDueDateEl) {
+    globalDueDateEl.addEventListener('click', function() {
+        if (typeof this.showPicker === 'function') {
+            try {
+                this.showPicker();
+            } catch (err) {
+                console.error('Failed to open date picker:', err);
+            }
+        }
+    });
 }
 
 // Initialize the application

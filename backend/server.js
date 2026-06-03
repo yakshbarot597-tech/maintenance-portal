@@ -313,16 +313,20 @@ const verifyToken = (req, res, next) => {
         return next();
     }
 
+    console.log(`[verifyToken] path: ${req.path}, method: ${req.method}`);
     const authHeader = req.headers['authorization'];
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        console.log(`[verifyToken] Rejected: No token or bad format for path ${req.path}`);
         return res.status(401).json({ success: false, message: 'No token provided. Please log in.' });
     }
 
     const token = authHeader.split(' ')[1];
     jwt.verify(token, JWT_SECRET, (err, decoded) => {
         if (err) {
+            console.log(`[verifyToken] Rejected: JWT verify error: ${err.message} for path ${req.path}`);
             return res.status(401).json({ success: false, message: 'Session expired. Please log in again.' });
         }
+        console.log(`[verifyToken] Success: user: ${JSON.stringify(decoded)} for path ${req.path}`);
         req.user = decoded;
         next();
     });
@@ -1050,6 +1054,69 @@ const initDB = async () => {
 
 waitForDB(); // Waits for MySQL to be ready, then calls initDB()
 
+function getDbPropertyType(type) {
+    if (!type) return 'flat';
+    const t = type.toLowerCase();
+    if (t === 'commercial') return 'shop';
+    if (t === 'bungalow') return 'villa';
+    return t;
+}
+
+function getClientPropertyType(type) {
+    if (!type) return 'flat';
+    const t = type.toLowerCase();
+    if (t === 'shop') return 'commercial';
+    if (t === 'villa') return 'bungalow';
+    return t;
+}
+
+// Global Property Type mapping middleware to bridge 'commercial' <-> 'shop' and 'bungalow' <-> 'villa'
+app.use((req, res, next) => {
+    if (req.query) {
+        if (req.query.property_type) req.query.property_type = getDbPropertyType(req.query.property_type);
+        if (req.query.propertyType) req.query.propertyType = getDbPropertyType(req.query.propertyType);
+        if (req.query.type) req.query.type = getDbPropertyType(req.query.type);
+    }
+    if (req.body) {
+        if (req.body.property_type) req.body.property_type = getDbPropertyType(req.body.property_type);
+        if (req.body.propertyType) req.body.propertyType = getDbPropertyType(req.body.propertyType);
+        if (req.body.type) req.body.type = getDbPropertyType(req.body.type);
+    }
+    if (req.params) {
+        if (req.params.property_type) req.params.property_type = getDbPropertyType(req.params.property_type);
+        if (req.params.propertyType) req.params.propertyType = getDbPropertyType(req.params.propertyType);
+        if (req.params.type) req.params.type = getDbPropertyType(req.params.type);
+    }
+
+    // Intercept JSON responses to map database property types back to client types
+    const originalJson = res.json;
+    res.json = function (data) {
+        if (data && typeof data === 'object') {
+            const mapObj = (obj) => {
+                if (!obj) return;
+                if (Array.isArray(obj)) {
+                    obj.forEach(mapObj);
+                } else if (typeof obj === 'object') {
+                    if (obj.hasOwnProperty('property_type') && obj.property_type) {
+                        obj.property_type = getClientPropertyType(obj.property_type);
+                    }
+                    if (obj.hasOwnProperty('propertyType') && obj.propertyType) {
+                        obj.propertyType = getClientPropertyType(obj.propertyType);
+                    }
+                    Object.keys(obj).forEach(key => {
+                        const val = obj[key];
+                        if (val && typeof val === 'object') mapObj(val);
+                    });
+                }
+            };
+            mapObj(data);
+        }
+        return originalJson.call(this, data);
+    };
+
+    next();
+});
+
 // --- API ENDPOINTS ---
 const API_ROUTES = require("./api-routes");
 
@@ -1062,6 +1129,7 @@ app.get("/api", (req, res) => {
 // Setup Society
 app.post("/api/setup", async (req, res) => {
     const { society_name, blocks, flats, username, password, property_type } = req.body;
+    const dbPropType = getDbPropertyType(property_type);
 
     const passRegex = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[^a-zA-Z0-9]).{5,}$/;
     if (password && !passRegex.test(password)) {
@@ -1074,7 +1142,7 @@ app.post("/api/setup", async (req, res) => {
             "SELECT id, property_type, address FROM societies WHERE society_name=?",
             [society_name]
         );
-        if (socRows.length > 0 && socRows[0].property_type !== (property_type || 'flat')) {
+        if (socRows.length > 0 && socRows[0].property_type !== dbPropType) {
             return res.json({ success: false, error: "A society with this name already exists." });
         }
         let existingSocId = socRows.length > 0 ? socRows[0].id : null;
@@ -1118,8 +1186,8 @@ app.post("/api/setup", async (req, res) => {
              VALUES (?, ?, ?, ?, ?, ?) 
              ON DUPLICATE KEY UPDATE total_blocks=?, total_units=?, default_due_day=?, property_type=?, address=?`,
             [
-                society_name, blocks, totalUnits, req.body.default_due_day || 1, property_type || 'flat', addressJSON,
-                blocks, totalUnits, req.body.default_due_day || 1, property_type || 'flat', addressJSON
+                society_name, blocks, totalUnits, req.body.default_due_day || 1, dbPropType, addressJSON,
+                blocks, totalUnits, req.body.default_due_day || 1, dbPropType, addressJSON
             ]
         );
 
@@ -1168,7 +1236,7 @@ app.post("/api/setup", async (req, res) => {
 // Login
 app.post("/api/login", async (req, res) => {
     const { user, pass, property_type } = req.body;
-    const propType = (property_type || 'flat').toLowerCase();
+    const propType = getDbPropertyType(property_type);
     try {
         const [result] = await db.promise().query(
             `SELECT s.*, u.username AS admin_username, u.password_hash AS admin_password 
@@ -1209,7 +1277,7 @@ app.post("/api/login", async (req, res) => {
         soc.qr_code = qrCode;
 
         // Ensure the admin's society matches the selected portal type (flat vs bungalow)
-        if ((soc.property_type || 'flat').toLowerCase() !== propType) {
+        if (getDbPropertyType(soc.property_type) !== propType) {
             return res.json({ success: false, message: "Username not found" });
         }
 
@@ -1224,6 +1292,8 @@ app.post("/api/login", async (req, res) => {
             { expiresIn: '24h' }
         );
 
+        soc.property_type = getClientPropertyType(soc.property_type);
+
         res.json({ success: true, society: soc, token });
     } catch (err) {
         console.error(err);
@@ -1233,24 +1303,29 @@ app.post("/api/login", async (req, res) => {
 
 app.post("/api/resident-login", async (req, res) => {
     const { username, password, property_type } = req.body;
-    const propType = (property_type || 'flat').toLowerCase();
+    console.log(`[resident-login] Attempt: username=${username}, property_type=${property_type}`);
+    const propType = getDbPropertyType(property_type);
+    console.log(`[resident-login] Mapped propType=${propType}`);
 
     try {
         const [flatRows] = await db.promise().query(
             `SELECT u.id AS unit_id, u.society_id, u.unit_number, 
-                    b.block_name,
-                    us.username AS resident_username, us.password_hash AS resident_password,
-                    s.society_name, s.property_type
-             FROM units u
-             JOIN unit_residents ur ON u.id = ur.unit_id
-             JOIN users us ON ur.user_id = us.id
-             JOIN societies s ON u.society_id = s.id
-             LEFT JOIN blocks b ON u.block_id = b.id
-             WHERE LOWER(us.username)=? AND us.role='resident' AND ur.is_active=1`,
+                     b.block_name,
+                     us.username AS resident_username, us.password_hash AS resident_password,
+                     s.society_name, s.property_type
+              FROM units u
+              JOIN unit_residents ur ON u.id = ur.unit_id
+              JOIN users us ON ur.user_id = us.id
+              JOIN societies s ON u.society_id = s.id
+              LEFT JOIN blocks b ON u.block_id = b.id
+              WHERE LOWER(us.username)=? AND us.role='resident' AND ur.is_active=1`,
             [(username || "").trim().toLowerCase()]
         );
 
+        console.log(`[resident-login] Query found ${flatRows.length} matching active resident user(s)`);
+
         if (flatRows.length === 0) {
+            console.log(`[resident-login] Failed: No active resident user found with username LOWER(${username})`);
             return res.json({
                 success: false,
                 message: "Username or password is incorrect"
@@ -1258,9 +1333,11 @@ app.post("/api/resident-login", async (req, res) => {
         }
 
         const flatRow = flatRows[0];
+        console.log(`[resident-login] Found flatRow: username=${flatRow.resident_username}, society_property_type=${flatRow.property_type}`);
 
         // Ensure the resident's society matches the selected portal type (flat vs bungalow)
-        if ((flatRow.property_type || 'flat').toLowerCase() !== propType) {
+        if (getDbPropertyType(flatRow.property_type) !== propType) {
+            console.log(`[resident-login] Failed: Property type mismatch. getDbPropertyType(${flatRow.property_type}) !== ${propType}`);
             return res.json({
                 success: false,
                 message: "Username or password is incorrect"
@@ -1268,6 +1345,7 @@ app.post("/api/resident-login", async (req, res) => {
         }
 
         if (!flatRow.resident_password) {
+            console.log(`[resident-login] Failed: No password hash stored for user`);
             return res.json({
                 success: false,
                 message: "Username or password is incorrect"
@@ -1275,7 +1353,9 @@ app.post("/api/resident-login", async (req, res) => {
         }
 
         const match = await bcryptjs.compare(password, flatRow.resident_password);
+        console.log(`[resident-login] password matches? ${match}`);
         if (!match) {
+            console.log(`[resident-login] Failed: Password mismatch`);
             return res.json({
                 success: false,
                 message: "Username or password is incorrect"
@@ -1295,7 +1375,7 @@ app.post("/api/resident-login", async (req, res) => {
         res.json({
             success: true,
             society: flatRow.society_name,
-            property_type: flatRow.property_type,
+            property_type: getClientPropertyType(flatRow.property_type),
             block: flatRow.block_name || block,
             flat: parseInt(flatNumber) || flatNumber,
             token
@@ -1320,7 +1400,7 @@ app.get("/api/society/:name/:type", async (req, res) => {
     const type = req.params.type;
 
     try {
-        const [societies] = await db.promise().query("SELECT * FROM societies WHERE society_name=? AND property_type=?", [name, type]);
+        const [societies] = await db.promise().query("SELECT * FROM societies WHERE society_name=? AND property_type=?", [name, getDbPropertyType(type)]);
         if (societies.length === 0) return res.status(404).send("Society not found");
 
         const society = societies[0];
@@ -1429,7 +1509,9 @@ app.get("/api/society/:name/:type", async (req, res) => {
                     past_owner_phone: '',
                     past_rental_name: '',
                     past_rental_phone: '',
-                    transfer_period: null
+                    transfer_period: null,
+                    owners: [],
+                    rentals: []
                 };
 
                 if (latestInvoiceMap[uId]) {
@@ -1439,6 +1521,9 @@ app.get("/api/society/:name/:type", async (req, res) => {
             }
 
             if (r.resident_type === 'owner') {
+                if (r.ur_is_active === 1) {
+                    flatMap[uId].owners.push({ name: r.full_name || '', phone: r.phone || '', username: r.username || '' });
+                }
                 if (r.is_primary === 1) {
                     flatMap[uId].owner_name = r.full_name || '';
                     flatMap[uId].phone = r.phone || '';
@@ -1452,9 +1537,12 @@ app.get("/api/society/:name/:type", async (req, res) => {
                 }
             } else if (r.resident_type === 'tenant') {
                 if (r.ur_is_active === 1) {
-                    flatMap[uId].is_rental = 'Yes';
-                    flatMap[uId].rental_name = r.full_name || '';
-                    flatMap[uId].rental_phone = r.phone || '';
+                    flatMap[uId].rentals.push({ name: r.full_name || '', phone: r.phone || '' });
+                    if (!flatMap[uId].rental_name) {
+                        flatMap[uId].is_rental = 'Yes';
+                        flatMap[uId].rental_name = r.full_name || '';
+                        flatMap[uId].rental_phone = r.phone || '';
+                    }
                 } else {
                     flatMap[uId].past_rental_name = r.full_name || '';
                     flatMap[uId].past_rental_phone = r.phone || '';
@@ -1638,6 +1726,8 @@ app.get("/api/society/:name/:type", async (req, res) => {
                 pastRentalName: flat.past_rental_name,
                 pastRentalPhone: flat.past_rental_phone,
                 transferPeriod: flat.transfer_period,
+                owners: flat.owners || [],
+                rentals: flat.rentals || [],
                 months: maintenanceMap[`${flat.block}-${flat.flat_number}`] || {}
             };
         }
@@ -1661,7 +1751,7 @@ app.get("/api/society/:name/:type", async (req, res) => {
                 flats: parsedFlats,
                 user: adminCred.admin_username,
                 defaultDueDay: society.default_due_day,
-                propertyType: society.property_type || 'flat',
+                propertyType: getClientPropertyType(society.property_type),
                 monthlyMaintenance: society.monthly_maintenance ? Number(society.monthly_maintenance) : 0.00
             },
             bank: {
@@ -1685,7 +1775,8 @@ app.get("/api/society/:name/:type", async (req, res) => {
 
 // Save/Update Flat
 app.post("/api/flat", async (req, res) => {
-    const { society_name, block, flat_number, owner, phone, isRental, rentalName, rentalPhone, amount, period, status, plan, paymentMethod, dateStr, futureOwner, futureOwnerPhone, transferMonth, transferYear, property_type, residentUsername, residentPassword } = req.body;
+    console.log("--- SAVE FLAT API CALLED WITH BODY:", req.body);
+    const { society_name, block, flat_number, owner, phone, isRental, rentalName, rentalPhone, amount, period, status, plan, paymentMethod, dateStr, futureOwner, futureOwnerPhone, transferMonth, transferYear, property_type, residentUsername, residentPassword, paidBy } = req.body;
 
     const passRegex = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[^a-zA-Z0-9]).{5,}$/;
     if (residentPassword && !passRegex.test(residentPassword)) {
@@ -1747,27 +1838,22 @@ app.post("/api/flat", async (req, res) => {
             unitId = unitInsert.insertId;
         }
 
-        // Find existing primary owner
-        const [primaryOwnerRows] = await db.promise().query(
-            `SELECT ur.user_id 
+        // Fetch active residents for the unit
+        const [activeResidents] = await db.promise().query(
+            `SELECT ur.id AS ur_id, ur.user_id, ur.resident_type, ur.is_primary, us.full_name, us.phone 
              FROM unit_residents ur 
-             WHERE ur.unit_id=? AND ur.resident_type='owner' AND ur.is_primary=1 AND ur.is_active=1`,
+             JOIN users us ON ur.user_id = us.id 
+             WHERE ur.unit_id=? AND ur.is_active=1`,
             [unitId]
         );
+        const activeOwners = activeResidents.filter(r => r.resident_type === 'owner');
+        const activeTenants = activeResidents.filter(r => r.resident_type === 'tenant');
 
-        let ownerUserId = null;
-        if (primaryOwnerRows.length > 0) {
-            ownerUserId = primaryOwnerRows[0].user_id;
-        }
+        const primaryOwner = activeOwners.find(o => o.is_primary === 1) || activeOwners[0];
+        const ownerUserId = primaryOwner ? primaryOwner.user_id : null;
 
-        // Find existing primary tenant (rental)
-        const [tenantRows] = await db.promise().query(
-            `SELECT ur.user_id 
-             FROM unit_residents ur 
-             WHERE ur.unit_id=? AND ur.resident_type='tenant' AND ur.is_active=1`,
-            [unitId]
-        );
-        const tenantUserId = tenantRows.length > 0 ? tenantRows[0].user_id : null;
+        const primaryTenant = activeTenants.find(t => t.is_primary === 1) || activeTenants[0];
+        const tenantUserId = primaryTenant ? primaryTenant.user_id : null;
 
         const dbUsername = (residentUsername && residentUsername.trim() !== "") ? residentUsername.trim() : null;
 
@@ -1844,69 +1930,118 @@ app.post("/api/flat", async (req, res) => {
                 [unitId, newOwnerUserId, moveInDateNew]
             );
         } else {
-            // Simple update of current owner
-            if (ownerUserId) {
-                // Update existing user details
-                let updateSql = "UPDATE users SET full_name=?, phone=?";
-                let params = [ultimateOwner, ultimatePhone];
-                if (dbUsername) {
-                    updateSql += ", username=?";
-                    params.push(dbUsername);
+            let bodyOwners = req.body.owners;
+            if (bodyOwners === undefined) {
+                if (property_type === 'shop' || property_type === 'commercial') {
+                    bodyOwners = activeOwners.map(o => ({ name: o.full_name, phone: o.phone }));
+                } else {
+                    bodyOwners = [];
+                    if (ultimateOwner) {
+                        bodyOwners.push({ name: ultimateOwner, phone: ultimatePhone });
+                    }
                 }
-                if (residentPassHash) {
-                    updateSql += ", password_hash=?";
-                    params.push(residentPassHash);
+            } else if (!bodyOwners || !Array.isArray(bodyOwners)) {
+                bodyOwners = [];
+                if (ultimateOwner) {
+                    bodyOwners.push({ name: ultimateOwner, phone: ultimatePhone });
                 }
-                updateSql += " WHERE id=?";
-                params.push(ownerUserId);
-                await db.promise().query(updateSql, params);
-            } else {
-                // Create user and link if not exists
-                const fallbackUsername = dbUsername || `_owner_${unitId}_${Date.now()}`;
-                const [userInsert] = await db.promise().query(
-                    `INSERT INTO users (society_id, username, phone, password_hash, full_name, role)
-                     VALUES (?, ?, ?, ?, ?, 'resident')`,
-                    [socId, fallbackUsername, ultimatePhone, residentPassHash || 'dummy', ultimateOwner]
-                );
-                const newOwnerUserId = userInsert.insertId;
-
-                await db.promise().query(
-                    `INSERT INTO unit_residents (unit_id, user_id, resident_type, is_primary, move_in_date)
-                     VALUES (?, ?, 'owner', 1, '2020-01-01')`,
-                    [unitId, newOwnerUserId]
-                );
             }
-        }
 
-        // Handle Tenant (rental) Update (only if this is not a scheduled ownership transfer)
-        if (!futureOwner) {
-            if (isRental === 'Yes') {
-                if (tenantUserId) {
+            let bodyRentals = req.body.rentals;
+            if (bodyRentals === undefined) {
+                if (property_type === 'shop' || property_type === 'commercial') {
+                    bodyRentals = activeTenants.map(t => ({ name: t.full_name, phone: t.phone }));
+                } else {
+                    bodyRentals = [];
+                    if (isRental === 'Yes' && rentalName) {
+                        bodyRentals.push({ name: rentalName, phone: rentalPhone });
+                    }
+                }
+            } else if (!bodyRentals || !Array.isArray(bodyRentals)) {
+                bodyRentals = [];
+                if (isRental === 'Yes' && rentalName) {
+                    bodyRentals.push({ name: rentalName, phone: rentalPhone });
+                }
+            }
+
+            // 1. Process Owners (if not ownership transfer)
+            for (let i = 0; i < bodyOwners.length; i++) {
+                const ownerData = bodyOwners[i];
+                if (i < activeOwners.length) {
+                    const existingUser = activeOwners[i];
+                    let updateSql = "UPDATE users SET full_name=?, phone=?";
+                    let params = [ownerData.name, ownerData.phone];
+                    if (i === 0) {
+                        if (dbUsername) {
+                            updateSql += ", username=?";
+                            params.push(dbUsername);
+                        }
+                        if (residentPassHash) {
+                            updateSql += ", password_hash=?";
+                            params.push(residentPassHash);
+                        }
+                    }
+                    updateSql += " WHERE id=?";
+                    params.push(existingUser.user_id);
+                    await db.promise().query(updateSql, params);
+                } else {
+                    let oUsername = (i === 0 && dbUsername) ? dbUsername : `_owner_${unitId}_${i}_${Date.now()}`;
+                    let oPass = (i === 0 && residentPassHash) ? residentPassHash : 'dummy';
+                    const [userInsert] = await db.promise().query(
+                        `INSERT INTO users (society_id, username, phone, password_hash, full_name, role)
+                         VALUES (?, ?, ?, ?, ?, 'resident')`,
+                        [socId, oUsername, ownerData.phone, oPass, ownerData.name]
+                    );
+                    const newOwnerUserId = userInsert.insertId;
+
+                    await db.promise().query(
+                        `INSERT INTO unit_residents (unit_id, user_id, resident_type, is_primary, move_in_date)
+                         VALUES (?, ?, 'owner', ?, '2020-01-01')`,
+                        [unitId, newOwnerUserId, i === 0 ? 1 : 0]
+                    );
+                }
+            }
+            if (activeOwners.length > bodyOwners.length) {
+                for (let i = bodyOwners.length; i < activeOwners.length; i++) {
+                    const extraUser = activeOwners[i];
+                    await db.promise().query(
+                        "UPDATE unit_residents SET is_active=0, move_out_date=NOW() WHERE unit_id=? AND user_id=?",
+                        [unitId, extraUser.user_id]
+                    );
+                }
+            }
+
+            // 2. Process Tenants/Rentals
+            for (let j = 0; j < bodyRentals.length; j++) {
+                const rentalData = bodyRentals[j];
+                if (j < activeTenants.length) {
+                    const existingUser = activeTenants[j];
                     await db.promise().query(
                         "UPDATE users SET full_name=?, phone=? WHERE id=?",
-                        [rentalName, rentalPhone, tenantUserId]
+                        [rentalData.name, rentalData.phone, existingUser.user_id]
                     );
                 } else {
-                    const tenantUsername = `_tenant_${unitId}_${Date.now()}`;
+                    const tenantUsername = `_tenant_${unitId}_${j}_${Date.now()}`;
                     const [tenantInsert] = await db.promise().query(
                         `INSERT INTO users (society_id, username, phone, password_hash, full_name, role)
                          VALUES (?, ?, ?, 'dummy', ?, 'resident')`,
-                        [socId, tenantUsername, rentalPhone, rentalName]
+                        [socId, tenantUsername, rentalData.phone, rentalData.name]
                     );
                     const newTenantUserId = tenantInsert.insertId;
 
                     await db.promise().query(
                         `INSERT INTO unit_residents (unit_id, user_id, resident_type, is_primary, move_in_date)
-                         VALUES (?, ?, 'tenant', 1, '2020-01-01')`,
-                        [unitId, newTenantUserId]
+                         VALUES (?, ?, 'tenant', ?, '2020-01-01')`,
+                        [unitId, newTenantUserId, j === 0 ? 1 : 0]
                     );
                 }
-            } else {
-                // If was rental and now is not, mark tenant as inactive
-                if (tenantUserId) {
+            }
+            if (activeTenants.length > bodyRentals.length) {
+                for (let j = bodyRentals.length; j < activeTenants.length; j++) {
+                    const extraUser = activeTenants[j];
                     await db.promise().query(
                         "UPDATE unit_residents SET is_active=0, move_out_date=NOW() WHERE unit_id=? AND user_id=?",
-                        [unitId, tenantUserId]
+                        [unitId, extraUser.user_id]
                     );
                 }
             }
@@ -1918,7 +2053,7 @@ app.post("/api/flat", async (req, res) => {
         const billingYear = parseInt(periodParts[1]);
 
         const invoiceNumber = `INV-${unitId}-${billingYear}-${billingMonth}`;
-        const notes = serializeNotes(plan || 'monthly', owner || '', '', paymentMethod || '');
+        const notes = serializeNotes(plan || 'monthly', paidBy || owner || '', '', paymentMethod || '');
         const dueDate = `${billingYear}-${String(billingMonth).padStart(2, '0')}-01`;
 
         const [existingInvoice] = await db.promise().query(
